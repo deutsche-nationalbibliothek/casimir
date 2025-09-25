@@ -386,6 +386,7 @@ test_that("graded relevance metrics are computed correctly", {
   )
 
 })
+
 test_that("propensity scores works", {
 
   # some dummy results
