@@ -9,7 +9,9 @@ testthat::test_that("ci for pr_auc work", {
     hsg = sample(c("001", "002"), size = n_docs, replace = TRUE)
   ) |>
     dplyr::rowwise() |>
-    dplyr::mutate(label_id = list(sample(letters[1:n_label], size = 5, replace = FALSE))) |>
+    dplyr::mutate(
+      label_id = list(sample(letters[1:n_label], size = 5, replace = FALSE))
+    ) |>
     tidyr::unnest(label_id)
 
   pred <- gold_hsg$doc_id |>
@@ -27,17 +29,25 @@ testthat::test_that("ci for pr_auc work", {
 
   # here are frozen results that have been computed for this random input
   # previously
-  expected_pr_auc <-structure(
-    list(pr_auc = 0.1923077,
-         ci_lower = c(0.1923077),
-         ci_upper = c(0.2173132)),
+  expected_pr_auc <- structure(
+    list(
+      pr_auc = 0.1923077,
+      ci_lower = c(0.1923077),
+      ci_upper = c(0.2173132)
+    ),
     row.names = c(NA, -1L),
-    class = c("data.frame"))
+    class = c("data.frame")
+  )
 
-  expect_error(compute_pr_auc(gold_hsg, pred, steps = 15, mode = "subj-avg",
-                 compute_bootstrap_ci = TRUE,
-                 n_bt = 20L),
-               regexp = "Confidence intervals for pr-auc in subj-avg-mode are not supported yet")
+  expect_error(
+    compute_pr_auc(
+      gold_hsg, pred, steps = 15, mode = "subj-avg",
+      compute_bootstrap_ci = TRUE,
+      n_bt = 20L
+    )
+    ,
+    regexp = "Confidence intervals for pr-auc in subj-avg-mode are not supported yet" # nolint
+  )
 
   pr_auc <- compute_pr_auc(gold_hsg, pred, steps = 15,
                            compute_bootstrap_ci = TRUE,

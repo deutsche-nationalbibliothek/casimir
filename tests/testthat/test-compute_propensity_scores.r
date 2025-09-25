@@ -36,13 +36,14 @@ test_that("propensity scores work out on toy example", {
     "g", 0, 10100
   )
 
-  A <- 0.55
-  B <- 1.5
-  N <- 10100
-  C <- (log(N) - 1) * ((B + 1)**A)
-  propensity_score <- 1 / (1 + C * exp(-A * log(label_distribution$label_freq + B)))
+  a <- 0.55
+  b <- 1.5
+  n <- 10100
+  c <- (log(n) - 1) * ((b + 1)**a)
+  propensity_score <- 1 /
+    (1 + c * exp(-a * log(label_distribution$label_freq + b)))
 
   res <- compute_propensity_scores(label_distribution)
 
-  expect_equal(res$label_weight, 1/propensity_score)
+  expect_equal(res$label_weight, 1 / propensity_score)
 })

@@ -1,21 +1,24 @@
 #' compute precision-recall-curve for a given step size and limit_range
 #'
-#' @param gold_standard expects \code{data.frame} with cols \emph{"label_id", "doc_id", "score"}
-#' @param predicted multi-label prediction results. expects \code{data.frame} with cols \emph{"label_id", "doc_id", "score"}
+#' @param gold_standard expects \code{data.frame} with cols
+#'   \emph{"label_id", "doc_id", "score"}
+#' @param predicted multi-label prediction results. expects \code{data.frame}
+#'   with cols \emph{"label_id", "doc_id", "score"}
 #' @param mode aggregation mode: \emph{"doc-avg", "subj-avg", "micro"}
 #' @param steps how many steps to take between c(0,1) as a grid for computing
 #'  the pr-curve
 #' @param doc_strata a column that exists in either gold_standard or predicted,
-#'     that results should be grouped by, e.g. strata of document-space.
-#'     \code{doc_strata} is recommended to be of type factor, so that levels are not
-#'     implicitly dropped during bootstrap replications
+#'   that results should be grouped by, e.g. strata of document-space.
+#'   \code{doc_strata} is recommended to be of type factor, so that levels are
+#'   not implicitly dropped during bootstrap replications
 #' @param label_dict two-column \code{data.frame} with col \emph{"label_id"}
-#'   and a second column
-#'   that defines groups of labels to stratify results by. Results in each stratum
+#'   and a second column that defines groups of labels to stratify results by.
+#'   Results in each stratum
 #'   will restrict gold_standard and predictions to the specified label-groups,
 #'   as if the vocabulary was consisting of the label group only.
 #'   All modes \code{c("doc-avg", "subj-avg", "micro") } are supported within
-#'   label-strata. Nevertheless, mixing \code{mode = "doc-avg"} with fine-grained
+#'   label-strata.
+#'   Nevertheless, mixing \code{mode = "doc-avg"} with fine-grained
 #'   label_strata can result in many missing values on document-level results.
 #'   Also rank-based thresholding (e.g. Top-5) will result in inhomogeneous
 #'   number of labels per documents within the defined label-strata.
@@ -35,10 +38,12 @@
 #'   \emph{"label_id", "label_freq", "n_docs"}. \code{label_freq} corresonds to
 #'   the number of occurences a label has in the gold_standard. \code{n_docs}
 #'   corresponds to the total number of documents in the gold_standard.
-#' @param cost_fp_constant Constant cost assigned to false positives. cost_fp_constant must be
-#'  a numeric value > 0 or one of 'max', 'min', 'mean' (computed with reference
+#' @param cost_fp_constant Constant cost assigned to false positives.
+#'   cost_fp_constant must be
+#'   a numeric value > 0 or one of 'max', 'min', 'mean' (computed with reference
 #'   to the \code{gold_standard} label distribution). The default is NULL, i.e.
-#'   label weights are appplied to false positices as to false negatives and true positives.
+#'   label weights are appplied to false positices as to false negatives and
+#'   true positives.
 #' @param .ignore_relevance_warning logical, if graded_relevance = FALSE, but
 #'   column relevance is present in predicted, a warning can be silenced by
 #'   setting .ignore_relevance_warning = TRUE
@@ -133,7 +138,7 @@ compute_pr_curve <- function(gold_standard, predicted,
 
   stopifnot(is.numeric(limit_range))
   if (!all(is.na(limit_range)))
-    stopifnot(all(limit_range>=1L))
+    stopifnot(all(limit_range >= 1L))
 
   grouping_var <- set_grouping_var(mode, doc_strata, label_dict)
 
@@ -156,7 +161,7 @@ compute_pr_curve <- function(gold_standard, predicted,
     .ignore_relevance_warning = .ignore_relevance_warning
   )
 
-  if (propensity_scored & !is.null(cost_fp_constant))
+  if (propensity_scored && !is.null(cost_fp_constant))
     cost_fp_processed <- process_cost_fp(cost_fp_constant, base_compare)
   else
     cost_fp_processed <- NULL
@@ -164,7 +169,7 @@ compute_pr_curve <- function(gold_standard, predicted,
   ps_flags <- set_ps_flags(mode, propensity_scored)
 
   searchspace <- tidyr::expand_grid(
-    thresholds = seq(0, 1, by = 1/steps),
+    thresholds = seq(0, 1, by = 1 / steps),
     limits = limit_range
   )
   searchspace <- dplyr::mutate(
@@ -216,9 +221,13 @@ compute_pr_curve <- function(gold_standard, predicted,
   )
 
   if (optimize_cutoff) {
-    grouping_var_stripped <- setdiff(grouping_var, c("doc_id", "label_id", "searchspace_id"))
+    grouping_var_stripped <- setdiff(
+      grouping_var, c("doc_id", "label_id", "searchspace_id")
+    )
     f1_results <- dplyr::filter(pr_all_thrsld, metric == "f1")
-    f1_results_grpd <- dplyr::group_by(f1_results, !!!rlang::syms(grouping_var_stripped))
+    f1_results_grpd <- dplyr::group_by(
+      f1_results, !!!rlang::syms(grouping_var_stripped)
+    )
     f1_results_grpd <- dplyr::mutate(f1_results_grpd, f1_max = max(value))
     f1_opt <- dplyr::filter(f1_results_grpd, value == f1_max)
     f1_opt <- dplyr::mutate(
@@ -247,16 +256,18 @@ compute_pr_curve <- function(gold_standard, predicted,
           "limits",
           "searchspace_id",
           "f1_max",
-          grouping_var_stripped))
+          grouping_var_stripped)
+      )
     )
 
   } else {
-    opt_cutoff = NULL
-    all_cutoffs = NULL
+    opt_cutoff <- NULL
+    all_cutoffs <- NULL
   }
 
   pr_all_thrsld_reshaped <- pr_curve_post_processing(
-    results_summary = pr_all_thrsld)
+    results_summary = pr_all_thrsld
+  )
 
   pr_all_thrsld_reshaped <- dplyr::mutate(
     pr_all_thrsld_reshaped,
@@ -283,7 +294,8 @@ compute_pr_curve <- function(gold_standard, predicted,
     all_cutoffs <- dplyr::left_join(
       searchspace,
       all_cutoffs,
-      by = c("searchspace_id"))
+      by = c("searchspace_id")
+    )
     all_cutoffs <- dplyr::left_join(
       all_cutoffs,
       pr_all_thrsld_reshaped,

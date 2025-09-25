@@ -97,11 +97,13 @@ test_that("grouped ranked retrieval works", {
       ndcg = mean(ndcg),
       dcg = mean(dcg),
       lrap = mean(lrap),
-      support = dplyr::n()) |>
+      support = dplyr::n()
+    ) |>
     tidyr::pivot_longer(
       cols = c("dcg", "ndcg", "lrap"),
       names_to = "metric",
-      values_to = "value") |>
+      values_to = "value"
+    ) |>
     dplyr::select(hsg, metric, mode, value, support)
 
 

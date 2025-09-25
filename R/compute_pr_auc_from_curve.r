@@ -73,9 +73,9 @@
 compute_pr_auc_from_curve <- function(pr_curve_data, grouping_vars = NULL) {
 
   if (!is.data.frame(pr_curve_data) && !is.null(pr_curve_data$plot_data)) {
-    plot_data = pr_curve_data$plot_data
+    plot_data <- pr_curve_data$plot_data
   } else {
-    plot_data = pr_curve_data
+    plot_data <- pr_curve_data
   }
   stopifnot(is.data.frame(plot_data))
   stopifnot(
@@ -87,7 +87,8 @@ compute_pr_auc_from_curve <- function(pr_curve_data, grouping_vars = NULL) {
     plot_data_grpd <- dplyr::group_by(
       plot_data,
       !!!rlang::syms(c(grouping_vars)),
-      .add = TRUE)
+      .add = TRUE
+    )
   else
     plot_data_grpd <- plot_data
 
@@ -102,19 +103,23 @@ compute_pr_auc_from_curve <- function(pr_curve_data, grouping_vars = NULL) {
     plot_data_grpd,
     k = .data$prec_cummax,
     k_m_1 = dplyr::lead(.data$prec_cummax),
-    increment_postive = .data$prec_cummax - dplyr::lead(.data$prec_cummax) >=0
+    increment_postive = .data$prec_cummax - dplyr::lead(.data$prec_cummax) >= 0
   )
   stopifnot(
-    all(utils::head(test_monotonicity[["increment_postive"]],-1), na.rm = TRUE))
+    all(
+      utils::head(test_monotonicity[["increment_postive"]], -1), na.rm = TRUE
+    )
+  )
 
   prepare_integral <- dplyr::mutate(
     plot_data_grpd,
     prec_cummax_k = .data$prec_cummax,
     rec_k_minus_1 = dplyr::lag(.data$rec),
     prec_cummax_k_minus_1 = dplyr::lag(.data$prec_cummax_k),
-    delta_f = (.data$prec_cummax_k + .data$prec_cummax_k_minus_1)/2,
+    delta_f = (.data$prec_cummax_k + .data$prec_cummax_k_minus_1) / 2,
     delta_h = .data$rec - .data$rec_k_minus_1,
-    integrand = .data$delta_f * .data$delta_h)
+    integrand = .data$delta_f * .data$delta_h
+  )
 
   dplyr::summarise(
     prepare_integral,

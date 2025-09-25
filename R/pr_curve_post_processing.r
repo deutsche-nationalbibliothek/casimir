@@ -2,11 +2,14 @@
 #'
 #' @param results_summary as produced by summarise_intermediate_results
 #'
-#' @return a \code{data.frame} with cols \code{c("searchspace_id", "prec", "rec", "prec_cummax")}
+#' @return a \code{data.frame} with cols
+#'   \code{c("searchspace_id", "prec", "rec", "prec_cummax")}
 #'   and possibly additional stratification variables
 pr_curve_post_processing <- function(results_summary) {
 
-  stopifnot(all(c("metric", "value", "searchspace_id", "support") %in% colnames(results_summary)))
+  stopifnot(all(
+    c("metric", "value", "searchspace_id", "support") %in% colnames(results_summary) # nolint
+  ))
 
   results_summary <- dplyr::mutate(
     results_summary,
@@ -15,13 +18,14 @@ pr_curve_post_processing <- function(results_summary) {
 
   results_summary <- dplyr::filter(
     results_summary,
-    .data$metric %in% c("prec", "rec"))
+    .data$metric %in% c("prec", "rec")
+  )
 
   results_summary <- tidyr::pivot_wider(
-    dplyr::select(results_summary,
-                  -"support"),
+    dplyr::select(results_summary, -"support"),
     names_from = "metric",
-    values_from = "value")
+    values_from = "value"
+  )
 
   results_summary <- dplyr::mutate(
     results_summary,
@@ -43,7 +47,6 @@ pr_curve_post_processing <- function(results_summary) {
     results_summary,
     dplyr::desc(.data$rec),
     .data$searchspace_id
-    #dplyr::desc(.data$prec)
   )
 
   results_summary <- dplyr::mutate(

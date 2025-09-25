@@ -4,8 +4,8 @@
 #' @param threshold numeric threshold between 0 and 1
 #' @param limit integer cutoff >= 1 for rankbased thresholding. Requires column
 #'   \code{"gold"} in input \code{base_compare}
-#' @param base_compare \code{data.frame} as created by \code{create_comparison}, containing
-#'   cols \code{c("gold", "score")}
+#' @param base_compare \code{data.frame} as created by \code{create_comparison},
+#'   containing cols \code{c("gold", "score")}
 #'
 #' @return \code{data.frame} with observations that satisfy
 #'   (\code{score > threshold} AND (if appliccable) \code{rank <= limit})
@@ -68,15 +68,18 @@ apply_threshold <- function(threshold, limit = NA_real_, base_compare) {
     stopifnot("rank" %in% colnames(base_compare))
 
     compare_w_limit <- dplyr::filter(
-      compare_w_limit, .data$gold | .data$rank <= limit)
+      compare_w_limit, .data$gold | .data$rank <= limit
+    )
   }
 
   compare_w_cutoff <- dplyr::filter(
-    compare_w_limit, .data$gold | .data$score >= threshold)
+    compare_w_limit, .data$gold | .data$score >= threshold
+  )
 
   compare_w_cutoff <- dplyr::mutate(
     compare_w_cutoff,
-    suggested = dplyr::if_else(.data$score >= threshold, TRUE, FALSE, FALSE))
+    suggested = dplyr::if_else(.data$score >= threshold, TRUE, FALSE, FALSE)
+  )
 
   if (!is.na(limit)) {
     compare_w_cutoff <- dplyr::mutate(

@@ -60,7 +60,7 @@
 #'     compute_bootstrap_ci = FALSE
 #' )
 #'
-compute_ranked_retrieval_scores <- function(
+compute_ranked_retrieval_scores <- function( # nolint
     gold_standard,
     predicted,
     doc_strata = NULL,
@@ -82,17 +82,23 @@ compute_ranked_retrieval_scores <- function(
   grouping_var <- rlang::syms(c("doc_id", doc_strata))
 
   iterm <- compute_intermediate_results_rr(
-    gold_vs_pred, grouping_var)
+    gold_vs_pred, grouping_var
+  )
 
   iterm |>
     dplyr::group_by(!!!rlang::syms(c(doc_strata))) |>
     dplyr::summarise(
       support = dplyr::n(),
       mode = "doc-avg",
-      across(.cols = c(dcg, ndcg, lrap), .fns = mean)) |>
+      across(.cols = c(dcg, ndcg, lrap), .fns = mean)
+    ) |>
     tidyr::pivot_longer(
       cols = c(dcg, ndcg, lrap),
       names_to = "metric",
-      values_to = "value") |>
-    dplyr::select(dplyr::all_of(doc_strata), metric, mode, value, support)
+      values_to = "value"
+    ) |>
+    dplyr::select(
+      dplyr::all_of(doc_strata),
+      "metric", "mode", "value", "support"
+    )
 }

@@ -7,7 +7,8 @@
 set_grouping_var(mode, doc_strata, label_dict, var = NULL)
 }
 \arguments{
-\item{mode}{aggregation mode for later computation. One of c("doc-avg", "subj-avg", "micro")}
+\item{mode}{aggregation mode for later computation. One of
+c("doc-avg", "subj-avg", "micro")}
 
 \item{doc_strata}{as in compute_set_retrieval_scores}
 

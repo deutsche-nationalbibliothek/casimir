@@ -49,23 +49,26 @@
 #'   grouping_var = c("doc_id")
 #'   )
 #'
-generate_replicate_results<- function(
-    base_compare,
-    n_bt,
-    grouping_var,
-    seed = NULL,
-    ps_flags = list("intermed" = FALSE, "summarise" = FALSE),
-    label_distribution = NULL,
-    cost_fp = NULL,
-    .progress = FALSE) {
+generate_replicate_results <- function(
+  base_compare,
+  n_bt,
+  grouping_var,
+  seed = NULL,
+  ps_flags = list("intermed" = FALSE, "summarise" = FALSE),
+  label_distribution = NULL,
+  cost_fp = NULL,
+  .progress = FALSE
+) {
 
   stopifnot(is.data.frame(base_compare))
   stopifnot(is.integer(n_bt))
   stopifnot("gold" %in% colnames(base_compare))
   stopifnot(is.logical(.progress))
 
-  doc_id_list <- dplyr::distinct(dplyr::filter(base_compare, .data$gold == TRUE),
-                                 .data$doc_id)
+  doc_id_list <- dplyr::distinct(
+    dplyr::filter(base_compare, .data$gold == TRUE),
+    .data$doc_id
+  )
 
   # core resampling is done by rsample library:
   if (!is.null(seed)) {
@@ -90,7 +93,10 @@ generate_replicate_results<- function(
     ps_flags = ps_flags,
     label_distribution = label_distribution,
     cost_fp = cost_fp,
-    grouping_var = grouping_var)
+    grouping_var = grouping_var
+  )
+
+  boot_results
 }
 
 #' wrapper for compute_intermediate and summarise on one bt_sample
@@ -104,15 +110,18 @@ generate_replicate_results<- function(
 #'
 #' @return as \code{summarise_intermediate_results}
 helper_f <- function(
-    sampled_id_list,
-    compare_cpy,
-    grouping_var,
-    label_distribution = NULL,
-    ps_flags = list("intermed" = FALSE, "summarise" = FALSE),
-    cost_fp = NULL) {
-  compare_resampled <- dplyr::inner_join(compare_cpy, sampled_id_list,
-                                         by = "doc_id",
-                                         relationship = "many-to-many")
+  sampled_id_list,
+  compare_cpy,
+  grouping_var,
+  label_distribution = NULL,
+  ps_flags = list("intermed" = FALSE, "summarise" = FALSE),
+  cost_fp = NULL
+) {
+  compare_resampled <- dplyr::inner_join(
+    compare_cpy, sampled_id_list,
+    by = "doc_id",
+    relationship = "many-to-many"
+  )
   intermediate_results_resampled <- compute_intermediate_results(
     compare_resampled,
     grouping_var,
@@ -129,23 +138,26 @@ helper_f <- function(
 
 #' @describeIn generate_replicate_results variant with dplyr based
 #' internals rather then collapse internals
-generate_replicate_results_dplyr_version <- function(
-    base_compare,
-    n_bt,
-    grouping_var,
-    seed = NULL,
-    label_distribution = NULL,
-    ps_flags = list("intermed" = FALSE, "summarise" = FALSE),
-    cost_fp = NULL,
-    .progress = FALSE) {
+generate_replicate_results_dplyr <- function( # nolint
+  base_compare,
+  n_bt,
+  grouping_var,
+  seed = NULL,
+  label_distribution = NULL,
+  ps_flags = list("intermed" = FALSE, "summarise" = FALSE),
+  cost_fp = NULL,
+  .progress = FALSE
+) {
 
   stopifnot(is.data.frame(base_compare))
   stopifnot(is.integer(n_bt))
   stopifnot("gold" %in% colnames(base_compare))
   stopifnot(is.logical(.progress))
 
-  doc_id_list <- dplyr::distinct(dplyr::filter(base_compare, .data$gold == TRUE),
-                                 .data$doc_id)
+  doc_id_list <- dplyr::distinct(
+    dplyr::filter(base_compare, .data$gold == TRUE),
+    .data$doc_id
+  )
 
   # core resampling is done by rsample library:
   if (!is.null(seed)) {
@@ -161,7 +173,7 @@ generate_replicate_results_dplyr_version <- function(
   # note: a call to furrr attaches purrr
   boot_results <- furrr::future_map_dfr(
     boot_dfs,
-    .f = helper_f_dplyr_version,
+    .f = helper_f_dplyr,
     .progress = .progress,
     .id = "boot_replicate",
     .options = furrr::furrr_options(seed = seed),
@@ -169,7 +181,10 @@ generate_replicate_results_dplyr_version <- function(
     ps_flags = ps_flags,
     label_distribution = label_distribution,
     cost_fp = cost_fp,
-    grouping_var = grouping_var)
+    grouping_var = grouping_var
+  )
+
+  boot_results
 }
 
 #' Internal wrapper for compute_intermediat and summarise on one bt_sample
@@ -181,24 +196,27 @@ generate_replicate_results_dplyr_version <- function(
 #' @param label_distribution as in compute_set_retrieval_scores
 #' @param ps_flags list with logicals "intermed" and "summarise"
 #'
-#' @return as \code{summarise_intermediate_results_dplyr_version}
-helper_f_dplyr_version <- function(
-    sampled_id_list,
-    compare_cpy,
-    grouping_var,
-    label_distribution = NULL,
-    ps_flags = list("intermed" = FALSE, "summarise" = FALSE),
-    cost_fp = NULL) {
-  compare_resampled <- dplyr::inner_join(compare_cpy, sampled_id_list,
-                                         by = "doc_id",
-                                         relationship = "many-to-many")
-  intermediate_results_resampled <- compute_intermediate_results_dplyr_version(
+#' @return as \code{summarise_intermediate_results_dplyr}
+helper_f_dplyr <- function(
+  sampled_id_list,
+  compare_cpy,
+  grouping_var,
+  label_distribution = NULL,
+  ps_flags = list("intermed" = FALSE, "summarise" = FALSE),
+  cost_fp = NULL
+) {
+  compare_resampled <- dplyr::inner_join(
+    compare_cpy, sampled_id_list,
+    by = "doc_id",
+    relationship = "many-to-many"
+  )
+  intermediate_results_resampled <- compute_intermediate_results_dplyr(
     compare_resampled,
     rlang::syms(grouping_var),
     propensity_scored = ps_flags$intermed,
     cost_fp
   )
-  summarise_intermediate_results_dplyr_version(
+  summarise_intermediate_results_dplyr(
     intermediate_results_resampled,
     propensity_scored = ps_flags$summarise,
     label_distribution = label_distribution

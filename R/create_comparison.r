@@ -1,15 +1,17 @@
 #' Join gold standard and predicted results in one table
 #'
-#' @param gold_standard expects data.frame with cols "label_id", "doc_id", "score"
-#' @param predicted expects data.frame with cols "label_id", "doc_id", "score"
+#' @param gold_standard expects data.frame with cols
+#'   "label_id", "doc_id", "score"
+#' @param predicted expects data.frame with cols
+#'   "label_id", "doc_id", "score"
 #' @param doc_strata variable that should be preserved, with a fixed mapping of
 #'    doc_strata and doc_id
-#' @param label_dict two-column data.frame with col "label_id" and a second column
-#'   that defines groups of labels to stratify by
+#' @param label_dict two-column data.frame with col "label_id" and a second
+#'   column that defines groups of labels to stratify by
 #' @param graded_relevance logical indicator for graded relevance. Defaults to
-#'  \code{FALSE} for binary relevance. If set to \code{TRUE}, the
-#'  \code{predicted} data.frame should contain a numeric column
-#'  \emph{"relevance"} with values in the range of \code{c(0, 1)}.
+#'   \code{FALSE} for binary relevance. If set to \code{TRUE}, the
+#'   \code{predicted} data.frame should contain a numeric column
+#'   \emph{"relevance"} with values in the range of \code{c(0, 1)}.
 #' @param propensity_scored logical, whether to use propensity scores as weights
 #' @param label_distribution expects \code{data.frame} with cols
 #'   \emph{"label_id", "label_freq", "n_docs"}. \code{label_freq} corresonds to
@@ -61,18 +63,22 @@ create_comparison <- function(gold_standard, predicted,
   stopifnot(all(c("label_id", "doc_id") %in% colnames(predicted)))
 
   if (graded_relevance)
-    predicted <- check_repair_relevance_predicted(predicted)
+    predicted <- check_repair_relevance_pred(predicted)
 
-  if (graded_relevance & propensity_scored) {
-   warning("Mixing graded relevance and propensity_scores is not tested. Are
-           you sure this is what you want?")
+  if (graded_relevance && propensity_scored) {
+    warning(
+      "Mixing graded relevance and propensity_scores is not tested. ",
+      "You sure this is what you want?"
+    )
   }
 
   if (propensity_scored) {
     if (is.null(label_distribution)) {
       stop("If propensity_scored = TRUE, label_distribution must be provided.")
     }
-    stopifnot(all(c("label_id", "label_freq") %in% colnames(label_distribution)))
+    stopifnot(all(
+      c("label_id", "label_freq") %in% colnames(label_distribution)
+    ))
   }
 
   if (!is.null(doc_strata)) {
@@ -89,12 +95,16 @@ create_comparison <- function(gold_standard, predicted,
 
   stopifnot(nrow(predicted_wo_gold) == 0)
   if (nrow(gold_wo_predicted) > 0)
-    warning("gold standard data contains documents that are not in predicted set")
+    warning(
+      "gold standard data contains documents ",
+      "that are not in predicted set"
+    )
 
   compare <- dplyr::full_join(
     x = dplyr::mutate(
-      dplyr::select(gold_standard,-!!doc_strata),
-      gold = TRUE),
+      dplyr::select(gold_standard, -!!doc_strata),
+      gold = TRUE
+    ),
     y = dplyr::mutate(predicted, suggested = TRUE),
     by = c("doc_id", "label_id"), relationship = "one-to-one",
     suffix = c(".gold", ".pred") # this is intended to differentiate columns
@@ -103,7 +113,7 @@ create_comparison <- function(gold_standard, predicted,
 
   compare_w_strata <- dplyr::left_join(
     x = compare,
-    y = dplyr::distinct(dplyr::select(gold_standard,"doc_id",!!doc_strata)),
+    y = dplyr::distinct(dplyr::select(gold_standard, "doc_id", !!doc_strata)),
     by = c("doc_id")
   )
 
@@ -133,14 +143,12 @@ create_comparison <- function(gold_standard, predicted,
     result <- check_repair_relevance_compare(result)
   } else {
     # test if column relevane exists
-    if ("relevance" %in% colnames(result) & !.ignore_relevance_warning) {
+    if ("relevance" %in% colnames(result) && !.ignore_relevance_warning) {
       warning("column 'relevance' in predicted is ignored, as
               graded_relevance = FALSE. Overwriting with relevance = 0.
               Silence this warning with .ignore_relevance_warning = TRUE")
     }
-    result <- collapse::ftransform(result,
-                                    relevance = 0
-    )
+    result <- collapse::ftransform(result, relevance = 0)
   }
 
 }

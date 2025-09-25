@@ -8,4 +8,6 @@ utils::globalVariables(
     "f1_max", # for optimize_cutoff argument in compute_pr_curve
     "score", "doc_id", "value", "metric", "ndcg", "dcg", "idcg", "n_pred",
     "score_tp", "L", "lrap",
-    "discount", "gain"))
+    "discount", "gain",
+    ".data")
+)

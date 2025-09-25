@@ -6,7 +6,8 @@
 #'  gold_vs_pred (dplyr version requires rlang symbols)
 #' @param cost_fp numeric > 0, default is NULL
 #'
-#' @return data.frame with cols "n_gold", "n_suggested", "tp", "fp", "fn", "rprec_deno"
+#' @return data.frame with cols "n_gold", "n_suggested", "tp", "fp",
+#'   "fn", "rprec_deno"
 find_ps_rprec_deno <- function(gold_vs_pred, grouping_var, cost_fp) {
 
   stopifnot(
@@ -58,9 +59,10 @@ find_ps_rprec_deno <- function(gold_vs_pred, grouping_var, cost_fp) {
 
   cumsums <- collapse::fcumsum(
     prepare_cumsums, g,
-    o = -gold_vs_pred$label_weight, na.rm = FALSE)
+    o = -gold_vs_pred$label_weight, na.rm = FALSE
+  )
 
-  group_names <- collapse::GRPnames(g)
+  group_names <- collapse::GRPnames(g) # nolint
   grp_id_col <- collapse::GRPid(g)
 
   cumsums <- collapse::ftransform(
@@ -73,12 +75,14 @@ find_ps_rprec_deno <- function(gold_vs_pred, grouping_var, cost_fp) {
     how = "left",
     multiple = TRUE,
     validate = "1:m",
-    verbose = 0)
+    verbose = 0
+  )
 
   gold_vs_pred_smry <- collapse::fsubset(
     gold_vs_pred_smry,
     rank_gold == pmin(n_suggested, n_gold)
-    | pmin(n_gold, n_suggested) == 0)
+    | pmin(n_gold, n_suggested) == 0
+  )
 
   gold_vs_pred_smry <- collapse::ftransform(
     gold_vs_pred_smry,
@@ -93,10 +97,16 @@ find_ps_rprec_deno <- function(gold_vs_pred, grouping_var, cost_fp) {
     gold_vs_pred_smry,
     how = "first",
     n = 1,
-    cols = "grp_names")
+    cols = "grp_names"
+  )
 
-  collapse::fselect(gold_vs_pred_smry,
-          c("grp_names", "n_gold", "n_suggested", "tp", "fp", "fn", "delta_relevance", "rprec_deno"))
+  collapse::fselect(
+    gold_vs_pred_smry,
+    c(
+      "grp_names", "n_gold", "n_suggested", "tp",
+      "fp", "fn", "delta_relevance", "rprec_deno"
+    )
+  )
 
 }
 
@@ -120,14 +130,16 @@ find_ps_rprec_deno_dplyr <- function(gold_vs_pred, grouping_var, cost_fp) {
       ),
       n_gold = sum(.data$gold),
       n_suggested = sum(.data$suggested),
-        # apply custom costs to tp, fp, fn
-        # note in this cost scheme fp gets no extra weight
+      # apply custom costs to tp, fp, fn
+      # note in this cost scheme fp gets no extra weight
       tp = sum((.data$gold & .data$suggested) * .data$label_weight),
       fp = sum((!.data$gold & .data$suggested) * cost_fp),
-      fn = sum((.data$gold & !.data$suggested) * .data$label_weight) ,
+      fn = sum((.data$gold & !.data$suggested) * .data$label_weight),
       # graded results are weighted by cost_fp, as they are false positives too
       # but this is something to think about in the future
-      delta_relevance = sum(.data$relevance * cost_fp * (!.data$gold & .data$suggested)),
+      delta_relevance = sum(
+        .data$relevance * cost_fp * (!.data$gold & .data$suggested)
+      ),
       rprec_deno = dplyr::if_else(
         pmin(n_gold, n_suggested) == 0,
         0,
@@ -136,14 +148,19 @@ find_ps_rprec_deno_dplyr <- function(gold_vs_pred, grouping_var, cost_fp) {
       )
     )
 
-  gold_vs_pred_smry <- dplyr::filter(gold_vs_pred_aggr, rank_gold == pmin(n_gold, n_suggested)
-                        | pmin(n_gold, n_suggested) == 0) |>
+  gold_vs_pred_smry <- dplyr::filter(
+    gold_vs_pred_aggr,
+    rank_gold == pmin(n_gold, n_suggested) | pmin(n_gold, n_suggested) == 0
+  ) |>
     dplyr::slice(1) |>
     dplyr::select(
       !!!grouping_var,
-      dplyr::all_of(c("n_gold", "n_suggested", "tp", "fp", "fn", "delta_relevance", "rprec_deno"))
+      dplyr::all_of(c(
+        "n_gold", "n_suggested", "tp", "fp", "fn",
+        "delta_relevance", "rprec_deno"
+      ))
     )
 
-  return(gold_vs_pred_smry)
+  gold_vs_pred_smry
 
 }

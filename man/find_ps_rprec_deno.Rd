@@ -19,7 +19,8 @@ gold_vs_pred (dplyr version requires rlang symbols)}
 \item{cost_fp}{numeric > 0, default is NULL}
 }
 \value{
-data.frame with cols "n_gold", "n_suggested", "tp", "fp", "fn", "rprec_deno"
+data.frame with cols "n_gold", "n_suggested", "tp", "fp",
+"fn", "rprec_deno"
 }
 \description{
 Compute the denominator for rprecision, based on propensity scored

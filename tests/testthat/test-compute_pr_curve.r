@@ -29,12 +29,15 @@ test_that("pr curve computation works", {
     "C", "e", 0.2
   )
 
-  res <- list("doc-avg" = "doc-avg", "subj-avg" = "subj-avg", "micro" = "micro") |>
+  res <- list(
+    "doc-avg" = "doc-avg", "subj-avg" = "subj-avg", "micro" = "micro"
+  ) |>
     purrr::map(
       .f = ~dplyr::arrange(
         expect_silent(
           compute_pr_curve(gold, pred, mode = .x, steps = 10)$plot_data
-        ), .data$searchspace_id)
+        ), .data$searchspace_id
+      )
     )
 
   expected <- list()
@@ -99,11 +102,12 @@ test_that("pr curve computation works", {
       res,
       ~compute_pr_auc_from_curve(
         .x,
-        grouping_vars = NULL)$pr_auc[1]),
+        grouping_vars = NULL
+      )$pr_auc[1]
+    ),
     list("doc-avg" = 0.4583333, "subj-avg" = 0.3833333, "micro" = 0.3888889),
     tolerance = 1e-4
   )
-
 
   # check that all scenarios run through undisturbed
   configuration <- expand.grid(
@@ -113,14 +117,15 @@ test_that("pr curve computation works", {
   )
   res_across_config <- purrr::pmap(
     configuration,
-    .f = function(.mode, .steps, .optimize){
+    .f = function(.mode, .steps, .optimize) {
       expect_silent(
         object = compute_pr_curve(
           gold_standard = gold,
           predicted = pred,
           mode = .mode,
           steps = .steps,
-          optimize_cutoff = .optimize)
+          optimize_cutoff = .optimize
+        )
       )
     }
   )
@@ -136,6 +141,7 @@ test_that("grouped pr-auc computation works with doc_strata", {
 
   # Randomly generated testdata seems not reproducible in R CMD check
   # so we use this code and save the testdata along with the package
+  # nolint start
   # set.seed(20)
   # n_docs <- 20
   # n_label <- 26
@@ -144,7 +150,9 @@ test_that("grouped pr-auc computation works with doc_strata", {
   #   hsg = sample(c("001", "002"), size = n_docs, replace = TRUE)
   # ) |>
   #   dplyr::rowwise() |>
-  #   dplyr::mutate(label_id = list(sample(letters[1:n_label], size = 5, replace = FALSE))) |>
+  #   dplyr::mutate(
+  #     label_id = list(sample(letters[1:n_label], size = 5, replace = FALSE))
+  #   ) |>
   #   tidyr::unnest(label_id)
   #
   # pred <- gold_hsg$doc_id |>
@@ -152,17 +160,20 @@ test_that("grouped pr-auc computation works with doc_strata", {
   #   purrr::map_dfr(
   #     .f = ~tibble::tibble(
   #       doc_id = .x,
-  #       label_id = sample(letters[1:n_label], size = n_label, replace = FALSE),
+  #       label_id = sample(
+  #         letters[1:n_label], size = n_label, replace = FALSE),
   #       score = runif(n_label)
   #     )
   #   )
+  # nolint end
   load(test_path("testdata/grouped_pr_curve_data_w_doc_strata.rds"))
 
 
   # test whether parallel computation yields the same as sequential computation
   pr_curve_by_hsg_parallel <- compute_pr_curve(
     gold_hsg, pred, doc_strata = "hsg",
-    steps = 15)$plot_data |>
+    steps = 15
+  )$plot_data |>
     dplyr::arrange(.data$hsg, .data$searchspace_id) |>
     dplyr::select("hsg", everything())
 
@@ -177,7 +188,8 @@ test_that("grouped pr-auc computation works with doc_strata", {
         compute_pr_curve(
           gold_standard = gold_1hsg,
           predicted = pred_1hsg,
-          steps = 15)$plot_data
+          steps = 15
+        )$plot_data
 
       },
       .id = "hsg"
@@ -193,11 +205,13 @@ test_that("grouped pr-auc computation works with doc_strata", {
                                              grouping_vars = "hsg")
 
   expected_pr_auc_by_hsg <- structure(
-    list(hsg = c("001", "002"),
-         pr_auc = c(0.1963002,
-                    0.2019231)),
+    list(
+      hsg = c("001", "002"),
+      pr_auc = c(0.1963002, 0.2019231)
+    ),
     row.names = c(NA, -2L),
-    class = c("tbl_df", "tbl", "data.frame"))
+    class = c("tbl_df", "tbl", "data.frame")
+  )
 
   expect_equal(pr_auc_by_hsg, expected_pr_auc_by_hsg, tolerance = 10e-5)
 
@@ -206,6 +220,7 @@ test_that("grouped pr-auc computation works with doc_strata", {
 test_that("grouped pr-auc computation works with label_strata", {
   # Randomly generated testdata seems not reproducible in R CMD check
   # so we use this code and save the testdata along with the package
+  # nolint start
   # set.seed(20)
   # n_docs <- 20
   # n_label <- 26
@@ -232,8 +247,11 @@ test_that("grouped pr-auc computation works with label_strata", {
   # set.seed(22)
   # label_dict <- tibble::tibble(
   #   label_id = letters[1:n_label],
-  #   label_group = sample(c("group 1", "group 2"), size = n_label, replace = TRUE)
+  #   label_group = sample(
+  #     c("group 1", "group 2"), size = n_label, replace = TRUE
+  #    )
   # )
+  # nolint end
   load(test_path("testdata/grouped_pr_curve_data_w_label_strata.rds"))
 
   pr_curve_by_lbl_grp <- compute_pr_curve(gold, pred,
@@ -243,19 +261,23 @@ test_that("grouped pr-auc computation works with label_strata", {
   expect_equal(nrow(pr_curve_by_lbl_grp$plot_data), 36)
 
   pr_auc_by_label_group <- compute_pr_auc_from_curve(
-    pr_curve_by_lbl_grp$plot_dat, grouping_vars = "label_group")
+    pr_curve_by_lbl_grp$plot_dat, grouping_vars = "label_group"
+  )
 
   expected_pr_auc_by_label_group <- structure(
-    list(label_group = c("group 1", "group 2"),
-         pr_auc = c(0.2216564,
-                    0.2170787)),
+    list(
+      label_group = c("group 1", "group 2"),
+      pr_auc = c(0.2216564, 0.2170787)
+    ),
     row.names = c(NA, -2L),
-    class = c("tbl_df", "tbl", "data.frame"))
+    class = c("tbl_df", "tbl", "data.frame")
+  )
 
   expect_equal(
     pr_auc_by_label_group,
     expected_pr_auc_by_label_group,
-    tolerance = 10e-5)
+    tolerance = 10e-5
+  )
 
   detach("package:purrr")
 
@@ -286,22 +308,26 @@ test_that("grouped cutoff works", {
   library(purrr, quietly = TRUE, warn.conflicts = FALSE)
   # Randomly generated testdata seems not reproducible in R CMD check
   # so we use this code and save the testdata along with the package
+  # nolint start
   # set.seed(13436)
   # hsg_mapping <- dnb_gold_standard |>
   #   dplyr::distinct(doc_id) |>
-  #   dplyr::mutate(hsg = sample(LETTERS[1:3], size = dplyr::n(), replace = TRUE))
+  #   dplyr::mutate(
+  #     hsg = sample(LETTERS[1:3], size = dplyr::n(), replace = TRUE)
+  #    )
+  # nolint end
   hsg_mapping <- readRDS(test_path("testdata/random_hsg_mapping.rds"))
   dnb_gold_standard_w_hsg <- dnb_gold_standard |>
     dplyr::left_join(hsg_mapping, by = "doc_id")
 
   res <- compute_pr_curve(
-      gold_standard = dnb_gold_standard_w_hsg,
-      predicted = dnb_test_predictions,
-      doc_strata = "hsg",
-      limit_range = c(1:5),
-      steps = 10,
-      optimize_cutoff = TRUE
-    )
+    gold_standard = dnb_gold_standard_w_hsg,
+    predicted = dnb_test_predictions,
+    doc_strata = "hsg",
+    limit_range = c(1:5),
+    steps = 10,
+    optimize_cutoff = TRUE
+  )
 
   expect_equal(
     res$opt_cutoff$f1_max,

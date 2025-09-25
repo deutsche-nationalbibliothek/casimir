@@ -90,8 +90,8 @@ test_that("ps_rprec_deno is computed correctly", {
   # first gold label: 9.220291
   expected_res[["docwise"]] <- tibble::tribble(
     ~doc_id, ~n_gold, ~n_suggested, ~tp, ~fp, ~fn, ~rprec_deno,
-    "A", 3, 3, 1.085846, 2*mlw, 1.304366 + 2.072008, 2.072008 + 1.304366 + 1.085846,
-    "B", 2, 4, 1.085846, 3*mlw, 9.220291, 9.220291 + 1.085846,
+    "A", 3, 3, 1.085846, 2 * mlw, 1.304366 + 2.072008, 2.072008 + 1.304366 + 1.085846, # nolint
+    "B", 2, 4, 1.085846, 3 * mlw, 9.220291, 9.220291 + 1.085846,
     "C", 4, 1, 7.831511, 0, 9.220291 + 1.304366 + 1.085846, 9.220291
   ) |>
     dplyr::mutate(
@@ -101,12 +101,14 @@ test_that("ps_rprec_deno is computed correctly", {
 
   expected_res[["labelwise"]] <- tibble::tribble(
     ~label_id, ~n_gold, ~n_suggested,        ~tp, ~fp,        ~fn, ~rprec_deno,
-    "a",             3,            2, 2*1.085846,   0,   1.085846,  2*1.085846,
-    "b",             2,            0,          0,   0, 2*1.304366,           0,
-    "c",             1,            1,          0,   mlw,   2.072009,    2.072009,
-    "d",             2,            1,          0,   mlw, 2*9.220291,    9.220291,
-    "e",             0,            1,          0,   mlw,          0,           0,
-    "f",             1,            3,   7.831511,   2*mlw,          0,    7.831511
+    # nolint start
+    "a",             3,            2, 2 * 1.085846,   0,   1.085846,  2 * 1.085846,
+    "b",             2,            0,            0,   0, 2 * 1.304366,           0,
+    "c",             1,            1,            0,   mlw,   2.072009,    2.072009,
+    "d",             2,            1,            0,   mlw, 2*9.220291,    9.220291,
+    "e",             0,            1,            0,   mlw,          0,           0,
+    "f",             1,            3,     7.831511,   2 * mlw,          0,    7.831511
+    # nolint end
   )  |>
     dplyr::mutate(
       delta_relevance = 0,
@@ -160,24 +162,21 @@ test_that("ps_rprec_deno is computed correctly", {
           .before = n_gold
         ) |>
         dplyr::select(- doc_id, -label_id)
-    }
-    else if ("doc_id" %in% colnames(expected_res)) {
+    } else if ("doc_id" %in% colnames(expected_res)) {
       res <- expected_res |>
         dplyr::mutate(
           grp_names = doc_id,
           .before = n_gold
         ) |>
         dplyr::select(-doc_id)
-    }
-    else if ("label_id" %in% colnames(expected_res)) {
+    } else if ("label_id" %in% colnames(expected_res)) {
       res <- expected_res |>
         dplyr::mutate(
           grp_names = label_id,
           .before = n_gold
         ) |>
         dplyr::select(-label_id)
-    }
-    else {
+    } else {
       res <- expected_res
     }
 

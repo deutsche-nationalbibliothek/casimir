@@ -38,7 +38,7 @@
 #' A data frame with 100,000 rows and 4 columns:
 #' \describe{
 #'   \item{label_id}{DNB identifier of a concept in the GND subject vocabulary}
-#'   \item{label_freq}{Number of occurences of the specified label in the overall catalogue}
+#'   \item{label_freq}{Number of occurences of the specified label in the overall catalogue} # nolint
 #'   \item{n_docs}{Overall number of documents in the ground truth dataset}
 #' }
 "dnb_label_distribution"

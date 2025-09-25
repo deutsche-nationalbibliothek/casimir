@@ -1,4 +1,4 @@
-test_that("compute_pr_auc_from_curve is computed correctly",{
+test_that("compute_pr_auc_from_curve is computed correctly", {
 
   pr_curve_ideal <- tibble::tribble(
     ~searchspace_id, ~rec, ~prec_cummax,
@@ -39,7 +39,7 @@ test_that("compute_pr_auc_from_curve is computed correctly",{
   # expect that non-monotone input is rejected
   expect_error(
     compute_pr_auc_from_curve(pr_curve_non_monotone, grouping_vars = NULL),
-    regexp = "all\\(utils::head\\(test_monotonicity\\[\\[\"increment_postive\"\\]\\], -1\\),.* is not TRUE"
+    regexp = "all\\(utils::head\\(test_monotonicity\\[\\[\"increment_postive\"\\]\\], -1\\),.* is not TRUE" # nolint
   )
 
   pr_curve <- tibble::tribble(

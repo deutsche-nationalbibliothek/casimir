@@ -2,26 +2,29 @@
 #' confidence intervals and different stratification and aggregation modes
 #' for the underlying precision and recall aggregation
 #' Precision is calculated as the best value at a given level of recall for
-#' all possible thresholds on score and limits on rank. In essence, compute_pr_auc
-#' performs a two dimensional optimisation over thresholds and limits applying
-#' both threshold-based cutoff as well as rank-based cutoff.
+#' all possible thresholds on score and limits on rank. In essence,
+#' compute_pr_auc performs a two dimensional optimisation over thresholds and
+#' limits applying both threshold-based cutoff as well as rank-based cutoff.
 #'
-#' @param gold_standard expects \code{data.frame} with cols \emph{"label_id", "doc_id", "score"}
-#' @param predicted multi-label prediction results. expects \code{data.frame} with cols \emph{"label_id", "doc_id", "score"}
+#' @param gold_standard expects \code{data.frame} with cols
+#'   \emph{"label_id", "doc_id", "score"}
+#' @param predicted multi-label prediction results. expects \code{data.frame}
+#'   with cols \emph{"label_id", "doc_id", "score"}
 #' @param mode aggregation mode: \emph{"doc-avg", "subj-avg", "micro"}
 #' @param compute_bootstrap_ci logical indicator for computing bootstrap CIs
 #' @param n_bt an integer number of resamples to undergo in bootstrapping
 #' @param doc_strata a column that exists in either gold_standard or predicted,
-#'     that results should be grouped by, e.g. strata of document-space.
-#'     \code{doc_strata} is recommended to be of type factor, so that levels are not
-#'     implicitly dropped during bootstrap replications
+#'   that results should be grouped by, e.g. strata of document-space.
+#'   \code{doc_strata} is recommended to be of type factor, so that levels are
+#'   not implicitly dropped during bootstrap replications
 #' @param label_dict two-column \code{data.frame} with col \emph{"label_id"}
-#'   and a second column
-#'   that defines groups of labels to stratify results by. Results in each stratum
+#'   and a second column that defines
+#'   groups of labels to stratify results by. Results in each stratum
 #'   will restrict gold_standard and predictions to the specified label-groups,
 #'   as if the vocabulary was consisting of the label group only.
 #'   All modes \code{c("doc-avg", "subj-avg", "micro") } are supported within
-#'   label-strata. Nevertheless, mixing \code{mode = "doc-avg"} with fine-grained
+#'   label-strata. Nevertheless, mixing
+#'   \code{mode = "doc-avg"} with fine-grained
 #'   label_strata can result in many missing values on document-level results.
 #'   Also rank-based thresholding (e.g. Top-5) will result in inhomogeneous
 #'   number of labels per documents within the defined label-strata.
@@ -45,10 +48,12 @@
 #'   \emph{"label_id", "label_freq", "n_docs"}. \code{label_freq} corresonds to
 #'   the number of occurences a label has in the gold_standard. \code{n_docs}
 #'   corresponds to the total number of documents in the gold_standard.
-#' @param cost_fp_constant Constant cost assigned to false positives. cost_fp_constant must be
-#'  a numeric value > 0 or one of 'max', 'min', 'mean' (computed with reference
+#' @param cost_fp_constant Constant cost assigned to false positives.
+#'   cost_fp_constant must be
+#'   a numeric value > 0 or one of 'max', 'min', 'mean' (computed with reference
 #'   to the \code{gold_standard} label distribution). The default is NULL, i.e.
-#'   label weights are appplied to false positices as to false negatives and true positives.
+#'   label weights are appplied to false positices as to false negatives and
+#'   true positives.
 #' @param .ignore_relevance_warning logical, if graded_relevance = FALSE, but
 #'   column relevance is present in predicted, a warning can be silenced by
 #'   setting .ignore_relevance_warning = TRUE
@@ -118,7 +123,7 @@ compute_pr_auc <- function(gold_standard, predicted,
   stopifnot(is.integer(n_bt))
   stopifnot(is.numeric(limit_range))
   if (!all(is.na(limit_range)))
-    stopifnot(all(limit_range>=1L))
+    stopifnot(all(limit_range >= 1L))
 
 
   if (!all(is.na(limit_range)) && !"rank" %in% colnames(predicted)) {
@@ -130,8 +135,11 @@ compute_pr_auc <- function(gold_standard, predicted,
     )
   }
 
-  if (mode == "subj-avg" & compute_bootstrap_ci == TRUE) {
-    stop("Confidence intervals for pr-auc in subj-avg-mode are not supported yet")
+  if (mode == "subj-avg" && compute_bootstrap_ci == TRUE) {
+    stop(paste(
+      "Confidence intervals for pr-auc in",
+      "subj-avg-mode are not supported yet"
+    ))
   }
 
   if (!is.null(doc_strata)) {
@@ -179,23 +187,23 @@ compute_pr_auc <- function(gold_standard, predicted,
       .ignore_relevance_warning = .ignore_relevance_warning
     )
 
-    if (propensity_scored & !is.null(cost_fp_constant))
+    if (propensity_scored && !is.null(cost_fp_constant))
       cost_fp_processed <- process_cost_fp(cost_fp_constant, base_compare)
     else
       cost_fp_processed <- NULL
 
     ps_flags <- set_ps_flags(mode, propensity_scored)
 
-    searchspace = tidyr::expand_grid(
-      thresholds = seq(0, 1, by = 1/steps),
+    searchspace <- tidyr::expand_grid(
+      thresholds = seq(0, 1, by = 1 / steps),
       limits = limit_range
     )
 
-    get_intermed_res_per_searchspace_id <- function(
-    threshold,
-    limit,
-    base_compare,
-    grouping_var
+    get_intermed_res_per_searchspace_id <- function( # nolint
+      threshold,
+      limit,
+      base_compare,
+      grouping_var
     ) {
       compare_all_thrsld <- apply_threshold(
         base_compare = base_compare,
@@ -259,7 +267,8 @@ compute_pr_auc <- function(gold_standard, predicted,
     boot_ci <- dplyr::summarise(
       boot_results_grpd,
       ci_lower = stats::quantile(x = .data$pr_auc, probs = 0.025, na.rm = TRUE),
-      ci_upper = stats::quantile(x = .data$pr_auc, probs = 0.975, na.rm = TRUE))
+      ci_upper = stats::quantile(x = .data$pr_auc, probs = 0.975, na.rm = TRUE)
+    )
 
     if (purrr::is_empty(smry_grouping_var)) {
       pr_auc <- cbind(pr_auc, boot_ci)
@@ -273,7 +282,7 @@ compute_pr_auc <- function(gold_standard, predicted,
 
   }
 
-  if (graded_relevance & rename_graded_metrics) {
+  if (graded_relevance && rename_graded_metrics) {
     pr_auc <- dplyr::rename(
       pr_auc,
       g_pr_auc = .data$pr_auc
@@ -306,7 +315,8 @@ generate_pr_auc_replica <- function(
     .progress) {
   doc_id_list <- dplyr::distinct(
     intermed_res_all_thrsld$results_table,
-    .data$doc_id)
+    .data$doc_id
+  )
   # core resampling is done by rsample library:
   if (!is.null(seed)) {
     set.seed(seed)
@@ -316,7 +326,7 @@ generate_pr_auc_replica <- function(
   boot_dfs <- purrr::map(boot_dfs, as.data.frame)
 
   # set the size that variables shared between the parallel instances may have
-  # 5000*1024^2 = 5242880000
+  # 5000*1024^2 = 5242880000 # nolint
   options(future.globals.maxSize = 5242880000)
   # apply wrapper to each of the bootstrap replica
   # note: a call to furrr attaches purrr
@@ -329,6 +339,8 @@ generate_pr_auc_replica <- function(
     intermed_res = intermed_res_all_thrsld,
     propensity_scored = propensity_scored
   )
+
+  boot_results
 }
 
 #' A wrapper for use within bootstrap computation of auc
@@ -352,7 +364,8 @@ boot_worker_fn <- function(sampled_id_list, intermed_res, propensity_scored) {
   intermed_resampled <- dplyr::inner_join(
     x = intermed_res$results_table,
     y = sampled_id_list, relationship = "many-to-many",
-    by = "doc_id")
+    by = "doc_id"
+  )
 
   # 2. summarise_intermediate_results on resampled docs
   pr_curve_data <- summarise_intermediate_results(
@@ -371,6 +384,7 @@ boot_worker_fn <- function(sampled_id_list, intermed_res, propensity_scored) {
     pr_curve_data = pr_curve_data_reshaped,
     grouping_vars = setdiff(
       intermed_res$grouping_var,
-      c("doc_id", "label_id", "searchspace_id"))
+      c("doc_id", "label_id", "searchspace_id")
+    )
   )
 }

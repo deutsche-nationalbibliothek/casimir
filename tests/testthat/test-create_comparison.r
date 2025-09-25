@@ -50,6 +50,8 @@ test_that("create_comparison produces no nonesens", {
     "B", "e",
   )
 
-  expect_warning(casimir:::create_comparison(gold, pred_scenario3),
-                 regexp = "gold standard data contains documents that are not in predicted set")
+  expect_warning(
+    casimir:::create_comparison(gold, pred_scenario3),
+    regexp = "gold standard data contains documents that are not in predicted set" #nolint
+  )
 })

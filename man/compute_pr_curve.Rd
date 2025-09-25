@@ -23,22 +23,25 @@ compute_pr_curve(
 )
 }
 \arguments{
-\item{gold_standard}{expects \code{data.frame} with cols \emph{"label_id", "doc_id", "score"}}
+\item{gold_standard}{expects \code{data.frame} with cols
+\emph{"label_id", "doc_id", "score"}}
 
-\item{predicted}{multi-label prediction results. expects \code{data.frame} with cols \emph{"label_id", "doc_id", "score"}}
+\item{predicted}{multi-label prediction results. expects \code{data.frame}
+with cols \emph{"label_id", "doc_id", "score"}}
 
 \item{doc_strata}{a column that exists in either gold_standard or predicted,
 that results should be grouped by, e.g. strata of document-space.
-\code{doc_strata} is recommended to be of type factor, so that levels are not
-implicitly dropped during bootstrap replications}
+\code{doc_strata} is recommended to be of type factor, so that levels are
+not implicitly dropped during bootstrap replications}
 
 \item{label_dict}{two-column \code{data.frame} with col \emph{"label_id"}
-and a second column
-that defines groups of labels to stratify results by. Results in each stratum
+and a second column that defines groups of labels to stratify results by.
+Results in each stratum
 will restrict gold_standard and predictions to the specified label-groups,
 as if the vocabulary was consisting of the label group only.
 All modes \code{c("doc-avg", "subj-avg", "micro") } are supported within
-label-strata. Nevertheless, mixing \code{mode = "doc-avg"} with fine-grained
+label-strata.
+Nevertheless, mixing \code{mode = "doc-avg"} with fine-grained
 label_strata can result in many missing values on document-level results.
 Also rank-based thresholding (e.g. Top-5) will result in inhomogeneous
 number of labels per documents within the defined label-strata.
@@ -69,10 +72,12 @@ search space specified by \code{limit_range} and \code{steps}.}
 the number of occurences a label has in the gold_standard. \code{n_docs}
 corresponds to the total number of documents in the gold_standard.}
 
-\item{cost_fp_constant}{Constant cost assigned to false positives. cost_fp_constant must be
+\item{cost_fp_constant}{Constant cost assigned to false positives.
+cost_fp_constant must be
 a numeric value > 0 or one of 'max', 'min', 'mean' (computed with reference
 to the \code{gold_standard} label distribution). The default is NULL, i.e.
-label weights are appplied to false positices as to false negatives and true positives.}
+label weights are appplied to false positices as to false negatives and
+true positives.}
 
 \item{.ignore_relevance_warning}{logical, if graded_relevance = FALSE, but
 column relevance is present in predicted, a warning can be silenced by

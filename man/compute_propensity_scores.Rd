@@ -4,7 +4,7 @@
 \alias{compute_propensity_scores}
 \title{Computes inverse propensity scores}
 \usage{
-compute_propensity_scores(label_distribution, A = 0.55, B = 1.5)
+compute_propensity_scores(label_distribution, a = 0.55, b = 1.5)
 }
 \arguments{
 \item{label_distribution}{expects \code{data.frame} with cols

@@ -81,15 +81,14 @@ lrap_score <- function(gold_vs_pred) {
     } else {
       scores_i <- -temp$score
       rank <- rank(scores_i, ties.method = "max")[relevant]
-      L <- rank(scores_i[relevant], ties.method = "max")
+      l <- rank(scores_i[relevant], ties.method = "max")
 
-      # Manuelle Korrektur für False Negatives: L / rank = #TP / n_samples ~ 0
-      aux <- mean((scores_i[relevant] < 0) * L / rank)
+      # Manuelle Korrektur für False Negatives: l / rank = #TP / n_samples ~ 0
+      aux <- mean((scores_i[relevant] < 0) * l / rank)
     }
 
     out <- c(out, aux)
   }
 
-  return(mean(out, na.rm = TRUE))
+  mean(out, na.rm = TRUE)
 }
-

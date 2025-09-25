@@ -1,6 +1,7 @@
 #' determine the appropriate grouping variables for each aggregation mode
 #'
-#' @param mode aggregation mode for later computation. One of c("doc-avg", "subj-avg", "micro")
+#' @param mode aggregation mode for later computation. One of
+#'   c("doc-avg", "subj-avg", "micro")
 #' @param doc_strata as in compute_set_retrieval_scores
 #' @param label_dict as in compute_set_retrieval_scores
 #' @param var additional variables to include
@@ -59,7 +60,7 @@ process_cost_fp <- function(cost_fp, gold_vs_pred) {
     stop("cost_fp must be a numeric value > 0 or one of
            'max', 'min', 'mean'; not cost_fp = ", cost_fp)
   }
-  return(cost_fp_processed)
+  cost_fp_processed
 }
 
 #' Generate flags, if propensity scores should be applied to intermediate
@@ -88,5 +89,5 @@ set_ps_flags <- function(mode, propensity_scored) {
     summarise <- FALSE
   }
 
-  return(list("intermed" = intermed, "summarise" = summarise))
+  list("intermed" = intermed, "summarise" = summarise)
 }

@@ -14,10 +14,13 @@ test_that("grouping_var selection works", {
     purrr::pmap(
       .f = function(mode, doc_strata, label_dict, var) {
         expect_silent(
-          set_grouping_var(mode = mode,
-                           doc_strata = doc_strata,
-                           label_dict = label_dict,
-                           var = var))
+          set_grouping_var(
+            mode = mode,
+            doc_strata = doc_strata,
+            label_dict = label_dict,
+            var = var
+          )
+        )
       }
     )
 

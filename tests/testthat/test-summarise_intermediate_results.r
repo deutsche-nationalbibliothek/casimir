@@ -7,35 +7,40 @@ test_that("summarise_intermediate_results checks out", {
       tp = c(1L, 1L, 1L),
       fp = 2:0,
       fn = c(2L, 1L, 3L),
-      prec = c(1/3, 0.5, 1),
-      rprec = c(1/3, 0.5, 1),
-      rec = c(1/3, 0.5, 0.25),
-      f1 = c(1/3, 0.5, 0.4)),
+      prec = c(1 / 3, 0.5, 1),
+      rprec = c(1 / 3, 0.5, 1),
+      rec = c(1 / 3, 0.5, 0.25),
+      f1 = c(1 / 3, 0.5, 0.4)
+    ),
     row.names = c(NA, -3L),
-    class = c("tbl_df", "tbl", "data.frame"))
+    class = c("tbl_df", "tbl", "data.frame")
+  )
 
   expected_res <- tibble::tribble(
     ~metric, ~value, ~support,
-    "f1", (1/3 + 0.5 + 0.4)/3, 3,
-    "prec", (1/3 + 0.5 + 1)/3 , 3,
-    "rec", (1/3 + 0.5 + 0.25)/3, 3,
-    "rprec", (1/3 +  0.5 + 1)/3, 3,
+    "f1", (1 / 3 + 0.5 + 0.4) / 3, 3,
+    "prec", (1 / 3 + 0.5 + 1) / 3, 3,
+    "rec", (1 / 3 + 0.5 + 0.25) / 3, 3,
+    "rprec", (1 / 3 +  0.5 + 1) / 3, 3,
   )
 
-  intermediate_results_grpd <- dplyr::group_by(intermediate_results, .data$doc_id)
-  actual_res <- summarise_intermediate_results_dplyr_version(intermediate_results_grpd)
+  intermediate_results_grpd <- dplyr::group_by(
+    intermediate_results, .data$doc_id
+  )
+  actual_res <- summarise_intermediate_results_dplyr(intermediate_results_grpd)
   actual_res_collapse <- summarise_intermediate_results(
     list(
       results_table = intermediate_results,
       grouping_var = c("doc_id")
-    ))
+    )
+  )
 
   expect_equal(actual_res, expected_res)
   expect_equal(actual_res_collapse, expected_res)
 
 })
 
-test_that("f1-score handles missings expectedly in summarise stage",{
+test_that("f1-score handles missings expectedly in summarise stage", {
 
   # Scenraio 1: Micro-Averaged precision and recall are both 0
   intermediate_results <- structure(
@@ -51,17 +56,25 @@ test_that("f1-score handles missings expectedly in summarise stage",{
       prec = c(NA, 0),
       rprec = c(NA, NA),
       rec = c(0, NA),
-      f1 = c(0, 0)),
-    class = c("tbl_df", "tbl", "data.frame"))
+      f1 = c(0, 0)
+    ),
+    class = c("tbl_df", "tbl", "data.frame")
+  )
 
 
-  expected <- structure(list(
-    metric = c("f1", "prec", "rec", "rprec"),
-    value = c(0,  0, 0, 0),
-    support = c(1, 1, 1, 1)), class = c("tbl_df", "tbl", "data.frame"),
-    row.names = c(NA, -4L))
+  expected <- structure(
+    list(
+      metric = c("f1", "prec", "rec", "rprec"),
+      value = c(0,  0, 0, 0),
+      support = c(1, 1, 1, 1)
+    ),
+    class = c("tbl_df", "tbl", "data.frame"),
+    row.names = c(NA, -4L)
+  )
 
-  observed <- summarise_intermediate_results(list(results_table = intermediate_results, grouping_var = c("doc_id", "label_id")))
+  observed <- summarise_intermediate_results(list(
+    results_table = intermediate_results, grouping_var = c("doc_id", "label_id")
+  ))
 
   expect_equal(observed, expected)
 
@@ -79,19 +92,26 @@ test_that("f1-score handles missings expectedly in summarise stage",{
       prec = c(NA, NA),
       rprec = c(NA, NA),
       rec = c(0, 0),
-      f1 = c(0, 0)),
-    class = c("tbl_df", "tbl", "data.frame"))
+      f1 = c(0, 0)
+    ),
+    class = c("tbl_df", "tbl", "data.frame")
+  )
 
 
-  expected <- structure(list(
-    metric = c("f1", "prec", "rec", "rprec"),
-    value = c(0,  NA, 0, NA),
-    support = c(1, 0, 2, 0)), class = c("tbl_df", "tbl", "data.frame"),
-    row.names = c(NA, -4L))
+  expected <- structure(
+    list(
+      metric = c("f1", "prec", "rec", "rprec"),
+      value = c(0,  NA, 0, NA),
+      support = c(1, 0, 2, 0)
+    ),
+    class = c("tbl_df", "tbl", "data.frame"),
+    row.names = c(NA, -4L)
+  )
 
-  observed <- summarise_intermediate_results(
-    list(results_table = intermediate_results,
-         grouping_var = c("doc_id", "label_id")))
+  observed <- summarise_intermediate_results(list(
+    results_table = intermediate_results,
+    grouping_var = c("doc_id", "label_id")
+  ))
 
   expect_equal(observed, expected)
 
@@ -109,19 +129,26 @@ test_that("f1-score handles missings expectedly in summarise stage",{
       prec = c(0, 0),
       rprec = c(NA, NA),
       rec = c(NA, NA),
-      f1 = c(0, 0)),
-    class = c("tbl_df", "tbl", "data.frame"))
+      f1 = c(0, 0)
+    ),
+    class = c("tbl_df", "tbl", "data.frame")
+  )
 
 
-  expected <- structure(list(
-    metric = c("f1", "prec", "rec", "rprec"),
-    value = c(0,  0, NA, NA),
-    support = c(1, 2, 0, 0)), class = c("tbl_df", "tbl", "data.frame"),
-    row.names = c(NA, -4L))
+  expected <- structure(
+    list(
+      metric = c("f1", "prec", "rec", "rprec"),
+      value = c(0,  0, NA, NA),
+      support = c(1, 2, 0, 0)
+    ),
+    class = c("tbl_df", "tbl", "data.frame"),
+    row.names = c(NA, -4L)
+  )
 
-  observed <- summarise_intermediate_results(
-    list(results_table = intermediate_results,
-         grouping_var = c("doc_id", "label_id")))
+  observed <- summarise_intermediate_results(list(
+    results_table = intermediate_results,
+    grouping_var = c("doc_id", "label_id")
+  ))
 
   expect_equal(observed, expected)
 
@@ -139,19 +166,26 @@ test_that("f1-score handles missings expectedly in summarise stage",{
       prec = c(NA, NA),
       rprec = c(NA, NA),
       rec = c(NA, NA),
-      f1 = c(NA, NA)),
-    class = c("tbl_df", "tbl", "data.frame"))
+      f1 = c(NA, NA)
+    ),
+    class = c("tbl_df", "tbl", "data.frame")
+  )
 
 
-  expected <- structure(list(
-    metric = c("f1", "prec", "rec", "rprec"),
-    value = c(NA_real_,  NA_real_, NA_real_, NA_real_),
-    support = c(0, 0, 0, 0)), class = c("tbl_df", "tbl", "data.frame"),
-    row.names = c(NA, -4L))
+  expected <- structure(
+    list(
+      metric = c("f1", "prec", "rec", "rprec"),
+      value = c(NA_real_,  NA_real_, NA_real_, NA_real_),
+      support = c(0, 0, 0, 0)
+    ),
+    class = c("tbl_df", "tbl", "data.frame"),
+    row.names = c(NA, -4L)
+  )
 
-  observed <- summarise_intermediate_results(
-    list(results_table = intermediate_results,
-         grouping_var = c("doc_id", "label_id")))
+  observed <- summarise_intermediate_results(list(
+    results_table = intermediate_results,
+    grouping_var = c("doc_id", "label_id")
+  ))
 
   expect_equal(observed, expected)
 })
@@ -204,13 +238,15 @@ test_that("Summarise works with weighted mean", {
   )
 
   weights <- compute_propensity_scores(label_distribution)
-  label_wise_res_no_weight$results_table <- label_wise_res_no_weight$results_table |>
+  label_wise_res_no_weight$results_table <- label_wise_res_no_weight$results_table |> # nolint
     dplyr::left_join(weights, by = "label_id")
   expected_res_weighted_mean <- dplyr::summarise(
     .data = label_wise_res_no_weight$results_table,
     dplyr::across(
       prec:f1,
-      .fns =  ~ sum(.x * .data$label_weight, na.rm = TRUE) / sum(as.numeric(!is.na(.x)) * .data$label_weight, na.rm = TRUE))
+      .fns =  ~ sum(.x * .data$label_weight, na.rm = TRUE) /
+        sum(as.numeric(!is.na(.x)) * .data$label_weight, na.rm = TRUE)
+    )
   )
 
   expected_res_weighted_mean <- expected_res_weighted_mean |>

@@ -3,7 +3,8 @@
 #' @param res_df data.frame with column \emph{"metric"} containing metric names
 #'   prec, rec, f1, rprec
 #'
-#' @return results data.frame with renamed metrics for generalized precision etc.
+#' @return results data.frame with renamed metrics for
+#'   generalized precision etc.
 rename_metrics <- function(res_df) {
   stopifnot("metric" %in% colnames(res_df))
 

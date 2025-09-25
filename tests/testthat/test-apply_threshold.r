@@ -38,7 +38,8 @@ test_that("threshold application works", {
   # all gold labels should still be present in dataset
   expect_equal(
     dplyr::select(res_1, "doc_id", "label_id"),
-    gold)
+    gold
+  )
 
   # expect error when threshold is above 1
   expect_error(
@@ -47,13 +48,13 @@ test_that("threshold application works", {
   )
 
   # expect some detailed specific results for the test case
-  res_0.5 <- casimir:::apply_threshold(
+  res_0p5 <- casimir:::apply_threshold(
     base_compare = base_compare,
     threshold = 0.5
   ) |>
     dplyr::select(-rank)
-  exp_0.5 <- tibble::tribble(
-    ~doc_id, ~label_id, ~gold, ~score , ~suggested, ~relevance,
+  exp_0p5 <- tibble::tribble(
+    ~doc_id, ~label_id, ~gold, ~score, ~suggested, ~relevance,
     "A",   "a", TRUE, 0.9, TRUE, 0,
     "A",   "b", TRUE, NA,  FALSE, 0,
     "A",   "c", TRUE, 0.1, FALSE, 0,
@@ -63,11 +64,11 @@ test_that("threshold application works", {
     "C",   "b", TRUE, NA,  FALSE, 0,
     "C",   "d", TRUE, NA,  FALSE, 0,
     "C",   "f", TRUE, 0.1, FALSE, 0,
-    "A",   "d", FALSE, 0.7,TRUE, 0,
-    "B",   "e", FALSE, 0.6,TRUE, 0
+    "A",   "d", FALSE, 0.7, TRUE, 0,
+    "B",   "e", FALSE, 0.6, TRUE, 0
   )
 
-  expect_equal(res_0.5, exp_0.5)
+  expect_equal(res_0p5, exp_0p5)
 
   pred2 <-  tibble::tribble(
     ~doc_id, ~label_id, ~score,
@@ -87,19 +88,21 @@ test_that("threshold application works", {
   expect_error(
     apply_threshold(base_compare = compare2, limit = 0.5),
     regexp = 'sum(base_compare[["score"]] > 1, na.rm = TRUE) == 0 is not TRUE',
-    fixed=TRUE
+    fixed = TRUE
   )
 })
 
-test_that("limits are applied correctly",{
+test_that("limits are applied correctly", {
 
   base_compare <- casimir:::create_comparison(
-    dnb_gold_standard, dnb_test_predictions)
+    dnb_gold_standard, dnb_test_predictions
+  )
 
   res <- apply_threshold(
     base_compare = base_compare,
     threshold = 0,
-    limit = 10L)
+    limit = 10L
+  )
 
   expect_equal(
     nrow(dplyr::filter(res, .data$suggested, .data$rank > 10L)),
@@ -111,7 +114,8 @@ test_that("limits are applied correctly",{
     apply_threshold(
       threshold = 0.1,
       base_compare = dplyr::select(base_compare, -rank),
-      limit = 5),
+      limit = 5
+    ),
     regexp = '.*\\"rank\\" %in% colnames\\(base_compare\\) is not TRUE'
   )
 
@@ -120,14 +124,16 @@ test_that("limits are applied correctly",{
 test_that("Handling of NULL and inf-limits works", {
 
   base_compare <- casimir:::create_comparison(
-    dnb_gold_standard, dnb_test_predictions)
+    dnb_gold_standard, dnb_test_predictions
+  )
 
   # null is not an appropriate input to limit
   expect_error(
     apply_threshold(
       threshold = 0.1,
       base_compare = dplyr::select(base_compare, -rank),
-      limit = NULL),
+      limit = NULL
+    ),
     regexp = "is.numeric\\(limit\\) is not TRUE"
   )
 
@@ -136,7 +142,8 @@ test_that("Handling of NULL and inf-limits works", {
     apply_threshold(
       threshold = 0.1,
       base_compare = dplyr::select(base_compare, -rank),
-      limit = Inf),
+      limit = Inf
+    ),
     regexp = '\\"rank\\" %in% colnames\\(base_compare\\) is not TRUE'
   )
 
@@ -145,6 +152,7 @@ test_that("Handling of NULL and inf-limits works", {
     apply_threshold(
       threshold = 0.1,
       base_compare = base_compare,
-      limit = Inf)
+      limit = Inf
+    )
   )
 })

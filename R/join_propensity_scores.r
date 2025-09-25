@@ -53,8 +53,8 @@
 #' )
 
 join_propensity_scores <- function(
-    input_data,
-    label_weights
+  input_data,
+  label_weights
 ) {
 
   rlang::try_fetch({
@@ -71,19 +71,31 @@ join_propensity_scores <- function(
     # exactly one weight, but the label_weights
     # may contain more labels than compare
   },
-  error = function(cnd)
+  error = function(cnd) {
     rlang::abort(
       "Label distribution does not match input data.",
       parent = cnd
     )
+  }
   )
 
   compare
-  # Alternative version with dplyr
-  # compare <- dplyr::inner_join(
-  #   x = input_data,
-  #   y = label_weights,
-  #   by = c("label_id"),
-  #   relationship = "many-to-one",
-  #   unmatched = c("error", "drop"))
+}
+
+#' @describeIn join_propensity_scores variant with dplyr based
+#' internals rather then collapse internals
+join_propensity_scores_dplyr <- function(
+  input_data,
+  label_weights
+) {
+
+  compare <- dplyr::inner_join(
+    x = input_data,
+    y = label_weights,
+    by = c("label_id"),
+    relationship = "many-to-one",
+    unmatched = c("error", "drop")
+  )
+
+  compare
 }

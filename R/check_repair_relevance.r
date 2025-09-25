@@ -26,13 +26,15 @@ check_repair_relevance_compare <- function(gold_vs_pred) {
       paste(
         "There are",
         inconsistent_values_tp,
-        "inconsistent relevance values with relevance < 1 but gold_standard = TRUE. Setting relevance to 1."
+        "inconsistent relevance values with relevance < 1 but",
+        "gold_standard = TRUE. Setting relevance to 1."
       )
     )
     compare <- dplyr::mutate(
       compare,
       relevance = dplyr::if_else(
-        gold & !is.na(.data$relevance) & .data$relevance < 1, 1, .data$relevance
+        .data$gold & !is.na(.data$relevance) &
+          .data$relevance < 1, 1, .data$relevance
       )
     )
 
@@ -49,8 +51,8 @@ check_repair_relevance_compare <- function(gold_vs_pred) {
       paste(
         "There are",
         inconsistent_values_fp,
-        "inconsistent relevance values with relevance == 1 but gold_standard = FALSE.\n
-          Please correct relevance or gold_standard."
+        "inconsistent relevance values with relevance == 1 but",
+        "gold_standard = FALSE. Please correct relevance or gold_standard."
       )
     )
   }
@@ -63,7 +65,7 @@ check_repair_relevance_compare <- function(gold_vs_pred) {
 #' @param predicted expects data.frame with column \emph{"relevance"}
 #'
 #' @return valid predicted data.frame with possibly eliminated missing values
-check_repair_relevance_predicted <- function(predicted) {
+check_repair_relevance_pred <- function(predicted) {
   stopifnot("relevance" %in% colnames(predicted))
   stopifnot(is.numeric(predicted[["relevance"]]))
   # check for missing relevance values
@@ -78,4 +80,3 @@ check_repair_relevance_predicted <- function(predicted) {
 
   predicted
 }
-

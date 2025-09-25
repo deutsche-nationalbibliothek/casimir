@@ -31,22 +31,24 @@
 #'
 #'
 compute_propensity_scores <- function(
-    label_distribution,
-    A = 0.55,
-    B = 1.5
-){
+  label_distribution,
+  a = 0.55,
+  b = 1.5
+) {
 
-  stopifnot(all(c("label_id", "label_freq", "n_docs") %in% colnames(label_distribution)))
+  stopifnot(all(
+    c("label_id", "label_freq", "n_docs") %in% colnames(label_distribution)
+  ))
 
-  N = dplyr::pull(label_distribution, n_docs)[1]
-  stopifnot(N > 0)
-  C <- (log(N) - 1) * (B +1 )**A
+  n <- dplyr::pull(label_distribution, .data$n_docs)[1]
+  stopifnot(n > 0)
+  c <- (log(n) - 1) * (b + 1)**a
 
   # apply formula (2) from Jain et al. (2016)
   dplyr::transmute(
     label_distribution,
     label_id = .data$label_id,
-    label_weight = 1 + C*(.data$label_freq + B)**(-A)
+    label_weight = 1 + c * (.data$label_freq + b)**(-a)
   )
 
 }
