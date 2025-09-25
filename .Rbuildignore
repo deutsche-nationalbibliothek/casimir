@@ -3,4 +3,5 @@
 ^casimir\.Rproj$
 ^LICENSE\.md$
 ^\.vscode$
+^\.github$
 ^r-casimir$

@@ -12,9 +12,9 @@
 #'   \emph{"label_id", "label_freq", "n_docs"}. \code{label_freq} corresonds to
 #'   the number of occurences a label has in the gold_standard. \code{n_docs}
 #'   corresponds to the total number of documents in the gold_standard.
-#' @param A \code{numeric} parameter for the propensity score calculation,
+#' @param a \code{numeric} parameter for the propensity score calculation,
 #'   defaults to 0.55
-#' @param B \code{numeric} parameter for the propensity score calculation,
+#' @param b \code{numeric} parameter for the propensity score calculation,
 #'   defaults to 1.5
 #'
 #' @return a \code{data.frame} with cols \emph{"label_id", "label_weight"}

@@ -12,10 +12,10 @@ compute_propensity_scores(label_distribution, a = 0.55, b = 1.5)
 the number of occurences a label has in the gold_standard. \code{n_docs}
 corresponds to the total number of documents in the gold_standard.}
 
-\item{A}{\code{numeric} parameter for the propensity score calculation,
+\item{a}{\code{numeric} parameter for the propensity score calculation,
 defaults to 0.55}
 
-\item{B}{\code{numeric} parameter for the propensity score calculation,
+\item{b}{\code{numeric} parameter for the propensity score calculation,
 defaults to 1.5}
 }
 \value{
