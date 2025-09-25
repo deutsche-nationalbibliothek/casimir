@@ -1,0 +1,146 @@
+#' Join gold standard and predicted results in one table
+#'
+#' @param gold_standard expects data.frame with cols "label_id", "doc_id", "score"
+#' @param predicted expects data.frame with cols "label_id", "doc_id", "score"
+#' @param doc_strata variable that should be preserved, with a fixed mapping of
+#'    doc_strata and doc_id
+#' @param label_dict two-column data.frame with col "label_id" and a second column
+#'   that defines groups of labels to stratify by
+#' @param graded_relevance logical indicator for graded relevance. Defaults to
+#'  \code{FALSE} for binary relevance. If set to \code{TRUE}, the
+#'  \code{predicted} data.frame should contain a numeric column
+#'  \emph{"relevance"} with values in the range of \code{c(0, 1)}.
+#' @param propensity_scored logical, whether to use propensity scores as weights
+#' @param label_distribution expects \code{data.frame} with cols
+#'   \emph{"label_id", "label_freq", "n_docs"}. \code{label_freq} corresonds to
+#'   the number of occurences a label has in the gold_standard. \code{n_docs}
+#'   corresponds to the total number of documents in the gold_standard.
+#' @param .ignore_relevance_warning logical, if graded_relevance = FALSE, but
+#'   column relevance is present in predicted, a warning can be silenced by
+#'   setting .ignore_relevance_warning = TRUE
+#'
+#' @return data.frame with cols "label_id", "doc_id", "suggested", "gold"
+#'
+#' @export
+#'
+#' @examples
+#' library(casimir)
+#'
+#' gold <- tibble::tribble(
+#'     ~doc_id, ~label_id,
+#'     "A", "a",
+#'     "A", "b",
+#'     "A", "c",
+#'     "B", "a",
+#'     "B", "d",
+#'     "C", "a",
+#'     "C", "b",
+#'     "C", "d",
+#'     "C", "f"
+#' )
+#'
+#' pred<- tibble::tribble(
+#'   ~doc_id, ~label_id,
+#'   "A", "a",
+#'   "A", "d",
+#'   "A", "f",
+#'   "B", "a",
+#'   "B", "e",
+#'   "C", "f"
+#' )
+#'
+#' casimir::create_comparison(gold, pred)
+create_comparison <- function(gold_standard, predicted,
+                              doc_strata = NULL, label_dict = NULL,
+                              graded_relevance = FALSE,
+                              propensity_scored = FALSE,
+                              label_distribution = NULL,
+                              .ignore_relevance_warning = FALSE) {
+
+  stopifnot(all(c("label_id", "doc_id") %in% colnames(gold_standard)))
+  stopifnot(all(c("label_id", "doc_id") %in% colnames(predicted)))
+
+  if (graded_relevance)
+    predicted <- check_repair_relevance_predicted(predicted)
+
+  if (graded_relevance & propensity_scored) {
+   warning("Mixing graded relevance and propensity_scores is not tested. Are
+           you sure this is what you want?")
+  }
+
+  if (propensity_scored) {
+    if (is.null(label_distribution)) {
+      stop("If propensity_scored = TRUE, label_distribution must be provided.")
+    }
+    stopifnot(all(c("label_id", "label_freq") %in% colnames(label_distribution)))
+  }
+
+  if (!is.null(doc_strata)) {
+    stopifnot(doc_strata %in% colnames(gold_standard))
+  }
+
+  if (!is.null(label_dict)) {
+    stopifnot("label_id" %in% colnames(label_dict))
+  }
+
+  # the set of title ids must always agree in predicted and gold_standard
+  gold_wo_predicted <- dplyr::anti_join(gold_standard, predicted, by = "doc_id")
+  predicted_wo_gold <- dplyr::anti_join(predicted, gold_standard, by = "doc_id")
+
+  stopifnot(nrow(predicted_wo_gold) == 0)
+  if (nrow(gold_wo_predicted) > 0)
+    warning("gold standard data contains documents that are not in predicted set")
+
+  compare <- dplyr::full_join(
+    x = dplyr::mutate(
+      dplyr::select(gold_standard,-!!doc_strata),
+      gold = TRUE),
+    y = dplyr::mutate(predicted, suggested = TRUE),
+    by = c("doc_id", "label_id"), relationship = "one-to-one",
+    suffix = c(".gold", ".pred") # this is intended to differentiate columns
+    # that might be dragged along later
+  )
+
+  compare_w_strata <- dplyr::left_join(
+    x = compare,
+    y = dplyr::distinct(dplyr::select(gold_standard,"doc_id",!!doc_strata)),
+    by = c("doc_id")
+  )
+
+  if (!is.null(label_dict)) {
+    compare_w_strata <- dplyr::left_join(
+      x = compare_w_strata,
+      y = label_dict,
+      by = c("label_id")
+    )
+  }
+
+  if (propensity_scored) {
+    label_weights <- compute_propensity_scores(label_distribution)
+    compare_w_strata <- join_propensity_scores(compare_w_strata, label_weights)
+  }
+
+  result <- tidyr::replace_na(
+    compare_w_strata,
+    replace = list(
+      gold = FALSE,
+      suggested = FALSE
+    )
+  )
+
+
+  if (graded_relevance) {
+    result <- check_repair_relevance_compare(result)
+  } else {
+    # test if column relevane exists
+    if ("relevance" %in% colnames(result) & !.ignore_relevance_warning) {
+      warning("column 'relevance' in predicted is ignored, as
+              graded_relevance = FALSE. Overwriting with relevance = 0.
+              Silence this warning with .ignore_relevance_warning = TRUE")
+    }
+    result <- collapse::ftransform(result,
+                                    relevance = 0
+    )
+  }
+
+}
