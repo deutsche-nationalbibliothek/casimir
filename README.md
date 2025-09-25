@@ -43,11 +43,11 @@ convince other people:
 remotes::install_github("deutsche-nationalbibliothek/casimir")
 ```
 
-# ### Installation with Conda/ Mamba
-# 
-# ```
-# conda create --name my-env -c conda-forge r-casimir
-# ```
+<!-- ### Installation with Conda/ Mamba
+
+```
+conda create --name my-env -c conda-forge r-casimir
+``` -->
 
 ## Getting Started
 
