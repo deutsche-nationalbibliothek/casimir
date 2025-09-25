@@ -1,5 +1,8 @@
 # CASIMiR: Comparing Automated Subject Indexing Methods in R
 
+[![status](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
+[![R-CMD-check](https://github.com/deutsche-nationalbibliothek/casimir/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/deutsche-nationalbibliothek/casimir/actions/workflows/R-CMD-check.yaml)
+
 CASIMiR is a toolbox to facilitate comparative analysis of automated subject
 indexing methods in R. 
 
