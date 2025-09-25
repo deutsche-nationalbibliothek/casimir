@@ -1,0 +1,81 @@
+{% set version = '0.1.0' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-casimir
+  version: {{ version|replace("-", "_") }}
+
+source:
+
+  git_url: git@github.com:deutsche-nationalbibliothek/casimir
+  git_tag: v0.1.0
+
+build:
+  merge_build_host: True  # [win]
+  # If this is a new build for the same version, increment the build number.
+  number: 0
+  # no skip
+
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+# Suggests: testthat (>= 3.0.0), tibble, tidyverse, ggplot2
+requirements:
+  build:
+    - r-base {{ r_base }}  # should be above 4.3.0 for collapse 2.1.0
+    - {{ posix }}filesystem        # [win]
+    - {{ posix }}git
+    - {{ posix }}zip               # [win]
+
+  host:
+    - r-base {{ r_base }}
+    - r-collapse >=2.1.0
+    - r-dplyr >=1.1.1
+    - r-furrr
+    - r-purrr
+    - r-rlang
+    - r-rsample
+    - r-stringr
+    - r-tidyr
+
+  run:
+    - r-base {{ r_base }}
+    - r-collapse >=2.1.0
+    - r-dplyr >=1.1.1
+    - r-furrr
+    - r-purrr
+    - r-rlang
+    - r-rsample
+    - r-stringr
+    - r-tidyr
+
+test:
+  commands:
+    # You can put additional test commands to be run here.
+    - $R -e "library('casimir')"           # [not win]
+    - "\"%R%\" -e \"library('casimir')\""  # [win]
+
+  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
+  # in the recipe that will be run at test time.
+
+  # requires:
+    # Put any additional test requirements here.
+
+about:
+  home: git@github.com:deutsche-nationalbibliothek/casimir
+  license: MIT
+  summary: This package contains functions for evaluating automatic subject
+  indexing results. The main focus of the package is to enable efficient
+  computation of set retrieval and ranked retrieval metrics across multiple
+  dimensions of a dataset, e.g. document strata or subsets of the label-set.
+  The package also provides the possibility of computing boot-strap confidence
+  intervals for all major metrics, with seemless integration for parallel
+  computation and propensity scored variants of standard metrics.
+  license_family: MIT
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/MIT'
+    - LICENSE

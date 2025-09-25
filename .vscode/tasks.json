@@ -1,0 +1,26 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build r-casimir for R 4.3.*",
+            "type": "shell",
+            "command": "conda mambabuild --R 4.3.3 r-casimir -c conda-forge",
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Build r-casimir for R 4.5.*",
+            "type": "shell",
+            "command": "conda mambabuild --R 4.5.1 r-casimir -c conda-forge",
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Build r-casimir for R 4.4.*",
+            "type": "shell",
+            "command": "conda mambabuild --R 4.4.3 r-casimir -c conda-forge",
+            "group": "build",
+            "problemMatcher": []
+        }
+    ]
+}

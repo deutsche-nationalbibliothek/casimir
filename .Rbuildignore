@@ -1,0 +1,6 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^casimir\.Rproj$
+^LICENSE\.md$
+^\.vscode$
+^r-casimir$
