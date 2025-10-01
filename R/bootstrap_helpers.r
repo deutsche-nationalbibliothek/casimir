@@ -5,12 +5,11 @@
 #' @param n_bt  an integer number of resamples to undergo in bootstrapping
 #' @param grouping_var character vector of variables that must be present in
 #'  base_compare
-#' @param .progress logical activating .progress bar in internal
-#'  \pkg{furrr}-computation
 #' @param seed pass seed to resampling step for reproducibility
 #' @param ps_flags list as returned by `set_ps_flags`
 #' @param cost_fp numeric > 0, default is NULL
 #' @param label_distribution as in compute_set_retrieval_scores
+#' @inheritParams option_params
 #'
 #' @return \code{data.frame} containing \code{n_bt} boot replica of results
 #'   as returned by  compute_intermediate_results summarise_intermediate_results
@@ -57,13 +56,13 @@ generate_replicate_results <- function(
   ps_flags = list("intermed" = FALSE, "summarise" = FALSE),
   label_distribution = NULL,
   cost_fp = NULL,
-  .progress = FALSE
+  progress = options::opt("progress")
 ) {
 
   stopifnot(is.data.frame(base_compare))
   stopifnot(is.integer(n_bt))
   stopifnot("gold" %in% colnames(base_compare))
-  stopifnot(is.logical(.progress))
+  stopifnot(is.logical(progress))
 
   doc_id_list <- dplyr::distinct(
     dplyr::filter(base_compare, .data$gold == TRUE),
@@ -86,7 +85,7 @@ generate_replicate_results <- function(
   boot_results <- furrr::future_map_dfr(
     boot_dfs,
     .f = helper_f,
-    .progress = .progress,
+    .progress = progress,
     .options = furrr::furrr_options(seed = seed),
     .id = "boot_replicate",
     compare_cpy = base_compare,
@@ -146,13 +145,13 @@ generate_replicate_results_dplyr <- function( # nolint
   label_distribution = NULL,
   ps_flags = list("intermed" = FALSE, "summarise" = FALSE),
   cost_fp = NULL,
-  .progress = FALSE
+  progress = FALSE
 ) {
 
   stopifnot(is.data.frame(base_compare))
   stopifnot(is.integer(n_bt))
   stopifnot("gold" %in% colnames(base_compare))
-  stopifnot(is.logical(.progress))
+  stopifnot(is.logical(progress))
 
   doc_id_list <- dplyr::distinct(
     dplyr::filter(base_compare, .data$gold == TRUE),
@@ -174,7 +173,7 @@ generate_replicate_results_dplyr <- function( # nolint
   boot_results <- furrr::future_map_dfr(
     boot_dfs,
     .f = helper_f_dplyr,
-    .progress = .progress,
+    .progress = progress,
     .id = "boot_replicate",
     .options = furrr::furrr_options(seed = seed),
     compare_cpy = base_compare,

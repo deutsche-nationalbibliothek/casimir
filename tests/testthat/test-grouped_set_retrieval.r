@@ -383,11 +383,11 @@ test_that("grouping (label-strata) of set retrieval computation works", {
   configuration <- expand.grid(
     .mode = c("doc-avg", "subj-avg", "micro"),
     .compute_bootstrap_ci = c(TRUE, FALSE),
-    ..progress = c(TRUE, FALSE)
+    .progress = c(TRUE, FALSE)
   )
   messages <- purrr::pmap(
     configuration,
-    .f = function(.mode, .compute_bootstrap_ci, ..progress) { # nolint
+    .f = function(.mode, .compute_bootstrap_ci, .progress) { # nolint
       expect_silent(
         object = compute_set_retrieval_scores_dplyr(
           gold,
@@ -396,14 +396,14 @@ test_that("grouping (label-strata) of set retrieval computation works", {
           label_dict = label_dict_w_factor,
           compute_bootstrap_ci = .compute_bootstrap_ci,
           seed = 10,
-          .progress = ..progress
+          progress = .progress
         )
       )
     }
   )
   messages_collapse <- purrr::pmap(
     configuration,
-    .f = function(.mode, .compute_bootstrap_ci, ..progress) { # nolint
+    .f = function(.mode, .compute_bootstrap_ci, .progress) { # nolint
       expect_silent(
         object = compute_set_retrieval_scores(
           gold,
@@ -412,7 +412,7 @@ test_that("grouping (label-strata) of set retrieval computation works", {
           label_dict = label_dict_w_factor,
           compute_bootstrap_ci = .compute_bootstrap_ci,
           seed = 10,
-          .progress = ..progress
+          progress = .progress
         )
       )
     }

@@ -31,12 +31,6 @@
 #' @param rename_graded_metrics if set to \code{TRUE}, the metric names in
 #'   the output will be prefixed with \emph{"g-"} to indicate that metrics
 #'   are computed with graded relevance.
-#' @param .verbose logical indicator for verbose output, defaults to FALSE
-#' @param .progress logical activating .progress bar in internal
-#'   \pkg{furrr}-computation
-#' @param .ignore_relevance_warning logical, if graded_relevance = FALSE, but
-#'   column relevance is present in predicted, a warning can be silenced by
-#'   setting .ignore_relevance_warning = TRUE
 #' @param seed pass seed to make bootstrap replication reproducible
 #' @param propensity_scored logical, whether to use propensity scores as weights
 #' @param label_distribution expects \code{data.frame} with cols
@@ -49,6 +43,7 @@
 #'   to the \code{gold_standard} label distribution). The default is NULL, i.e.
 #'   label weights are applied to false positives as to false negatives and
 #'   true positives.
+#' @inheritParams option_params
 #'
 #' @return a \code{data.frame} with cols
 #'   \emph{"metric", "mode", "value", "support"}
@@ -128,22 +123,23 @@
 #'
 #'
 compute_set_retrieval_scores <- function(
-    gold_standard,
-    predicted,
-    mode = "doc-avg",
-    compute_bootstrap_ci = FALSE,
-    n_bt = 10L,
-    doc_strata = NULL,
-    label_dict = NULL,
-    graded_relevance = FALSE,
-    rename_graded_metrics = FALSE,
-    seed = NULL,
-    propensity_scored = FALSE,
-    label_distribution = NULL,
-    cost_fp_constant = NULL,
-    .ignore_relevance_warning = FALSE,
-    .verbose = FALSE,
-    .progress = FALSE) {
+  gold_standard,
+  predicted,
+  mode = "doc-avg",
+  compute_bootstrap_ci = FALSE,
+  n_bt = 10L,
+  doc_strata = NULL,
+  label_dict = NULL,
+  graded_relevance = FALSE,
+  rename_graded_metrics = FALSE,
+  seed = NULL,
+  propensity_scored = FALSE,
+  label_distribution = NULL,
+  cost_fp_constant = NULL,
+  ignore_inconsistencies = options::opt("ignore_inconsistencies"),
+  verbose = options::opt("verbose"),
+  progress = options::opt("progress")
+) {
 
   stopifnot(mode %in% c("doc-avg", "subj-avg", "micro"))
   stopifnot(all(c("label_id", "doc_id") %in% colnames(gold_standard)))
@@ -160,7 +156,7 @@ compute_set_retrieval_scores <- function(
     graded_relevance = graded_relevance,
     propensity_scored = propensity_scored,
     label_distribution = label_distribution,
-    .ignore_relevance_warning = .ignore_relevance_warning
+    ignore_inconsistencies = ignore_inconsistencies
   )
 
   if (propensity_scored && !is.null(cost_fp_constant))
@@ -190,7 +186,7 @@ compute_set_retrieval_scores <- function(
     boot_results <- NULL
 
 
-    if (.verbose)
+    if (verbose)
       message("Computing intermediate results...")
 
     intermediate_results <- compute_intermediate_results(
@@ -200,7 +196,7 @@ compute_set_retrieval_scores <- function(
       cost_fp = cost_fp_processed
     )
 
-    if (.verbose)
+    if (verbose)
       message("Summarizing intermediate results...")
 
 
@@ -213,7 +209,7 @@ compute_set_retrieval_scores <- function(
 
     # generate n_bt copies of results, plus one original
 
-    if (.verbose)
+    if (verbose)
       message("Computing bootstrap confidence intervals...")
 
     boot_results <- generate_replicate_results(
@@ -224,7 +220,7 @@ compute_set_retrieval_scores <- function(
       ps_flags = ps_flags,
       label_distribution = label_distribution,
       cost_fp = cost_fp_processed,
-      .progress = .progress
+      progress = progress
     )
 
     # take the original as THE result
@@ -275,22 +271,23 @@ compute_set_retrieval_scores <- function(
 #' @describeIn compute_set_retrieval_scores variant with internal usage of
 #'  dplyr rather than collapse library. Tends to be slower, but more stable
 compute_set_retrieval_scores_dplyr <- function( # nolint
-    gold_standard,
-    predicted,
-    mode = "doc-avg",
-    compute_bootstrap_ci = FALSE,
-    n_bt = 10L,
-    doc_strata = NULL,
-    label_dict = NULL,
-    graded_relevance = FALSE,
-    rename_graded_metrics = FALSE,
-    seed = NULL,
-    propensity_scored = FALSE,
-    label_distribution = NULL,
-    cost_fp_constant = NULL,
-    .ignore_relevance_warning = FALSE,
-    .verbose = FALSE,
-    .progress = FALSE) {
+  gold_standard,
+  predicted,
+  mode = "doc-avg",
+  compute_bootstrap_ci = FALSE,
+  n_bt = 10L,
+  doc_strata = NULL,
+  label_dict = NULL,
+  graded_relevance = FALSE,
+  rename_graded_metrics = FALSE,
+  seed = NULL,
+  propensity_scored = FALSE,
+  label_distribution = NULL,
+  cost_fp_constant = NULL,
+  ignore_inconsistencies = FALSE,
+  verbose = FALSE,
+  progress = FALSE
+) {
 
   stopifnot(is.logical(compute_bootstrap_ci))
   if (!is.null(doc_strata)) {
@@ -308,7 +305,7 @@ compute_set_retrieval_scores_dplyr <- function( # nolint
     doc_strata = doc_strata,
     label_dict = label_dict,
     graded_relevance = graded_relevance,
-    .ignore_relevance_warning = .ignore_relevance_warning
+    ignore_inconsistencies = ignore_inconsistencies
   )
 
   cost_fp_processed <- NULL
@@ -374,7 +371,7 @@ compute_set_retrieval_scores_dplyr <- function( # nolint
   } else {
 
     # generate n_bt copies of results, plus one original
-    if (.verbose)
+    if (verbose)
       message("Computing bootstrap confidence intervals...")
 
     boot_results <- generate_replicate_results_dplyr(
@@ -385,7 +382,7 @@ compute_set_retrieval_scores_dplyr <- function( # nolint
       ps_flags = ps_flags,
       label_distribution = label_distribution,
       cost_fp = cost_fp_processed,
-      .progress = .progress
+      progress = progress
     )
 
     # take the original as THE result

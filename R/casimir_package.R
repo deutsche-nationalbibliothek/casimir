@@ -8,3 +8,11 @@
 #' @importFrom dplyr across
 ## usethis namespace: end
 NULL
+
+#' @eval options::as_roxygen_docs()
+NULL
+
+#' @eval options::as_params()
+#' @name option_params
+#'
+NULL
