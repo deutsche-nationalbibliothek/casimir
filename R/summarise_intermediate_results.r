@@ -2,15 +2,11 @@
 #'
 #' @param intermediate_results as produced by compute intermediate results.
 #'   This requires a list containing
-#'   #' \itemize{
+#'   \itemize{
 #'    \item \code{grouping_var} a  character vector of variables to group by
 #'    \item \code{results_table}  a  with cols "prec", "rprec", "rec", "f1" as
 #'   }
-#' @param propensity_scored logical, whether to use propensity scores as weights
-#' @param label_distribution expects \code{data.frame} with cols
-#'   \emph{"label_id", "label_freq", "n_docs"}. \code{label_freq} corresonds to
-#'   the number of occurences a label has in the gold_standard. \code{n_docs}
-#'   corresponds to the total number of documents in the gold_standard.
+#' @inheritParams compute_set_retrieval_scores
 #' @export
 #'
 #' @return data.frame with cols metric, value
@@ -150,10 +146,7 @@ summarise_intermediate_results <- function(
 #' Compute mean of intermediate results. Variant with dplyr based
 #' internals rather then collapse internals
 #'
-#' @param intermediate_results with cols "prec", "rprec", "rec", "f1" as
-#'   produced by compute intermediate results
-#' @param propensity_scored as in `compute_set_retrieval_scores`
-#' @param label_distribution as in `compute_set_retrieval_scores`
+#' @inheritParams summarise_intermediate_results
 #'
 #' @return data.frame with cols metric, value
 summarise_intermediate_results_dplyr <- function( # nolint

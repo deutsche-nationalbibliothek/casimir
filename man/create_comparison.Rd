@@ -16,17 +16,30 @@ create_comparison(
 )
 }
 \arguments{
-\item{gold_standard}{expects data.frame with cols
-"label_id", "doc_id", "score"}
+\item{gold_standard}{expects \code{data.frame} with cols
+\emph{"label_id", "doc_id"}}
 
-\item{predicted}{expects data.frame with cols
-"label_id", "doc_id", "score"}
+\item{predicted}{multi-label prediction results. expects \code{data.frame}
+with cols \emph{"label_id", "doc_id"}}
 
-\item{doc_strata}{variable that should be preserved, with a fixed mapping of
-doc_strata and doc_id}
+\item{doc_strata}{a column that exists gold_standard,
+that results should be grouped by, e.g. strata of document-space.
+\code{doc_strata} is recommended to be of type factor, so that levels are
+not implicitly dropped during bootstrap replications}
 
-\item{label_dict}{two-column data.frame with col "label_id" and a second
-column that defines groups of labels to stratify by}
+\item{label_dict}{two-column \code{data.frame} with col \emph{"label_id"}
+and a second column that defines groups of labels to stratify results by.
+Results in each stratum
+will restrict gold_standard and predictions to the specified label-groups,
+as if the vocabulary was consisting of the label group only.
+All modes \code{c("doc-avg", "subj-avg", "micro") } are supported within
+label-strata.
+Nevertheless, mixing \code{mode = "doc-avg"} with fine-grained
+label_strata can result in many missing values on document-level results.
+Also rank-based thresholding (e.g. Top-5) will result in inhomogeneous
+number of labels per documents within the defined label-strata.
+\code{mode = "subj-avg"} or \code{mode = "micro"} can be more appropriate
+in these circumstances.}
 
 \item{graded_relevance}{logical indicator for graded relevance. Defaults to
 \code{FALSE} for binary relevance. If set to \code{TRUE}, the

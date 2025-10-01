@@ -7,18 +7,9 @@
 #' a document wise evaluation. Thus, there is only the aggregation mode
 #' "doc-avg" for these scores available.
 #'
-#' @param gold_standard gold-standard data, expects \code{data.frame} with cols
-#'     \emph{"label_id", "doc_id"}
+#' @inheritParams compute_set_retrieval_scores
 #' @param predicted multi-label prediction results. expects \code{data.frame}
-#'     with cols \emph{"label_id", "doc_id", "score"}
-#' @param doc_strata  a column that exists in gold_standard,
-#'     that results should be grouped by, e.g. strata of document-space.
-#'     \code{doc_strata} is recommended to be of type factor, so that levels are
-#'     not implicitly dropped during bootstrap replications
-#' @param compute_bootstrap_ci logical indicator for computing bootstrap CIs
-#' @param n_bt an integer number of resamples to undergo in bootstrapping
-#' @param seed pass seed to make bootstrap replication reproducible
-#' @inheritParams option_params
+#'   with cols \emph{"label_id", "doc_id", "score"}
 #'
 #' @return a \code{data.frame} with cols
 #'    \emph{"metric", "mode", "value", "support"}

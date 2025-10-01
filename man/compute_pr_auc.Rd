@@ -33,24 +33,24 @@ compute_pr_auc(
 }
 \arguments{
 \item{gold_standard}{expects \code{data.frame} with cols
-\emph{"label_id", "doc_id", "score"}}
+\emph{"label_id", "doc_id"}}
 
 \item{predicted}{multi-label prediction results. expects \code{data.frame}
 with cols \emph{"label_id", "doc_id", "score"}}
 
-\item{doc_strata}{a column that exists in either gold_standard or predicted,
+\item{doc_strata}{a column that exists gold_standard,
 that results should be grouped by, e.g. strata of document-space.
 \code{doc_strata} is recommended to be of type factor, so that levels are
 not implicitly dropped during bootstrap replications}
 
 \item{label_dict}{two-column \code{data.frame} with col \emph{"label_id"}
-and a second column that defines
-groups of labels to stratify results by. Results in each stratum
+and a second column that defines groups of labels to stratify results by.
+Results in each stratum
 will restrict gold_standard and predictions to the specified label-groups,
 as if the vocabulary was consisting of the label group only.
 All modes \code{c("doc-avg", "subj-avg", "micro") } are supported within
-label-strata. Nevertheless, mixing
-\code{mode = "doc-avg"} with fine-grained
+label-strata.
+Nevertheless, mixing \code{mode = "doc-avg"} with fine-grained
 label_strata can result in many missing values on document-level results.
 Also rank-based thresholding (e.g. Top-5) will result in inhomogeneous
 number of labels per documents within the defined label-strata.
@@ -59,7 +59,8 @@ in these circumstances.}
 
 \item{mode}{aggregation mode: \emph{"doc-avg", "subj-avg", "micro"}}
 
-\item{steps}{number of threshold-steps to use in auc-computation}
+\item{steps}{how many steps to take between c(0,1) as a grid for computing
+the pr-curve}
 
 \item{limit_range}{a vector of limit values to apply on rank-column.
 Defaults to NA, applying no cutoff on label-rank of predictions.}
@@ -76,7 +77,7 @@ Defaults to NA, applying no cutoff on label-rank of predictions.}
 \emph{"relevance"} with values in the range of \code{c(0, 1)}.}
 
 \item{rename_graded_metrics}{if set to \code{TRUE}, the metric names in
-the output will be prefixed with \emph{"g_"} to indicate that metrics
+the output will be prefixed with \emph{"g-"} to indicate that metrics
 are computed with graded relevance.}
 
 \item{propensity_scored}{logical, whether to use propensity scores as weights}
@@ -90,7 +91,7 @@ corresponds to the total number of documents in the gold_standard.}
 cost_fp_constant must be
 a numeric value > 0 or one of 'max', 'min', 'mean' (computed with reference
 to the \code{gold_standard} label distribution). The default is NULL, i.e.
-label weights are appplied to false positices as to false negatives and
+label weights are applied to false positives as to false negatives and
 true positives.}
 
 \item{ignore_inconsistencies}{Warnings about data inconsistencies will be silenced. (Defaults to \code{FALSE}, overwritable using option 'casimir.ignore_inconsistencies' or environment variable 'R_CASIMIR_IGNORE_INCONSISTENCIES')}

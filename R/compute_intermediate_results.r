@@ -4,7 +4,7 @@
 #'   \emph{"suggested", "gold"} as produced by \code{create_comparison}
 #' @param grouping_var a character vector of variables that must be present in
 #'  gold_vs_pred (dplyr version requires rlang symbols)
-#' @param propensity_scored logical, whether to use propensity scores as weights
+#' @inheritParams compute_set_retrieval_scores
 #' @param cost_fp numeric > 0, default is NULL
 #'
 #' @return data.frame with cols "n_gold", "n_suggested", "tp", "fp", "fn",

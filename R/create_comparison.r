@@ -1,23 +1,6 @@
 #' Join gold standard and predicted results in one table
 #'
-#' @param gold_standard expects data.frame with cols
-#'   "label_id", "doc_id", "score"
-#' @param predicted expects data.frame with cols
-#'   "label_id", "doc_id", "score"
-#' @param doc_strata variable that should be preserved, with a fixed mapping of
-#'    doc_strata and doc_id
-#' @param label_dict two-column data.frame with col "label_id" and a second
-#'   column that defines groups of labels to stratify by
-#' @param graded_relevance logical indicator for graded relevance. Defaults to
-#'   \code{FALSE} for binary relevance. If set to \code{TRUE}, the
-#'   \code{predicted} data.frame should contain a numeric column
-#'   \emph{"relevance"} with values in the range of \code{c(0, 1)}.
-#' @param propensity_scored logical, whether to use propensity scores as weights
-#' @param label_distribution expects \code{data.frame} with cols
-#'   \emph{"label_id", "label_freq", "n_docs"}. \code{label_freq} corresonds to
-#'   the number of occurences a label has in the gold_standard. \code{n_docs}
-#'   corresponds to the total number of documents in the gold_standard.
-#' @inheritParams option_params
+#' @inheritParams compute_set_retrieval_scores
 #'
 #' @return data.frame with cols "label_id", "doc_id", "suggested", "gold"
 #'

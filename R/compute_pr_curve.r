@@ -1,49 +1,14 @@
 #' compute precision-recall-curve for a given step size and limit_range
-#'
-#' @param gold_standard expects \code{data.frame} with cols
-#'   \emph{"label_id", "doc_id", "score"}
+#' @inheritParams compute_set_retrieval_scores
 #' @param predicted multi-label prediction results. expects \code{data.frame}
 #'   with cols \emph{"label_id", "doc_id", "score"}
-#' @param mode aggregation mode: \emph{"doc-avg", "subj-avg", "micro"}
 #' @param steps how many steps to take between c(0,1) as a grid for computing
 #'  the pr-curve
-#' @param doc_strata a column that exists in either gold_standard or predicted,
-#'   that results should be grouped by, e.g. strata of document-space.
-#'   \code{doc_strata} is recommended to be of type factor, so that levels are
-#'   not implicitly dropped during bootstrap replications
-#' @param label_dict two-column \code{data.frame} with col \emph{"label_id"}
-#'   and a second column that defines groups of labels to stratify results by.
-#'   Results in each stratum
-#'   will restrict gold_standard and predictions to the specified label-groups,
-#'   as if the vocabulary was consisting of the label group only.
-#'   All modes \code{c("doc-avg", "subj-avg", "micro") } are supported within
-#'   label-strata.
-#'   Nevertheless, mixing \code{mode = "doc-avg"} with fine-grained
-#'   label_strata can result in many missing values on document-level results.
-#'   Also rank-based thresholding (e.g. Top-5) will result in inhomogeneous
-#'   number of labels per documents within the defined label-strata.
-#'   \code{mode = "subj-avg"} or \code{mode = "micro"} can be more appropriate
-#'   in these circumstances.
 #' @param limit_range a vector of limit values to apply on rank-column.
 #'   Defaults to NA, applying no cutoff on label-rank of predictions.
 #' @param optimize_cutoff logical. If \code{TRUE} performs a grid search to
 #'   find optimal limit and threshold  with respect to f1-measure in the
 #'   search space specified by \code{limit_range} and \code{steps}.
-#' @param graded_relevance logical indicator for graded relevance. Defaults to
-#'  \code{FALSE} for binary relevance. If set to \code{TRUE}, the
-#'  \code{predicted} data.frame should contain a numeric column
-#'  \emph{"relevance"} with values in the range of \code{c(0, 1)}.
-#' @param propensity_scored logical, whether to use propensity scores as weights
-#' @param label_distribution expects \code{data.frame} with cols
-#'   \emph{"label_id", "label_freq", "n_docs"}. \code{label_freq} corresonds to
-#'   the number of occurences a label has in the gold_standard. \code{n_docs}
-#'   corresponds to the total number of documents in the gold_standard.
-#' @param cost_fp_constant Constant cost assigned to false positives.
-#'   cost_fp_constant must be
-#'   a numeric value > 0 or one of 'max', 'min', 'mean' (computed with reference
-#'   to the \code{gold_standard} label distribution). The default is NULL, i.e.
-#'   label weights are appplied to false positices as to false negatives and
-#'   true positives.
 #' @inheritParams option_params
 #'
 #' @return a \code{list} with of two elemets:

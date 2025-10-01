@@ -62,7 +62,8 @@ check_repair_relevance_compare <- function(gold_vs_pred) {
 
 #' Internal helper to check predicted data frame for valid relevance column
 #'
-#' @param predicted expects data.frame with column \emph{"relevance"}
+#' @param predicted multi-label prediction results. expects \code{data.frame}
+#'   with cols \emph{"label_id", "doc_id", "relevance"}
 #'
 #' @return valid predicted data.frame with possibly eliminated missing values
 check_repair_relevance_pred <- function(predicted) {

@@ -4,15 +4,18 @@
 \alias{process_cost_fp}
 \title{Process input for cost_fp}
 \usage{
-process_cost_fp(cost_fp, gold_vs_pred)
+process_cost_fp(cost_fp_constant, gold_vs_pred)
 }
 \arguments{
-\item{cost_fp}{Constant cost assigned to false positives. cost_fp must be
+\item{cost_fp_constant}{Constant cost assigned to false positives.
+cost_fp_constant must be
 a numeric value > 0 or one of 'max', 'min', 'mean' (computed with reference
-to the \code{label_weights})}
+to the \code{gold_standard} label distribution). The default is NULL, i.e.
+label weights are applied to false positives as to false negatives and
+true positives.}
 
-\item{gold_vs_pred}{expects \code{data.frame} with cols
-\emph{"gold", "label_weight"}.}
+\item{gold_vs_pred}{\code{data.frame} with logical columns
+\emph{"suggested", "gold"} as produced by \code{create_comparison}}
 }
 \value{
 a numeric value > 0
