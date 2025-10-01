@@ -17,9 +17,8 @@
 #'     not implicitly dropped during bootstrap replications
 #' @param compute_bootstrap_ci logical indicator for computing bootstrap CIs
 #' @param n_bt an integer number of resamples to undergo in bootstrapping
-#' @param .progress logical activating .progress bar in internal
-#'  \pkg{furrr}-computation
 #' @param seed pass seed to make bootstrap replication reproducible
+#' @inheritParams option_params
 #'
 #' @return a \code{data.frame} with cols
 #'    \emph{"metric", "mode", "value", "support"}
@@ -61,13 +60,14 @@
 #' )
 #'
 compute_ranked_retrieval_scores <- function( # nolint
-    gold_standard,
-    predicted,
-    doc_strata = NULL,
-    compute_bootstrap_ci = FALSE,
-    n_bt = 10L,
-    seed = NULL,
-    .progress = FALSE) {
+  gold_standard,
+  predicted,
+  doc_strata = NULL,
+  compute_bootstrap_ci = FALSE,
+  n_bt = 10L,
+  seed = NULL,
+  progress = options::opt("progress")
+) {
 
   stopifnot(all(c("label_id", "doc_id") %in% colnames(gold_standard)))
   stopifnot(all(c("label_id", "doc_id", "score") %in% colnames(predicted)))

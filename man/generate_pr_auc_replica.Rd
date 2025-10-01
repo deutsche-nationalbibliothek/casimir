@@ -9,7 +9,7 @@ generate_pr_auc_replica(
   seed,
   n_bt,
   propensity_scored,
-  .progress
+  progress = options::opt("progress")
 )
 }
 \arguments{
@@ -23,7 +23,8 @@ as grouping variable}
 
 \item{propensity_scored}{as in \code{compute_pr_auc}}
 
-\item{.progress}{show progress bar}
+\item{progress}{Display progress bars for iterated computations (like bootstrap CI or
+PR-Curves) (Defaults to \code{FALSE}, overwritable using option 'casimir.progress' or environment variable 'R_CASIMIR_PROGRESS')}
 }
 \value{
 \code{data.frame} with cols \code{c("boot_replicate", "pr_auc")}

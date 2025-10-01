@@ -11,7 +11,7 @@ compute_ranked_retrieval_scores(
   compute_bootstrap_ci = FALSE,
   n_bt = 10L,
   seed = NULL,
-  .progress = FALSE
+  progress = options::opt("progress")
 )
 }
 \arguments{
@@ -32,8 +32,8 @@ not implicitly dropped during bootstrap replications}
 
 \item{seed}{pass seed to make bootstrap replication reproducible}
 
-\item{.progress}{logical activating .progress bar in internal
-\pkg{furrr}-computation}
+\item{progress}{Display progress bars for iterated computations (like bootstrap CI or
+PR-Curves) (Defaults to \code{FALSE}, overwritable using option 'casimir.progress' or environment variable 'R_CASIMIR_PROGRESS')}
 }
 \value{
 a \code{data.frame} with cols

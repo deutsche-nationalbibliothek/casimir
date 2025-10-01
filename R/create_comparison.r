@@ -17,9 +17,7 @@
 #'   \emph{"label_id", "label_freq", "n_docs"}. \code{label_freq} corresonds to
 #'   the number of occurences a label has in the gold_standard. \code{n_docs}
 #'   corresponds to the total number of documents in the gold_standard.
-#' @param .ignore_relevance_warning logical, if graded_relevance = FALSE, but
-#'   column relevance is present in predicted, a warning can be silenced by
-#'   setting .ignore_relevance_warning = TRUE
+#' @inheritParams option_params
 #'
 #' @return data.frame with cols "label_id", "doc_id", "suggested", "gold"
 #'
@@ -52,12 +50,14 @@
 #' )
 #'
 #' casimir::create_comparison(gold, pred)
-create_comparison <- function(gold_standard, predicted,
-                              doc_strata = NULL, label_dict = NULL,
-                              graded_relevance = FALSE,
-                              propensity_scored = FALSE,
-                              label_distribution = NULL,
-                              .ignore_relevance_warning = FALSE) {
+create_comparison <- function(
+  gold_standard, predicted,
+  doc_strata = NULL, label_dict = NULL,
+  graded_relevance = FALSE,
+  propensity_scored = FALSE,
+  label_distribution = NULL,
+  ignore_inconsistencies = options::opt("ignore_inconsistencies")
+) {
 
   stopifnot(all(c("label_id", "doc_id") %in% colnames(gold_standard)))
   stopifnot(all(c("label_id", "doc_id") %in% colnames(predicted)))
@@ -143,10 +143,10 @@ create_comparison <- function(gold_standard, predicted,
     result <- check_repair_relevance_compare(result)
   } else {
     # test if column relevane exists
-    if ("relevance" %in% colnames(result) && !.ignore_relevance_warning) {
+    if ("relevance" %in% colnames(result) && !ignore_inconsistencies) {
       warning("column 'relevance' in predicted is ignored, as
               graded_relevance = FALSE. Overwriting with relevance = 0.
-              Silence this warning with .ignore_relevance_warning = TRUE")
+              Silence this warning by setting ignore_inconsistencies = TRUE")
     }
     result <- collapse::ftransform(result, relevance = 0)
   }

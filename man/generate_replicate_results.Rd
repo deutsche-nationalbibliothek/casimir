@@ -14,7 +14,7 @@ generate_replicate_results(
   ps_flags = list(intermed = FALSE, summarise = FALSE),
   label_distribution = NULL,
   cost_fp = NULL,
-  .progress = FALSE
+  progress = options::opt("progress")
 )
 
 generate_replicate_results_dplyr(
@@ -25,7 +25,7 @@ generate_replicate_results_dplyr(
   label_distribution = NULL,
   ps_flags = list(intermed = FALSE, summarise = FALSE),
   cost_fp = NULL,
-  .progress = FALSE
+  progress = FALSE
 )
 }
 \arguments{
@@ -44,8 +44,8 @@ base_compare}
 
 \item{cost_fp}{numeric > 0, default is NULL}
 
-\item{.progress}{logical activating .progress bar in internal
-\pkg{furrr}-computation}
+\item{progress}{Display progress bars for iterated computations (like bootstrap CI or
+PR-Curves) (Defaults to \code{FALSE}, overwritable using option 'casimir.progress' or environment variable 'R_CASIMIR_PROGRESS')}
 }
 \value{
 \code{data.frame} containing \code{n_bt} boot replica of results

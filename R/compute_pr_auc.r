@@ -30,8 +30,6 @@
 #'   number of labels per documents within the defined label-strata.
 #'   \code{mode = "subj-avg"} or \code{mode = "micro"} can be more appropriate
 #'   in these circumstances.
-#' @param .progress logical activating .progress bar in internal
-#'  \pkg{furrr}-computation
 #' @param seed pass seed to make bootstrap replication reproducible
 #' @param steps number of threshold-steps to use in auc-computation
 #' @param limit_range a vector of limit values to apply on rank-column.
@@ -54,10 +52,7 @@
 #'   to the \code{gold_standard} label distribution). The default is NULL, i.e.
 #'   label weights are appplied to false positices as to false negatives and
 #'   true positives.
-#' @param .ignore_relevance_warning logical, if graded_relevance = FALSE, but
-#'   column relevance is present in predicted, a warning can be silenced by
-#'   setting .ignore_relevance_warning = TRUE
-#' @param .verbose logical indicator for verbose output, defaults to FALSE
+#' @inheritParams option_params
 #'
 #' @return a \code{data.frame} with cols pr_auc and (if applicable)
 #'   ci_lower, ci_upper and additional stratification variables
@@ -97,29 +92,31 @@
 #' )
 #'
 #' auc <- compute_pr_auc(gold, pred, mode = "doc-avg")
-compute_pr_auc <- function(gold_standard, predicted,
-                           doc_strata = NULL,
-                           label_dict = NULL,
-                           mode = "doc-avg",
-                           steps = 100,
-                           limit_range = NA_real_,
-                           compute_bootstrap_ci = FALSE,
-                           n_bt = 10L,
-                           seed = NULL,
-                           graded_relevance = FALSE,
-                           rename_graded_metrics = FALSE,
-                           propensity_scored = FALSE,
-                           label_distribution = NULL,
-                           cost_fp_constant = NULL,
-                           .ignore_relevance_warning = FALSE,
-                           .verbose = FALSE,
-                           .progress = FALSE) {
+compute_pr_auc <- function(
+  gold_standard, predicted,
+  doc_strata = NULL,
+  label_dict = NULL,
+  mode = "doc-avg",
+  steps = 100,
+  limit_range = NA_real_,
+  compute_bootstrap_ci = FALSE,
+  n_bt = 10L,
+  seed = NULL,
+  graded_relevance = FALSE,
+  rename_graded_metrics = FALSE,
+  propensity_scored = FALSE,
+  label_distribution = NULL,
+  cost_fp_constant = NULL,
+  ignore_inconsistencies = options::opt("ignore_inconsistencies"),
+  verbose = options::opt("verbose"),
+  progress = options::opt("progress")
+) {
 
 
   stopifnot(all(c("label_id", "doc_id") %in% colnames(gold_standard)))
   stopifnot(all(c("label_id", "doc_id") %in% colnames(predicted)))
   stopifnot(is.logical(compute_bootstrap_ci))
-  stopifnot(is.logical(.progress))
+  stopifnot(is.logical(progress))
   stopifnot(is.integer(n_bt))
   stopifnot(is.numeric(limit_range))
   if (!all(is.na(limit_range)))
@@ -147,7 +144,7 @@ compute_pr_auc <- function(gold_standard, predicted,
   }
 
   if (compute_bootstrap_ci == FALSE) {
-    if (.verbose)
+    if (verbose)
       message("Computing pr-curve")
 
     pr_curve <- compute_pr_curve(
@@ -162,11 +159,11 @@ compute_pr_auc <- function(gold_standard, predicted,
       propensity_scored = propensity_scored,
       label_distribution = label_distribution,
       cost_fp_constant = cost_fp_constant,
-      .ignore_relevance_warning = .ignore_relevance_warning,
-      .verbose = .verbose,
-      .progress = .progress
+      ignore_inconsistencies = ignore_inconsistencies,
+      verbose = verbose,
+      progress = progress
     )
-    if (.verbose)
+    if (verbose)
       message("Computing pr-auc from pr-curve")
     remaining_groupvars <- setdiff(
       set_grouping_var(mode, doc_strata, label_dict),
@@ -184,7 +181,7 @@ compute_pr_auc <- function(gold_standard, predicted,
       graded_relevance = graded_relevance,
       propensity_scored = propensity_scored,
       label_distribution = label_distribution,
-      .ignore_relevance_warning = .ignore_relevance_warning
+      ignore_inconsistencies = ignore_inconsistencies
     )
 
     if (propensity_scored && !is.null(cost_fp_constant))
@@ -221,7 +218,7 @@ compute_pr_auc <- function(gold_standard, predicted,
     }
 
     # glue together data.frames with different searchspace_id
-    if (.verbose)
+    if (verbose)
       message("Computing intermediate results for all thresholds and limits")
 
     intermed_res_all_thrsld <- list()
@@ -232,7 +229,7 @@ compute_pr_auc <- function(gold_standard, predicted,
       .id = "searchspace_id",
       base_compare = base_compare,
       grouping_var = grouping_var,
-      .progress = .progress
+      .progress = progress
     )
     grouping_var_w_thrsld <- c("searchspace_id", grouping_var)
     # we have to set the grouping structure explicitly, as this was lost
@@ -241,7 +238,7 @@ compute_pr_auc <- function(gold_standard, predicted,
 
     smry_grouping_var <- setdiff(grouping_var, c("doc_id", "label_id"))
 
-    if (.verbose)
+    if (verbose)
       message("Computing bootstrap confidence intervals")
 
     boot_results <- generate_pr_auc_replica(
@@ -249,7 +246,7 @@ compute_pr_auc <- function(gold_standard, predicted,
       n_bt = n_bt,
       seed = seed,
       propensity_scored = ps_flags$summarise,
-      .progress = .progress
+      progress = progress
     )
 
     # take the original as THE result
@@ -304,15 +301,16 @@ compute_pr_auc <- function(gold_standard, predicted,
 #'   as grouping variable
 #' @param seed set seed for reproducibility of bootstrap run
 #' @param n_bt integer number of bootstrap-replica to draw
-#' @param .progress show progress bar
 #' @param propensity_scored as in `compute_pr_auc`
+#' @inheritParams option_params
 #'
 #' @return \code{data.frame} with cols \code{c("boot_replicate", "pr_auc")}
 generate_pr_auc_replica <- function(
-    intermed_res_all_thrsld,
-    seed, n_bt,
-    propensity_scored,
-    .progress) {
+  intermed_res_all_thrsld,
+  seed, n_bt,
+  propensity_scored,
+  progress = options::opt("progress")
+) {
   doc_id_list <- dplyr::distinct(
     intermed_res_all_thrsld$results_table,
     .data$doc_id
@@ -327,13 +325,13 @@ generate_pr_auc_replica <- function(
 
   # set the size that variables shared between the parallel instances may have
   # 5000*1024^2 = 5242880000 # nolint
-  options(future.globals.maxSize = 5242880000)
+  base::options(future.globals.maxSize = 5242880000)
   # apply wrapper to each of the bootstrap replica
   # note: a call to furrr attaches purrr
   boot_results <- furrr::future_map_dfr(
     boot_dfs,
     .f = boot_worker_fn,
-    .progress = .progress,
+    .progress = progress,
     .id = "boot_replicate",
     .options = furrr::furrr_options(seed = seed),
     intermed_res = intermed_res_all_thrsld,

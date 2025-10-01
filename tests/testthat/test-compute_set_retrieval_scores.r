@@ -69,7 +69,7 @@ test_that("compute_set_retrieval_scores works", {
     .f = ~expect_equal(
       object = compute_set_retrieval_scores_dplyr(
         gold, pred, mode = .y,
-        .ignore_relevance_warning = TRUE
+        ignore_inconsistencies = TRUE
       ),
       expected = .x
     )
@@ -80,7 +80,7 @@ test_that("compute_set_retrieval_scores works", {
     .f = ~expect_equal(
       object = compute_set_retrieval_scores(
         gold, pred, mode = .y,
-        .ignore_relevance_warning = TRUE
+        ignore_inconsistencies = TRUE
       ),
       expected = .x
     )
@@ -93,7 +93,7 @@ test_that("compute_set_retrieval_scores works", {
     .graded_relevance = c(TRUE, FALSE),
     .propensity_scored = c(TRUE, FALSE),
     .cost_fp_constant = c(NULL, "mean", "max", "min"),
-    ..progress = c(TRUE, FALSE),
+    .progress = c(TRUE, FALSE),
     stringsAsFactors = FALSE
   )
   configuration <- dplyr::filter(
@@ -106,7 +106,7 @@ test_that("compute_set_retrieval_scores works", {
     configuration,
     .f = function(
       .mode, .compute_bootstrap_ci, .graded_relevance, .propensity_scored,
-      .cost_fp_constant, ..progress # nolint
+      .cost_fp_constant, .progress # nolint
     ) {
       expect_silent(
         object = compute_set_retrieval_scores_dplyr(
@@ -119,8 +119,8 @@ test_that("compute_set_retrieval_scores works", {
           propensity_scored = .propensity_scored,
           label_distribution = label_distribution,
           cost_fp_constant = .cost_fp_constant,
-          .ignore_relevance_warning = TRUE,
-          .progress = ..progress
+          ignore_inconsistencies = TRUE,
+          progress = .progress
         )
       )
     }
@@ -131,7 +131,7 @@ test_that("compute_set_retrieval_scores works", {
     configuration,
     .f = function(
       .mode, .compute_bootstrap_ci, .graded_relevance,
-      .propensity_scored, .cost_fp_constant, ..progress # nolint
+      .propensity_scored, .cost_fp_constant, .progress # nolint
     ) {
       expect_silent(
         object = compute_set_retrieval_scores(
@@ -144,8 +144,8 @@ test_that("compute_set_retrieval_scores works", {
           propensity_scored = .propensity_scored,
           label_distribution = label_distribution,
           cost_fp_constant = .cost_fp_constant,
-          .ignore_relevance_warning = TRUE,
-          .progress = ..progress
+          ignore_inconsistencies = TRUE,
+          progress = .progress
         )
       )
     }
@@ -209,7 +209,7 @@ test_that("graded relevance metrics are computed correctly", {
     comp <- create_comparison(
       gold_standard,
       dplyr::filter(predicted, !is.na(relevance)),
-      .ignore_relevance_warning = TRUE
+      ignore_inconsistencies = TRUE
     ) |>
       # remove artificially generated relevance = 0 column
       # because crate_comparison overwrites relevance column

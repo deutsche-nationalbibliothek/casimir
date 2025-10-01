@@ -44,12 +44,7 @@
 #'   to the \code{gold_standard} label distribution). The default is NULL, i.e.
 #'   label weights are appplied to false positices as to false negatives and
 #'   true positives.
-#' @param .ignore_relevance_warning logical, if graded_relevance = FALSE, but
-#'   column relevance is present in predicted, a warning can be silenced by
-#'   setting .ignore_relevance_warning = TRUE
-#' @param .verbose logical indicator for verbose output, defaults to FALSE
-#' @param .progress logical activating .progress bar in internal
-#'  parallel \pkg{furrr}-computation
+#' @inheritParams option_params
 #'
 #' @return a \code{list} with of two elemets:
 #'   \enumerate{
@@ -121,20 +116,22 @@
 #'   ) +
 #'   geom_path() +
 #'   coord_cartesian(xlim = c(0,1), ylim = c(0,1))
-compute_pr_curve <- function(gold_standard, predicted,
-                             doc_strata = NULL,
-                             label_dict = NULL,
-                             mode = "doc-avg",
-                             steps = 100,
-                             limit_range = NA_real_,
-                             optimize_cutoff = FALSE,
-                             graded_relevance = FALSE,
-                             propensity_scored = FALSE,
-                             label_distribution = NULL,
-                             cost_fp_constant = NULL,
-                             .ignore_relevance_warning = FALSE,
-                             .verbose = FALSE,
-                             .progress = FALSE) {
+compute_pr_curve <- function(
+  gold_standard, predicted,
+  doc_strata = NULL,
+  label_dict = NULL,
+  mode = "doc-avg",
+  steps = 100,
+  limit_range = NA_real_,
+  optimize_cutoff = FALSE,
+  graded_relevance = FALSE,
+  propensity_scored = FALSE,
+  label_distribution = NULL,
+  cost_fp_constant = NULL,
+  ignore_inconsistencies = options::opt("ignore_inconsistencies"),
+  verbose = options::opt("verbose"),
+  progress = options::opt("progress")
+) {
 
   stopifnot(is.numeric(limit_range))
   if (!all(is.na(limit_range)))
@@ -158,7 +155,7 @@ compute_pr_curve <- function(gold_standard, predicted,
     graded_relevance = graded_relevance,
     propensity_scored = propensity_scored,
     label_distribution = label_distribution,
-    .ignore_relevance_warning = .ignore_relevance_warning
+    ignore_inconsistencies = ignore_inconsistencies
   )
 
   if (propensity_scored && !is.null(cost_fp_constant))
@@ -203,7 +200,7 @@ compute_pr_curve <- function(gold_standard, predicted,
     )
 
   }
-  if (.verbose)
+  if (verbose)
     message("Computing set retrieval metrics for all thresholds and limits.")
 
 
@@ -214,7 +211,7 @@ compute_pr_curve <- function(gold_standard, predicted,
     .y = searchspace$limits,
     .f = get_results_per_searchspace_id,
     .id = "searchspace_id",
-    .progress = .progress,
+    .progress = progress,
     base_compare = base_compare,
     grouping_var = grouping_var,
     .options = furrr::furrr_options(seed = 43544)

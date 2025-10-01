@@ -12,7 +12,7 @@ create_comparison(
   graded_relevance = FALSE,
   propensity_scored = FALSE,
   label_distribution = NULL,
-  .ignore_relevance_warning = FALSE
+  ignore_inconsistencies = options::opt("ignore_inconsistencies")
 )
 }
 \arguments{
@@ -40,9 +40,7 @@ column that defines groups of labels to stratify by}
 the number of occurences a label has in the gold_standard. \code{n_docs}
 corresponds to the total number of documents in the gold_standard.}
 
-\item{.ignore_relevance_warning}{logical, if graded_relevance = FALSE, but
-column relevance is present in predicted, a warning can be silenced by
-setting .ignore_relevance_warning = TRUE}
+\item{ignore_inconsistencies}{Warnings about data inconsistencies will be silenced. (Defaults to \code{FALSE}, overwritable using option 'casimir.ignore_inconsistencies' or environment variable 'R_CASIMIR_IGNORE_INCONSISTENCIES')}
 }
 \value{
 data.frame with cols "label_id", "doc_id", "suggested", "gold"

@@ -26,9 +26,9 @@ compute_pr_auc(
   propensity_scored = FALSE,
   label_distribution = NULL,
   cost_fp_constant = NULL,
-  .ignore_relevance_warning = FALSE,
-  .verbose = FALSE,
-  .progress = FALSE
+  ignore_inconsistencies = options::opt("ignore_inconsistencies"),
+  verbose = options::opt("verbose"),
+  progress = options::opt("progress")
 )
 }
 \arguments{
@@ -93,14 +93,12 @@ to the \code{gold_standard} label distribution). The default is NULL, i.e.
 label weights are appplied to false positices as to false negatives and
 true positives.}
 
-\item{.ignore_relevance_warning}{logical, if graded_relevance = FALSE, but
-column relevance is present in predicted, a warning can be silenced by
-setting .ignore_relevance_warning = TRUE}
+\item{ignore_inconsistencies}{Warnings about data inconsistencies will be silenced. (Defaults to \code{FALSE}, overwritable using option 'casimir.ignore_inconsistencies' or environment variable 'R_CASIMIR_IGNORE_INCONSISTENCIES')}
 
-\item{.verbose}{logical indicator for verbose output, defaults to FALSE}
+\item{verbose}{Verbose reorting of computation steps for debugging (Defaults to \code{FALSE}, overwritable using option 'casimir.verbose' or environment variable 'R_CASIMIR_VERBOSE')}
 
-\item{.progress}{logical activating .progress bar in internal
-\pkg{furrr}-computation}
+\item{progress}{Display progress bars for iterated computations (like bootstrap CI or
+PR-Curves) (Defaults to \code{FALSE}, overwritable using option 'casimir.progress' or environment variable 'R_CASIMIR_PROGRESS')}
 }
 \value{
 a \code{data.frame} with cols pr_auc and (if applicable)
