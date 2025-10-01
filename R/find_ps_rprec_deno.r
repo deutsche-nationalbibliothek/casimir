@@ -1,10 +1,7 @@
 #' Compute the denominator for rprecision, based on propensity scored
 #' ranking of gold_standrad labels
 #'
-#' @param gold_vs_pred data.frame with colums "score.pred", "score.gold"
-#' @param grouping_var a character vector of variables that must be present in
-#'  gold_vs_pred (dplyr version requires rlang symbols)
-#' @param cost_fp numeric > 0, default is NULL
+#' @inheritParams compute_intermediate_results
 #'
 #' @return data.frame with cols "n_gold", "n_suggested", "tp", "fp",
 #'   "fn", "rprec_deno"

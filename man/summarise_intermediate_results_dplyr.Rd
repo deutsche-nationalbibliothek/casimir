@@ -12,12 +12,19 @@ summarise_intermediate_results_dplyr(
 )
 }
 \arguments{
-\item{intermediate_results}{with cols "prec", "rprec", "rec", "f1" as
-produced by compute intermediate results}
+\item{intermediate_results}{as produced by compute intermediate results.
+This requires a list containing
+\itemize{
+\item \code{grouping_var} a  character vector of variables to group by
+\item \code{results_table}  a  with cols "prec", "rprec", "rec", "f1" as
+}}
 
-\item{propensity_scored}{as in \code{compute_set_retrieval_scores}}
+\item{propensity_scored}{logical, whether to use propensity scores as weights}
 
-\item{label_distribution}{as in \code{compute_set_retrieval_scores}}
+\item{label_distribution}{expects \code{data.frame} with cols
+\emph{"label_id", "label_freq", "n_docs"}. \code{label_freq} corresonds to
+the number of occurences a label has in the gold_standard. \code{n_docs}
+corresponds to the total number of documents in the gold_standard.}
 }
 \value{
 data.frame with cols metric, value

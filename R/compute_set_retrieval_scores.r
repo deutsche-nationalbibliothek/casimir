@@ -3,7 +3,7 @@
 #' @param gold_standard expects \code{data.frame} with cols
 #'   \emph{"label_id", "doc_id"}
 #' @param predicted multi-label prediction results. expects \code{data.frame}
-#'   with cols \emph{"label_id", "doc_id", "score"}
+#'   with cols \emph{"label_id", "doc_id"}
 #' @param mode aggregation mode: \emph{"doc-avg", "subj-avg", "micro"}
 #' @param compute_bootstrap_ci logical indicator for computing bootstrap CIs
 #' @param n_bt an integer number of resamples to undergo in bootstrapping

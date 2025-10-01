@@ -13,7 +13,7 @@ summarise_intermediate_results(
 \arguments{
 \item{intermediate_results}{as produced by compute intermediate results.
 This requires a list containing
-#' \itemize{
+\itemize{
 \item \code{grouping_var} a  character vector of variables to group by
 \item \code{results_table}  a  with cols "prec", "rprec", "rec", "f1" as
 }}

@@ -573,14 +573,14 @@ test_that("altering cost_fp works", {
       all(res[[1]] == res[[3]]) ||
       all(res[[2]] == res[[3]])
   ) {
-    stop("altering cost_fp doesn't change the results")
+    stop("altering cost_fp_constant doesn't change the results")
   }
 
 
   expect_error(
     test_cost_fp("foo"),
-    "cost_fp must be a numeric value > 0 or one of
-           'max', 'min', 'mean'; not cost_fp = foo"
+    "cost_fp_constant must be a numeric value > 0 or one of
+           'max', 'min', 'mean'; not cost_fp_constant = foo"
   )
 
 })

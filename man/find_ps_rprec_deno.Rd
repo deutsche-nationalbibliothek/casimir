@@ -11,7 +11,8 @@ find_ps_rprec_deno(gold_vs_pred, grouping_var, cost_fp)
 find_ps_rprec_deno_dplyr(gold_vs_pred, grouping_var, cost_fp)
 }
 \arguments{
-\item{gold_vs_pred}{data.frame with colums "score.pred", "score.gold"}
+\item{gold_vs_pred}{\code{data.frame} with logical columns
+\emph{"suggested", "gold"} as produced by \code{create_comparison}}
 
 \item{grouping_var}{a character vector of variables that must be present in
 gold_vs_pred (dplyr version requires rlang symbols)}

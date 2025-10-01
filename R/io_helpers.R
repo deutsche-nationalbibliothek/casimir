@@ -1,9 +1,6 @@
 #' determine the appropriate grouping variables for each aggregation mode
 #'
-#' @param mode aggregation mode for later computation. One of
-#'   c("doc-avg", "subj-avg", "micro")
-#' @param doc_strata as in compute_set_retrieval_scores
-#' @param label_dict as in compute_set_retrieval_scores
+#' @inheritParams compute_set_retrieval_scores
 #' @param var additional variables to include
 #'
 #' @return a character vector of variables that determine the grouping structure
@@ -30,14 +27,11 @@ set_grouping_var <- function(mode, doc_strata, label_dict, var = NULL) {
 
 #' Process input for cost_fp
 #'
-#' @param cost_fp Constant cost assigned to false positives. cost_fp must be
-#'  a numeric value > 0 or one of 'max', 'min', 'mean' (computed with reference
-#'   to the \code{label_weights})
-#' @param gold_vs_pred expects \code{data.frame} with cols
-#'   \emph{"gold", "label_weight"}.
+#' @inheritParams compute_set_retrieval_scores
+#' @inheritParams compute_intermediate_results
 #'
 #' @return a numeric value > 0
-process_cost_fp <- function(cost_fp, gold_vs_pred) {
+process_cost_fp <- function(cost_fp_constant, gold_vs_pred) {
 
   label_stats <- gold_vs_pred |>
     collapse::fsubset(gold == TRUE) |>
@@ -47,18 +41,18 @@ process_cost_fp <- function(cost_fp, gold_vs_pred) {
       mean = mean(label_weight)
     )
 
-  if (is.numeric(cost_fp) && cost_fp > 0) {
-    cost_fp_processed <- cost_fp
-  } else if (cost_fp %in% c("max", "min", "mean")) {
+  if (is.numeric(cost_fp_constant) && cost_fp_constant > 0) {
+    cost_fp_processed <- cost_fp_constant
+  } else if (cost_fp_constant %in% c("max", "min", "mean")) {
     cost_fp_processed <- switch(
-      cost_fp,
+      cost_fp_constant,
       max = label_stats$max,
       min = label_stats$min,
       mean = label_stats$mean
     )
   } else {
-    stop("cost_fp must be a numeric value > 0 or one of
-           'max', 'min', 'mean'; not cost_fp = ", cost_fp)
+    stop("cost_fp_constant must be a numeric value > 0 or one of
+           'max', 'min', 'mean'; not cost_fp_constant = ", cost_fp_constant)
   }
   cost_fp_processed
 }
@@ -66,8 +60,7 @@ process_cost_fp <- function(cost_fp, gold_vs_pred) {
 #' Generate flags, if propensity scores should be applied to intermediate
 #' results or summarise results
 #'
-#' @param mode aggregation mode: \emph{"doc-avg", "subj-avg", "micro"}
-#' @param propensity_scored logical, whether to use propensity scores as weights
+#' @inheritParams compute_set_retrieval_scores
 #'
 #' @returns list containing logical flags `intermed` and `summarise`
 set_ps_flags <- function(mode, propensity_scored) {

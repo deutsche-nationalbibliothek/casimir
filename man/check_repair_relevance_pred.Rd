@@ -7,7 +7,8 @@
 check_repair_relevance_pred(predicted)
 }
 \arguments{
-\item{predicted}{expects data.frame with column \emph{"relevance"}}
+\item{predicted}{multi-label prediction results. expects \code{data.frame}
+with cols \emph{"label_id", "doc_id", "relevance"}}
 }
 \value{
 valid predicted data.frame with possibly eliminated missing values

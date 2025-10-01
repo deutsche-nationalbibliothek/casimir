@@ -48,7 +48,7 @@ compute_set_retrieval_scores_dplyr(
 \emph{"label_id", "doc_id"}}
 
 \item{predicted}{multi-label prediction results. expects \code{data.frame}
-with cols \emph{"label_id", "doc_id", "score"}}
+with cols \emph{"label_id", "doc_id"}}
 
 \item{mode}{aggregation mode: \emph{"doc-avg", "subj-avg", "micro"}}
 

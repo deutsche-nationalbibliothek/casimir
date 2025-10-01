@@ -24,12 +24,12 @@ compute_pr_curve(
 }
 \arguments{
 \item{gold_standard}{expects \code{data.frame} with cols
-\emph{"label_id", "doc_id", "score"}}
+\emph{"label_id", "doc_id"}}
 
 \item{predicted}{multi-label prediction results. expects \code{data.frame}
 with cols \emph{"label_id", "doc_id", "score"}}
 
-\item{doc_strata}{a column that exists in either gold_standard or predicted,
+\item{doc_strata}{a column that exists gold_standard,
 that results should be grouped by, e.g. strata of document-space.
 \code{doc_strata} is recommended to be of type factor, so that levels are
 not implicitly dropped during bootstrap replications}
@@ -76,7 +76,7 @@ corresponds to the total number of documents in the gold_standard.}
 cost_fp_constant must be
 a numeric value > 0 or one of 'max', 'min', 'mean' (computed with reference
 to the \code{gold_standard} label distribution). The default is NULL, i.e.
-label weights are appplied to false positices as to false negatives and
+label weights are applied to false positives as to false negatives and
 true positives.}
 
 \item{ignore_inconsistencies}{Warnings about data inconsistencies will be silenced. (Defaults to \code{FALSE}, overwritable using option 'casimir.ignore_inconsistencies' or environment variable 'R_CASIMIR_IGNORE_INCONSISTENCIES')}

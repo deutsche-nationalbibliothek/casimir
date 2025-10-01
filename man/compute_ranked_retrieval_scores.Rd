@@ -15,13 +15,13 @@ compute_ranked_retrieval_scores(
 )
 }
 \arguments{
-\item{gold_standard}{gold-standard data, expects \code{data.frame} with cols
+\item{gold_standard}{expects \code{data.frame} with cols
 \emph{"label_id", "doc_id"}}
 
 \item{predicted}{multi-label prediction results. expects \code{data.frame}
 with cols \emph{"label_id", "doc_id", "score"}}
 
-\item{doc_strata}{a column that exists in gold_standard,
+\item{doc_strata}{a column that exists gold_standard,
 that results should be grouped by, e.g. strata of document-space.
 \code{doc_strata} is recommended to be of type factor, so that levels are
 not implicitly dropped during bootstrap replications}
