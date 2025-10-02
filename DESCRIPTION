@@ -26,7 +26,8 @@ Imports:
     rlang,
     collapse (>= 2.1.0),
     stringr,
-    options
+    options,
+    withr
 Suggests: 
     testthat (>= 3.0.0),
     tibble,

@@ -5,10 +5,15 @@
 \title{Internal helper function to check comparison matrix for
 inconsistent gold_standard and relevance values}
 \usage{
-check_repair_relevance_compare(gold_vs_pred)
+check_repair_relevance_compare(
+  gold_vs_pred,
+  ignore_inconsistencies = options::opt("ignore_inconsistencies")
+)
 }
 \arguments{
 \item{gold_vs_pred}{as created by \code{create_comparison}}
+
+\item{ignore_inconsistencies}{Warnings about data inconsistencies will be silenced. (Defaults to \code{FALSE}, overwritable using option 'casimir.ignore_inconsistencies' or environment variable 'R_CASIMIR_IGNORE_INCONSISTENCIES')}
 }
 \value{
 comparison matrix compatible with compute_intermediate_results

@@ -51,7 +51,16 @@ test_that("create_comparison produces no nonesens", {
   )
 
   expect_warning(
-    casimir:::create_comparison(gold, pred_scenario3),
+    create_comparison(gold, pred_scenario3),
     regexp = "gold standard data contains documents that are not in predicted set" #nolint
   )
+
+  # test that option ignore_inconsistencies works
+  withr::with_options(
+    list(casimir.ignore_inconsistencies = TRUE),
+    {
+      expect_silent(create_comparison(gold, pred_scenario3))
+    }
+  )
+
 })
