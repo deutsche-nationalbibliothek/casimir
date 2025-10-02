@@ -283,7 +283,9 @@ generate_pr_auc_replica <- function(
 
   # set the size that variables shared between the parallel instances may have
   # 5000*1024^2 = 5242880000 # nolint
-  base::options(future.globals.maxSize = 5242880000)
+  withr::local_options(list(
+    future.globals.maxSize = 5242880000
+  ))
   # apply wrapper to each of the bootstrap replica
   # note: a call to furrr attaches purrr
   boot_results <- furrr::future_map_dfr(
