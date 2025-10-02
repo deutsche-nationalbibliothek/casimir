@@ -77,7 +77,7 @@ create_comparison <- function(
   predicted_wo_gold <- dplyr::anti_join(predicted, gold_standard, by = "doc_id")
 
   stopifnot(nrow(predicted_wo_gold) == 0)
-  if (nrow(gold_wo_predicted) > 0)
+  if (nrow(gold_wo_predicted) > 0 && !ignore_inconsistencies)
     warning(
       "gold standard data contains documents ",
       "that are not in predicted set"

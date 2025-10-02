@@ -4,11 +4,16 @@
 \alias{check_repair_relevance_pred}
 \title{Internal helper to check predicted data frame for valid relevance column}
 \usage{
-check_repair_relevance_pred(predicted)
+check_repair_relevance_pred(
+  predicted,
+  ignore_inconsistencies = options::opt("ignore_inconsistencies")
+)
 }
 \arguments{
 \item{predicted}{multi-label prediction results. expects \code{data.frame}
 with cols \emph{"label_id", "doc_id", "relevance"}}
+
+\item{ignore_inconsistencies}{Warnings about data inconsistencies will be silenced. (Defaults to \code{FALSE}, overwritable using option 'casimir.ignore_inconsistencies' or environment variable 'R_CASIMIR_IGNORE_INCONSISTENCIES')}
 }
 \value{
 valid predicted data.frame with possibly eliminated missing values

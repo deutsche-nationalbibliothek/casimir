@@ -2,9 +2,13 @@
 #' inconsistent gold_standard and relevance values
 #'
 #' @param gold_vs_pred as created by \code{create_comparison}
+#' @inheritParams option_params
 #'
 #' @return comparison matrix compatible with compute_intermediate_results
-check_repair_relevance_compare <- function(gold_vs_pred) {
+check_repair_relevance_compare <- function(
+  gold_vs_pred,
+  ignore_inconsistencies = options::opt("ignore_inconsistencies")
+) {
 
   # set relevance to 1 if gold_standard = TRUE and relevance missing
   compare <- dplyr::mutate(
@@ -21,7 +25,7 @@ check_repair_relevance_compare <- function(gold_vs_pred) {
       .data$gold & !is.na(.data$relevance) & .data$relevance < 1
     )
   )
-  if (inconsistent_values_tp > 0) {
+  if (inconsistent_values_tp > 0 && !ignore_inconsistencies) {
     warning(
       paste(
         "There are",
@@ -46,7 +50,7 @@ check_repair_relevance_compare <- function(gold_vs_pred) {
       !.data$gold & !is.na(.data$relevance) & .data$relevance == 1
     )
   )
-  if (inconsistent_values_fp > 0) {
+  if (inconsistent_values_fp > 0 && !ignore_inconsistencies) {
     warning(
       paste(
         "There are",
@@ -64,13 +68,17 @@ check_repair_relevance_compare <- function(gold_vs_pred) {
 #'
 #' @param predicted multi-label prediction results. expects \code{data.frame}
 #'   with cols \emph{"label_id", "doc_id", "relevance"}
+#' @inheritParams option_params
 #'
 #' @return valid predicted data.frame with possibly eliminated missing values
-check_repair_relevance_pred <- function(predicted) {
+check_repair_relevance_pred <- function(
+  predicted,
+  ignore_inconsistencies = options::opt("ignore_inconsistencies")
+) {
   stopifnot("relevance" %in% colnames(predicted))
   stopifnot(is.numeric(predicted[["relevance"]]))
   # check for missing relevance values
-  if (sum(is.na(predicted[["relevance"]])) > 0) {
+  if (sum(is.na(predicted[["relevance"]])) > 0 && !ignore_inconsistencies) {
     warning("NA values in 'relevance' column. Removing rows with NA values.")
     predicted <- dplyr::filter(predicted, !is.na(.data$relevance))
   }
