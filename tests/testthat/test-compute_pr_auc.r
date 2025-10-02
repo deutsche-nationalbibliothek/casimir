@@ -199,3 +199,31 @@ test_that("pr_auc with propensity scored metrics works", {
 
   detach("package:purrr")
 })
+
+test_that("parallel compute_pr_auc handles large shared objects gracefully", {
+
+  library(future)
+  plan(multisession, workers = 2)
+
+  withr::with_options(
+    # 197254 is chosen to be such that the warning is provoked,
+    # usually `future.globals.maxSize` is much higher
+    list(future.globals.maxSize = 197254),
+    {
+      expect_warning(
+        compute_pr_auc(
+          dnb_gold_standard,
+          dnb_test_predictions,
+          compute_bootstrap_ci = TRUE,
+          n_bt = 2L,
+          steps = 25
+        ),
+        regexp = paste(
+          ".*Shared object size for parallel computation in CI",
+          "bootstrapping exceeds default.*"
+        )
+      )
+    }
+  )
+
+})
