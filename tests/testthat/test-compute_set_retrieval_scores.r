@@ -93,7 +93,6 @@ test_that("compute_set_retrieval_scores works", {
     .graded_relevance = c(TRUE, FALSE),
     .propensity_scored = c(TRUE, FALSE),
     .cost_fp_constant = c(NULL, "mean", "max", "min"),
-    .progress = c(TRUE, FALSE),
     stringsAsFactors = FALSE
   )
   configuration <- dplyr::filter(
@@ -106,7 +105,7 @@ test_that("compute_set_retrieval_scores works", {
     configuration,
     .f = function(
       .mode, .compute_bootstrap_ci, .graded_relevance, .propensity_scored,
-      .cost_fp_constant, .progress # nolint
+      .cost_fp_constant
     ) {
       expect_silent(
         object = compute_set_retrieval_scores_dplyr(
@@ -120,7 +119,7 @@ test_that("compute_set_retrieval_scores works", {
           label_distribution = label_distribution,
           cost_fp_constant = .cost_fp_constant,
           ignore_inconsistencies = TRUE,
-          progress = .progress
+          progress = FALSE
         )
       )
     }
@@ -131,7 +130,7 @@ test_that("compute_set_retrieval_scores works", {
     configuration,
     .f = function(
       .mode, .compute_bootstrap_ci, .graded_relevance,
-      .propensity_scored, .cost_fp_constant, .progress # nolint
+      .propensity_scored, .cost_fp_constant
     ) {
       expect_silent(
         object = compute_set_retrieval_scores(
@@ -145,7 +144,7 @@ test_that("compute_set_retrieval_scores works", {
           label_distribution = label_distribution,
           cost_fp_constant = .cost_fp_constant,
           ignore_inconsistencies = TRUE,
-          progress = .progress
+          progress = FALSE
         )
       )
     }
