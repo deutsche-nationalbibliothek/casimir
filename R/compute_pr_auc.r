@@ -282,10 +282,22 @@ generate_pr_auc_replica <- function(
   boot_dfs <- purrr::map(boot_dfs, as.data.frame)
 
   # set the size that variables shared between the parallel instances may have
-  # 5000*1024^2 = 5242880000 # nolint
-  withr::local_options(list(
-    future.globals.maxSize = 5242880000
-  ))
+  max_size <- getOption("future.globals.maxSize", 500 * 1024^2)
+  obj_size <- as.numeric(utils::object.size(intermed_res_all_thrsld))
+  if (obj_size > max_size) {
+    warning(paste(
+      "Shared object size for parallel computation in CI bootstrapping",
+      "exceeds default (maxSize = ",
+      max_size,
+      ". Setting `future.globals.maxSize` to",
+      obj_size * 1.1,
+      ", locally. To avoid this warning try one of the following:
+        * increase `future.globals.maxSize` globally
+        * decrease `steps` or `limit_range`
+        * disable CI computation"
+    ))
+    withr::local_options(list(future.globals.maxSize = obj_size * 1.1))
+  }
   # apply wrapper to each of the bootstrap replica
   # note: a call to furrr attaches purrr
   boot_results <- furrr::future_map_dfr(
