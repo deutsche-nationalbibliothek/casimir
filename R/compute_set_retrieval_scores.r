@@ -1,4 +1,4 @@
-#' Compute multi label metrics for gnd subject indexing results
+#' Compute multi label metrics for subject indexing results
 #'
 #' @param gold_standard expects \code{data.frame} with cols
 #'   \emph{"label_id", "doc_id"}
