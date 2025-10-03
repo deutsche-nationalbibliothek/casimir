@@ -73,8 +73,16 @@ create_comparison <- function(
   }
 
   # the set of title ids must always agree in predicted and gold_standard
-  gold_wo_predicted <- dplyr::anti_join(gold_standard, predicted, by = "doc_id")
-  predicted_wo_gold <- dplyr::anti_join(predicted, gold_standard, by = "doc_id")
+  gold_wo_predicted <- collapse::join(
+    x = gold_standard,
+    y = predicted,
+    on = "doc_id", how = "anti", verbose = 0
+  )
+  predicted_wo_gold <- collapse::join(
+    x = predicted,
+    y = gold_standard,
+    on = "doc_id", how = "anti", verbose = 0
+  )
 
   stopifnot(nrow(predicted_wo_gold) == 0)
   if (nrow(gold_wo_predicted) > 0 && !ignore_inconsistencies)
@@ -83,28 +91,35 @@ create_comparison <- function(
       "that are not in predicted set"
     )
 
-  compare <- dplyr::full_join(
+  compare <- collapse::join(
     x = dplyr::mutate(
       dplyr::select(gold_standard, -!!doc_strata),
       gold = TRUE
     ),
     y = dplyr::mutate(predicted, suggested = TRUE),
-    by = c("doc_id", "label_id"), relationship = "one-to-one",
+    how = "full",
+    on = c("doc_id", "label_id"),
+    validate = "1:1",
+    verbose = 0,
     suffix = c(".gold", ".pred") # this is intended to differentiate columns
     # that might be dragged along later
   )
 
-  compare_w_strata <- dplyr::left_join(
+  compare_w_strata <- collapse::join(
     x = compare,
     y = dplyr::distinct(dplyr::select(gold_standard, "doc_id", !!doc_strata)),
-    by = c("doc_id")
+    on = c("doc_id"),
+    how = "left",
+    verbose = 0
   )
 
   if (!is.null(label_dict)) {
-    compare_w_strata <- dplyr::left_join(
+    compare_w_strata <- collapse::join(
       x = compare_w_strata,
       y = label_dict,
-      by = c("label_id")
+      on = c("label_id"),
+      how = "left",
+      verbose = 0
     )
   }
 
