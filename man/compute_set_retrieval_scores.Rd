@@ -3,7 +3,7 @@
 \name{compute_set_retrieval_scores}
 \alias{compute_set_retrieval_scores}
 \alias{compute_set_retrieval_scores_dplyr}
-\title{Compute multi label metrics for gnd subject indexing results}
+\title{Compute multi label metrics for subject indexing results}
 \usage{
 compute_set_retrieval_scores(
   gold_standard,
@@ -123,7 +123,7 @@ for r-precision.}
 }
 }
 \description{
-Compute multi label metrics for gnd subject indexing results
+Compute multi label metrics for subject indexing results
 }
 \section{Functions}{
 \itemize{
