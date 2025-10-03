@@ -98,16 +98,23 @@ test_that("compute_intermediate_results checks out", {
 test_that("grouping vars with dots are rejected", {
 
   gold <- tibble::tribble(
-    ~doc_id, ~label_id, ~hsg,
-    "A", "a", "0.1.1",
-    "A", "b", "0.1.1",
-    "A", "c", "0.1.1",
-    "B", "a", "0.1.1",
-    "B", "d", "0.1.1",
-    "C", "a", "0.2.1",
-    "C", "b", "0.2.1",
-    "C", "d", "0.2.1",
-    "C", "f", "0.2.1"
+    ~doc_id, ~label_id,
+    "A", "a",
+    "A", "b",
+    "A", "c",
+    "B", "a",
+    "B", "d",
+    "C", "a",
+    "C", "b",
+    "C", "d",
+    "C", "f",
+  )
+
+  doc_groups <- tibble::tribble(
+    ~doc_id, ~hsg,
+    "A", "0.1.1",
+    "B", "0.1.1",
+    "C", "0.2.1"
   )
 
   pred <- tibble::tribble(
@@ -120,7 +127,7 @@ test_that("grouping vars with dots are rejected", {
     "C", "f"
   )
 
-  cmp <- create_comparison(gold, pred, doc_strata = "hsg")
+  cmp <- create_comparison(gold, pred, doc_groups = doc_groups)
   expect_error(
     object =  compute_intermediate_results(
       cmp, grouping_var = c("doc_id", "hsg")
@@ -128,7 +135,7 @@ test_that("grouping vars with dots are rejected", {
     regexp = "grouping variable must not contain levels that contain dots"
   )
 
-  label_dict <- tibble::tribble(
+  label_groups <- tibble::tribble(
     ~label_id, ~strata,
     "a", "12.1",
     "b", "12.1",
@@ -138,7 +145,7 @@ test_that("grouping vars with dots are rejected", {
     "f", "12.3"
   )
 
-  cmp <- create_comparison(gold, pred, label_dict = label_dict)
+  cmp <- create_comparison(gold, pred, label_groups = label_groups)
 
   expect_error(
     object = compute_intermediate_results(

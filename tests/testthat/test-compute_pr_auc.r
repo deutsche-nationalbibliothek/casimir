@@ -1,10 +1,10 @@
-testthat::test_that("ci for pr_auc work", {
+test_that("ci for pr_auc work", {
 
   library(purrr, quietly = TRUE, warn.conflicts = FALSE)
   set.seed(20)
   n_docs <- 20
   n_label <- 26
-  gold_hsg <- tibble::tibble(
+  gold_w_hsg <- tibble::tibble(
     doc_id = LETTERS[1:n_docs],
     hsg = sample(c("001", "002"), size = n_docs, replace = TRUE)
   ) |>
@@ -14,7 +14,14 @@ testthat::test_that("ci for pr_auc work", {
     ) |>
     tidyr::unnest(label_id)
 
-  pred <- gold_hsg$doc_id |>
+  doc_groups <- dplyr::distinct(
+    gold_w_hsg,
+    doc_id, hsg
+  )
+
+  gold <- dplyr::select(gold_w_hsg, -hsg)
+
+  pred <- gold_w_hsg$doc_id |>
     unique() |>
     purrr::map_dfr(
       .f = ~tibble::tibble(
@@ -41,7 +48,7 @@ testthat::test_that("ci for pr_auc work", {
 
   expect_error(
     compute_pr_auc(
-      gold_hsg, pred, steps = 15, mode = "subj-avg",
+      gold, pred, steps = 15, mode = "subj-avg",
       compute_bootstrap_ci = TRUE,
       n_bt = 20L
     )
@@ -49,7 +56,15 @@ testthat::test_that("ci for pr_auc work", {
     regexp = "Confidence intervals for pr-auc in subj-avg-mode are not supported yet" # nolint
   )
 
-  pr_auc <- compute_pr_auc(gold_hsg, pred, steps = 15,
+  expect_silent(
+    compute_pr_auc(
+      gold, pred, doc_groups = doc_groups, steps = 15,
+      compute_bootstrap_ci = TRUE,
+      n_bt = 20L
+    )
+  )
+
+  pr_auc <- compute_pr_auc(gold, pred, steps = 15,
                            compute_bootstrap_ci = TRUE,
                            seed = 3426,
                            n_bt = 20L)
@@ -116,7 +131,7 @@ test_that("Zero AUC for singleton-curve in empty label_strata", {
     "D", "h", 0.3 # only label from gnd_entity works, not in gold
   )
 
-  label_dict <- tibble::tribble(
+ label_groups <- tibble::tribble(
     ~label_id, ~gnd_entity,
     "a", "pers",
     "b", "pers",
@@ -129,7 +144,7 @@ test_that("Zero AUC for singleton-curve in empty label_strata", {
     "i", "location"
   )
 
-  res <- compute_pr_auc(gold, pred, label_dict = label_dict, steps = 10)
+  res <- compute_pr_auc(gold, pred, label_groups = label_groups, steps = 10)
 
   edge_cases_expected <- tibble::tribble(
     ~gnd_entity, ~pr_auc,

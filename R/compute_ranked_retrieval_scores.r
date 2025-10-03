@@ -14,8 +14,8 @@
 #' @return a \code{data.frame} with cols
 #'    \emph{"metric", "mode", "value", "support"}
 #'    and optionally grouping
-#'    variables supplied in doc_strata. Here, \strong{support}
-#'    is defined number of documents that contribute to the document average
+#'    variables supplied in doc_groups. Here, \strong{support}
+#'    is defined as number of documents that contribute to the document average
 #'    in aggregation of the overall result.
 #' @export
 #'
@@ -53,7 +53,7 @@
 compute_ranked_retrieval_scores <- function( # nolint
   gold_standard,
   predicted,
-  doc_strata = NULL,
+  doc_groups = NULL,
   compute_bootstrap_ci = FALSE,
   n_bt = 10L,
   seed = NULL,
@@ -63,14 +63,12 @@ compute_ranked_retrieval_scores <- function( # nolint
   stopifnot(all(c("label_id", "doc_id") %in% colnames(gold_standard)))
   stopifnot(all(c("label_id", "doc_id", "score") %in% colnames(predicted)))
   stopifnot(is.logical(compute_bootstrap_ci))
-  if (!is.null(doc_strata)) {
-    stopifnot(doc_strata %in% colnames(gold_standard))
-  }
 
   gold_vs_pred <- create_comparison(gold_standard, predicted,
-                                    doc_strata = doc_strata)
+                                    doc_groups = doc_groups)
 
-  grouping_var <- rlang::syms(c("doc_id", doc_strata))
+  grouping_var <- rlang::syms(colnames(doc_groups))
+  doc_strata <- setdiff(colnames(doc_groups), "doc_id")
 
   iterm <- compute_intermediate_results_rr(
     gold_vs_pred, grouping_var

@@ -4,17 +4,17 @@
 \alias{set_grouping_var}
 \title{determine the appropriate grouping variables for each aggregation mode}
 \usage{
-set_grouping_var(mode, doc_strata, label_dict, var = NULL)
+set_grouping_var(mode, doc_groups, label_groups, var = NULL)
 }
 \arguments{
 \item{mode}{aggregation mode: \emph{"doc-avg", "subj-avg", "micro"}}
 
-\item{doc_strata}{a column that exists gold_standard,
-that results should be grouped by, e.g. strata of document-space.
-\code{doc_strata} is recommended to be of type factor, so that levels are
+\item{doc_groups}{two-column \code{data.frame} with col \emph{"doc_id"}
+and a second column that defines groups of labels to stratify results by.
+It is recommended that groups are of type factor, so that levels are
 not implicitly dropped during bootstrap replications}
 
-\item{label_dict}{two-column \code{data.frame} with col \emph{"label_id"}
+\item{label_groups}{two-column \code{data.frame} with col \emph{"label_id"}
 and a second column that defines groups of labels to stratify results by.
 Results in each stratum
 will restrict gold_standard and predictions to the specified label-groups,

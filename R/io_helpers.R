@@ -4,10 +4,18 @@
 #' @param var additional variables to include
 #'
 #' @return a character vector of variables that determine the grouping structure
-set_grouping_var <- function(mode, doc_strata, label_dict, var = NULL) {
-  if (!is.null(label_dict)) {
-    stopifnot("label_id" %in% colnames(label_dict))
-    label_strata <- setdiff(colnames(label_dict), "label_id")
+set_grouping_var <- function(mode, doc_groups, label_groups, var = NULL) {
+
+  if (!is.null(doc_groups)) {
+    stopifnot("doc_id" %in% colnames(doc_groups))
+    doc_strata <- setdiff(colnames(doc_groups), "doc_id")
+  } else {
+    doc_strata <- NULL
+  }
+
+  if (!is.null(label_groups)) {
+    stopifnot("label_id" %in% colnames(label_groups))
+    label_strata <- setdiff(colnames(label_groups), "label_id")
   } else {
     label_strata <- NULL
   }
