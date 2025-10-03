@@ -13,8 +13,8 @@ limits applying both threshold-based cutoff as well as rank-based cutoff.}
 compute_pr_auc(
   gold_standard,
   predicted,
-  doc_strata = NULL,
-  label_dict = NULL,
+  doc_groups = NULL,
+  label_groups = NULL,
   mode = "doc-avg",
   steps = 100,
   limit_range = NA_real_,
@@ -38,12 +38,12 @@ compute_pr_auc(
 \item{predicted}{multi-label prediction results. expects \code{data.frame}
 with cols \emph{"label_id", "doc_id", "score"}}
 
-\item{doc_strata}{a column that exists gold_standard,
-that results should be grouped by, e.g. strata of document-space.
-\code{doc_strata} is recommended to be of type factor, so that levels are
+\item{doc_groups}{two-column \code{data.frame} with col \emph{"doc_id"}
+and a second column that defines groups of labels to stratify results by.
+It is recommended that groups are of type factor, so that levels are
 not implicitly dropped during bootstrap replications}
 
-\item{label_dict}{two-column \code{data.frame} with col \emph{"label_id"}
+\item{label_groups}{two-column \code{data.frame} with col \emph{"label_id"}
 and a second column that defines groups of labels to stratify results by.
 Results in each stratum
 will restrict gold_standard and predictions to the specified label-groups,

@@ -2,23 +2,38 @@ test_that("grouping_var selection works", {
 
   # test that function remains siltnt across all possible configs
   config <- expand.grid(
-    mode = c("micro", "subj-avg", "doc-avg"),
-    doc_strata = list(NULL, c("hsg"), c("hsg", "grp2")),
-    label_dict = list(NULL,
-                      tibble::tibble(label_id = c("A", "B"),
-                                     label_grp = c("1", "2"))),
-    var = list(NULL, c("abc"), c("abc", "def"))
+    .mode = c("micro", "subj-avg", "doc-avg"),
+    .doc_groups = list(
+      NULL,
+      tibble::tibble(
+        doc_id = c("a", "b"),
+        hsg = c("grp1", "grp2")
+      ),
+      tibble::tibble(
+        doc_id = c("a", "b"),
+        hsg = c("grp1", "grp2"),
+        foo = c("foo1", "foo2")
+      )
+    ),
+    .label_groups = list(
+      NULL,
+      tibble::tibble(
+        label_id = c("A", "B"),
+        label_grp = c("1", "2")
+      )
+    ),
+    .var = list(NULL, c("abc"), c("abc", "def"))
   )
 
   messages <- config |>
     purrr::pmap(
-      .f = function(mode, doc_strata, label_dict, var) {
+      .f = function(.mode, .doc_groups, .label_groups, .var) {
         expect_silent(
           set_grouping_var(
-            mode = mode,
-            doc_strata = doc_strata,
-            label_dict = label_dict,
-            var = var
+            mode = .mode,
+            doc_groups = .doc_groups,
+            label_groups = .label_groups,
+            var = .var
           )
         )
       }

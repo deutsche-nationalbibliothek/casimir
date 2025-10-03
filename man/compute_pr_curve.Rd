@@ -7,8 +7,8 @@
 compute_pr_curve(
   gold_standard,
   predicted,
-  doc_strata = NULL,
-  label_dict = NULL,
+  doc_groups = NULL,
+  label_groups = NULL,
   mode = "doc-avg",
   steps = 100,
   limit_range = NA_real_,
@@ -29,12 +29,12 @@ compute_pr_curve(
 \item{predicted}{multi-label prediction results. expects \code{data.frame}
 with cols \emph{"label_id", "doc_id", "score"}}
 
-\item{doc_strata}{a column that exists gold_standard,
-that results should be grouped by, e.g. strata of document-space.
-\code{doc_strata} is recommended to be of type factor, so that levels are
+\item{doc_groups}{two-column \code{data.frame} with col \emph{"doc_id"}
+and a second column that defines groups of labels to stratify results by.
+It is recommended that groups are of type factor, so that levels are
 not implicitly dropped during bootstrap replications}
 
-\item{label_dict}{two-column \code{data.frame} with col \emph{"label_id"}
+\item{label_groups}{two-column \code{data.frame} with col \emph{"label_id"}
 and a second column that defines groups of labels to stratify results by.
 Results in each stratum
 will restrict gold_standard and predictions to the specified label-groups,
@@ -96,8 +96,8 @@ a \code{list} with of two elemets:
       "prec", "rec", "prec_cummax")}
 }
 
-and possibly additional stratification variables passed with doc_strata
-and label_dict
+and possibly additional stratification variables passed with doc_groups
+and label_groups
 }
 \description{
 compute precision-recall-curve for a given step size and limit_range

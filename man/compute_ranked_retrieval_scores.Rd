@@ -7,7 +7,7 @@
 compute_ranked_retrieval_scores(
   gold_standard,
   predicted,
-  doc_strata = NULL,
+  doc_groups = NULL,
   compute_bootstrap_ci = FALSE,
   n_bt = 10L,
   seed = NULL,
@@ -21,9 +21,9 @@ compute_ranked_retrieval_scores(
 \item{predicted}{multi-label prediction results. expects \code{data.frame}
 with cols \emph{"label_id", "doc_id", "score"}}
 
-\item{doc_strata}{a column that exists gold_standard,
-that results should be grouped by, e.g. strata of document-space.
-\code{doc_strata} is recommended to be of type factor, so that levels are
+\item{doc_groups}{two-column \code{data.frame} with col \emph{"doc_id"}
+and a second column that defines groups of labels to stratify results by.
+It is recommended that groups are of type factor, so that levels are
 not implicitly dropped during bootstrap replications}
 
 \item{compute_bootstrap_ci}{logical indicator for computing bootstrap CIs}
@@ -39,8 +39,8 @@ PR-Curves) (Defaults to \code{FALSE}, overwritable using option 'casimir.progres
 a \code{data.frame} with cols
 \emph{"metric", "mode", "value", "support"}
 and optionally grouping
-variables supplied in doc_strata. Here, \strong{support}
-is defined number of documents that contribute to the document average
+variables supplied in doc_groups. Here, \strong{support}
+is defined as number of documents that contribute to the document average
 in aggregation of the overall result.
 }
 \description{

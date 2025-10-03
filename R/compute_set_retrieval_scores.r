@@ -7,11 +7,11 @@
 #' @param mode aggregation mode: \emph{"doc-avg", "subj-avg", "micro"}
 #' @param compute_bootstrap_ci logical indicator for computing bootstrap CIs
 #' @param n_bt an integer number of resamples to undergo in bootstrapping
-#' @param doc_strata a column that exists gold_standard,
-#'   that results should be grouped by, e.g. strata of document-space.
-#'   \code{doc_strata} is recommended to be of type factor, so that levels are
+#' @param doc_groups two-column \code{data.frame} with col \emph{"doc_id"}
+#'   and a second column that defines groups of labels to stratify results by.
+#'   It is recommended that groups are of type factor, so that levels are
 #'   not implicitly dropped during bootstrap replications
-#' @param label_dict two-column \code{data.frame} with col \emph{"label_id"}
+#' @param label_groups two-column \code{data.frame} with col \emph{"label_id"}
 #'   and a second column that defines groups of labels to stratify results by.
 #'   Results in each stratum
 #'   will restrict gold_standard and predictions to the specified label-groups,
@@ -48,7 +48,7 @@
 #' @return a \code{data.frame} with cols
 #'   \emph{"metric", "mode", "value", "support"}
 #'    and optionally grouping
-#'    variables supplied in doc_strata or label_dict. Here, \strong{support}
+#'    variables supplied in doc_groups or label_groups. Here, \strong{support}
 #'    is defined for each \emph{mode} as,
 #' \describe{
 #'   \item{\code{mode = "doc-avg"}}{the number of tested documents}
@@ -128,8 +128,8 @@ compute_set_retrieval_scores <- function(
   mode = "doc-avg",
   compute_bootstrap_ci = FALSE,
   n_bt = 10L,
-  doc_strata = NULL,
-  label_dict = NULL,
+  doc_groups = NULL,
+  label_groups = NULL,
   graded_relevance = FALSE,
   rename_graded_metrics = FALSE,
   seed = NULL,
@@ -145,14 +145,11 @@ compute_set_retrieval_scores <- function(
   stopifnot(all(c("label_id", "doc_id") %in% colnames(gold_standard)))
   stopifnot(all(c("label_id", "doc_id") %in% colnames(predicted)))
   stopifnot(is.logical(compute_bootstrap_ci))
-  if (!is.null(doc_strata)) {
-    stopifnot(doc_strata %in% colnames(gold_standard))
-  }
 
   compare <- create_comparison(
     gold_standard, predicted,
-    doc_strata = doc_strata,
-    label_dict = label_dict,
+    doc_groups = doc_groups,
+    label_groups = label_groups,
     graded_relevance = graded_relevance,
     propensity_scored = propensity_scored,
     label_distribution = label_distribution,
@@ -166,7 +163,7 @@ compute_set_retrieval_scores <- function(
 
   ps_flags <- set_ps_flags(mode, propensity_scored)
 
-  grouping_var <- set_grouping_var(mode, doc_strata, label_dict)
+  grouping_var <- set_grouping_var(mode, doc_groups, label_groups)
 
   # give warnings, when additional stratification variables are not factors
   test_factor <- function(var) {
@@ -276,8 +273,8 @@ compute_set_retrieval_scores_dplyr <- function( # nolint
   mode = "doc-avg",
   compute_bootstrap_ci = FALSE,
   n_bt = 10L,
-  doc_strata = NULL,
-  label_dict = NULL,
+  doc_groups = NULL,
+  label_groups = NULL,
   graded_relevance = FALSE,
   rename_graded_metrics = FALSE,
   seed = NULL,
@@ -290,9 +287,7 @@ compute_set_retrieval_scores_dplyr <- function( # nolint
 ) {
 
   stopifnot(is.logical(compute_bootstrap_ci))
-  if (!is.null(doc_strata)) {
-    stopifnot(doc_strata %in% colnames(gold_standard))
-  }
+
   if (propensity_scored) {
     stopifnot(!is.null(label_distribution))
     stopifnot(all(
@@ -302,8 +297,8 @@ compute_set_retrieval_scores_dplyr <- function( # nolint
 
   compare <- create_comparison(
     gold_standard, predicted,
-    doc_strata = doc_strata,
-    label_dict = label_dict,
+    doc_groups = doc_groups,
+    label_groups = label_groups,
     graded_relevance = graded_relevance,
     ignore_inconsistencies = ignore_inconsistencies
   )
@@ -337,7 +332,7 @@ compute_set_retrieval_scores_dplyr <- function( # nolint
 
   }
 
-  grouping_var <- set_grouping_var(mode, doc_strata, label_dict)
+  grouping_var <- set_grouping_var(mode, doc_groups, label_groups)
 
   # give warnings, when additional stratification variables are not factors
   test_factor <- function(var) {
