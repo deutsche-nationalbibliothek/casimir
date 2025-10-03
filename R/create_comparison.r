@@ -35,7 +35,7 @@
 #' casimir::create_comparison(gold, pred)
 create_comparison <- function(
   gold_standard, predicted,
-  doc_strata = NULL, label_dict = NULL,
+  doc_groups = NULL, label_groups = NULL,
   graded_relevance = FALSE,
   propensity_scored = FALSE,
   label_distribution = NULL,
@@ -64,12 +64,12 @@ create_comparison <- function(
     ))
   }
 
-  if (!is.null(doc_strata)) {
-    stopifnot(doc_strata %in% colnames(gold_standard))
+  if (!is.null(doc_groups)) {
+    stopifnot("doc_id" %in% colnames(doc_groups))
   }
 
-  if (!is.null(label_dict)) {
-    stopifnot("label_id" %in% colnames(label_dict))
+  if (!is.null(label_groups)) {
+    stopifnot("label_id" %in% colnames(label_groups))
   }
 
   # the set of title ids must always agree in predicted and gold_standard
@@ -92,11 +92,8 @@ create_comparison <- function(
     )
 
   compare <- collapse::join(
-    x = dplyr::mutate(
-      dplyr::select(gold_standard, -!!doc_strata),
-      gold = TRUE
-    ),
-    y = dplyr::mutate(predicted, suggested = TRUE),
+    x = collapse::ftransform(gold_standard, gold = TRUE),
+    y = collapse::ftransform(predicted, suggested = TRUE),
     how = "full",
     on = c("doc_id", "label_id"),
     validate = "1:1",
@@ -105,31 +102,36 @@ create_comparison <- function(
     # that might be dragged along later
   )
 
-  compare_w_strata <- collapse::join(
-    x = compare,
-    y = dplyr::distinct(dplyr::select(gold_standard, "doc_id", !!doc_strata)),
-    on = c("doc_id"),
-    how = "left",
-    verbose = 0
-  )
+  if (!is.null(doc_groups)) {
+    compare <- collapse::join(
+      x = compare,
+      y = doc_groups,
+      on = c("doc_id"),
+      how = "left",
+      validate = "m:1",
+      verbose = 0
+    )
+  }
 
-  if (!is.null(label_dict)) {
-    compare_w_strata <- collapse::join(
-      x = compare_w_strata,
-      y = label_dict,
+
+  if (!is.null(label_groups)) {
+    compare <- collapse::join(
+      x = compare,
+      y = label_groups,
       on = c("label_id"),
       how = "left",
+      validate = "m:1",
       verbose = 0
     )
   }
 
   if (propensity_scored) {
     label_weights <- compute_propensity_scores(label_distribution)
-    compare_w_strata <- join_propensity_scores(compare_w_strata, label_weights)
+    compare <- join_propensity_scores(compare, label_weights)
   }
 
   result <- tidyr::replace_na(
-    compare_w_strata,
+    compare,
     replace = list(
       gold = FALSE,
       suggested = FALSE

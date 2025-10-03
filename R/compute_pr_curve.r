@@ -21,8 +21,8 @@
 #'   }
 #'
 #'
-#'   and possibly additional stratification variables passed with doc_strata
-#'   and label_dict
+#'   and possibly additional stratification variables passed with doc_groups
+#'   and label_groups
 #' @export
 #'
 #' @examples
@@ -83,8 +83,8 @@
 #'   coord_cartesian(xlim = c(0,1), ylim = c(0,1))
 compute_pr_curve <- function(
   gold_standard, predicted,
-  doc_strata = NULL,
-  label_dict = NULL,
+  doc_groups = NULL,
+  label_groups = NULL,
   mode = "doc-avg",
   steps = 100,
   limit_range = NA_real_,
@@ -102,7 +102,7 @@ compute_pr_curve <- function(
   if (!all(is.na(limit_range)))
     stopifnot(all(limit_range >= 1L))
 
-  grouping_var <- set_grouping_var(mode, doc_strata, label_dict)
+  grouping_var <- set_grouping_var(mode, doc_groups, label_groups)
 
   if (!all(is.na(limit_range)) && !"rank" %in% colnames(predicted)) {
     predicted <- dplyr::ungroup(
@@ -115,8 +115,8 @@ compute_pr_curve <- function(
 
   base_compare <- create_comparison(
     gold_standard, predicted,
-    doc_strata = doc_strata,
-    label_dict = label_dict,
+    doc_groups = doc_groups,
+    label_groups = label_groups,
     graded_relevance = graded_relevance,
     propensity_scored = propensity_scored,
     label_distribution = label_distribution,

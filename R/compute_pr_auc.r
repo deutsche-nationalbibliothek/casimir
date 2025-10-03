@@ -52,8 +52,8 @@
 #' auc <- compute_pr_auc(gold, pred, mode = "doc-avg")
 compute_pr_auc <- function(
   gold_standard, predicted,
-  doc_strata = NULL,
-  label_dict = NULL,
+  doc_groups = NULL,
+  label_groups = NULL,
   mode = "doc-avg",
   steps = 100,
   limit_range = NA_real_,
@@ -97,10 +97,6 @@ compute_pr_auc <- function(
     ))
   }
 
-  if (!is.null(doc_strata)) {
-    stopifnot(doc_strata %in% colnames(gold_standard))
-  }
-
   if (compute_bootstrap_ci == FALSE) {
     if (verbose)
       message("Computing pr-curve")
@@ -108,8 +104,8 @@ compute_pr_auc <- function(
     pr_curve <- compute_pr_curve(
       gold_standard = gold_standard,
       predicted = predicted,
-      doc_strata = doc_strata,
-      label_dict = label_dict,
+      doc_groups = doc_groups,
+      label_groups = label_groups,
       mode = mode,
       steps = steps,
       limit_range = limit_range,
@@ -124,18 +120,18 @@ compute_pr_auc <- function(
     if (verbose)
       message("Computing pr-auc from pr-curve")
     remaining_groupvars <- setdiff(
-      set_grouping_var(mode, doc_strata, label_dict),
+      set_grouping_var(mode, doc_groups, label_groups),
       c("doc_id", "label_id", "searchspace_id")
     )
     pr_auc <- compute_pr_auc_from_curve(pr_curve, remaining_groupvars)
   } else {
 
-    grouping_var <- set_grouping_var(mode, doc_strata, label_dict)
+    grouping_var <- set_grouping_var(mode, doc_groups, label_groups)
 
     base_compare <- create_comparison(
       gold_standard, predicted,
-      doc_strata = doc_strata,
-      label_dict = label_dict,
+      doc_groups = doc_groups,
+      label_groups = label_groups,
       graded_relevance = graded_relevance,
       propensity_scored = propensity_scored,
       label_distribution = label_distribution,

@@ -47,25 +47,34 @@ test_that("grouped ranked retrieval works", {
 
   # some dummy results
   gold <- tibble::tribble(
-    ~hsg, ~doc_id, ~label_id,
-    "001", "A", "a",
-    "001", "A", "b",
-    "001", "A", "c",
-    "001", "A", "d",
-    "001", "A", "e",
-    "001", "B", "b",
-    "001", "B", "i",
-    "001", "B", "l",
-    "001", "C", "a",
-    "001", "C", "c",
-    "001", "C", "f",
-    "001", "C", "j",
-    "001", "C", "k",
-    "002", "D", "c",
-    "002", "D", "e",
-    "002", "D", "h",
-    "002", "D", "k",
-    "002", "E", "d",
+    ~doc_id, ~label_id,
+    "A", "a",
+    "A", "b",
+    "A", "c",
+    "A", "d",
+    "A", "e",
+    "B", "b",
+    "B", "i",
+    "B", "l",
+    "C", "a",
+    "C", "c",
+    "C", "f",
+    "C", "j",
+    "C", "k",
+    "D", "c",
+    "D", "e",
+    "D", "h",
+    "D", "k",
+    "E", "d",
+  )
+
+  doc_groups <- tibble::tribble(
+    ~doc_id, ~hsg,
+    "A", "001",
+    "B", "002",
+    "C", "003",
+    "D", "004",
+    "E", "005"
   )
 
   set.seed(2)
@@ -79,11 +88,11 @@ test_that("grouped ranked retrieval works", {
   observed <- compute_ranked_retrieval_scores(
     gold,
     pred,
-    doc_strata = "hsg",
+    doc_groups = doc_groups,
     compute_bootstrap_ci = FALSE
   )
 
-  doc_wise_results <- create_comparison(gold, pred, doc_strata = "hsg") |>
+  doc_wise_results <- create_comparison(gold, pred, doc_groups = doc_groups) |>
     dplyr::group_by(doc_id, hsg) |>
     dplyr::do(ndcg = ndcg_score(.), # according to Reference implementation
               dcg = dcg_score(.), # according to Reference implementation

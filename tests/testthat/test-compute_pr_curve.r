@@ -135,7 +135,7 @@ test_that("pr curve computation works", {
 })
 
 
-test_that("grouped pr-auc computation works with doc_strata", {
+test_that("grouped pr-auc computation works with doc_groups", {
 
   library(purrr, quietly = TRUE, warn.conflicts = FALSE)
 
@@ -167,11 +167,12 @@ test_that("grouped pr-auc computation works with doc_strata", {
   #   )
   # nolint end
   load(test_path("testdata/grouped_pr_curve_data_w_doc_strata.rds"))
-
+  doc_groups <- dplyr::distinct(gold_hsg, doc_id, hsg)
+  gold <- dplyr::select(gold_hsg, -hsg)
 
   # test whether parallel computation yields the same as sequential computation
   pr_curve_by_hsg_parallel <- compute_pr_curve(
-    gold_hsg, pred, doc_strata = "hsg",
+    gold, pred, doc_groups = doc_groups,
     steps = 15
   )$plot_data |>
     dplyr::arrange(.data$hsg, .data$searchspace_id) |>
@@ -255,7 +256,7 @@ test_that("grouped pr-auc computation works with label_strata", {
   load(test_path("testdata/grouped_pr_curve_data_w_label_strata.rds"))
 
   pr_curve_by_lbl_grp <- compute_pr_curve(gold, pred,
-                                          label_dict = label_dict,
+                                          label_groups = label_dict,
                                           steps = 15)
   # expect 2x(number-of-steps + 1) + 2 = 34 rows in the resulting data.frame
   expect_equal(nrow(pr_curve_by_lbl_grp$plot_data), 36)
@@ -317,13 +318,11 @@ test_that("grouped cutoff works", {
   #    )
   # nolint end
   hsg_mapping <- readRDS(test_path("testdata/random_hsg_mapping.rds"))
-  dnb_gold_standard_w_hsg <- dnb_gold_standard |>
-    dplyr::left_join(hsg_mapping, by = "doc_id")
 
   res <- compute_pr_curve(
-    gold_standard = dnb_gold_standard_w_hsg,
+    gold_standard = dnb_gold_standard,
     predicted = dnb_test_predictions,
-    doc_strata = "hsg",
+    doc_groups = hsg_mapping,
     limit_range = c(1:5),
     steps = 10,
     optimize_cutoff = TRUE
@@ -385,7 +384,7 @@ test_that("Empty Recall in label strata gives singleton-curve", {
     "D", "h", 0.3 # only label from gnd_entity works, not in gold
   )
 
-  label_dict <- tibble::tribble(
+  label_groups <- tibble::tribble(
     ~label_id, ~gnd_entity,
     "a", "pers",
     "b", "pers",
@@ -399,7 +398,7 @@ test_that("Empty Recall in label strata gives singleton-curve", {
   )
 
   res <- compute_pr_curve(
-    gold, pred, label_dict = label_dict, steps = 10, mode = "micro"
+    gold, pred, label_groups = label_groups, steps = 10, mode = "micro"
   )
 
   # expected last row for entity type "location" should be
