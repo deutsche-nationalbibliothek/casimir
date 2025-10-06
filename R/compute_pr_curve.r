@@ -131,7 +131,7 @@ compute_pr_curve <- function(
     # condition on true positives
     true_positives <- dplyr::filter(base_compare, .data$gold & .data$suggested)
 
-    thresholds <- unique(quantile(
+    thresholds <- unique(stats::quantile(
       true_positives[["score"]],
       probs = seq(0, 1, 1 / steps),
       type = 1,  na.rm = TRUE
@@ -151,7 +151,7 @@ compute_pr_curve <- function(
   )
   searchspace <- dplyr::mutate(
     searchspace,
-    searchspace_id = 1:(dplyr::n())
+    searchspace_id = seq_len(dplyr::n())
   )
   thresholds_list <- tibble::deframe(
     dplyr::select(searchspace,

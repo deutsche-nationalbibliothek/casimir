@@ -149,9 +149,11 @@ compute_pr_auc <- function(
 
     if (is.null(thresholds)) {
       # condition on true positives
-      true_positives <- dplyr::filter(base_compare, .data$gold & .data$suggested)
+      true_positives <- dplyr::filter(
+        base_compare, .data$gold & .data$suggested
+      )
 
-      thresholds <- unique(quantile(
+      thresholds <- unique(stats::quantile(
         true_positives[["score"]],
         probs = seq(0, 1, 1 / steps),
         type = 1,  na.rm = TRUE

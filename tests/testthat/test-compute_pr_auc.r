@@ -94,7 +94,7 @@ test_that("applying limit_range works", {
     gold_standard = dnb_gold_standard,
     predicted = dnb_test_predictions,
     limit_range = 1:5,
-    thresholds = seq(0, 1, 1/10)
+    thresholds = seq(0, 1, 1 / 10)
   ))
 
   expect_equal(
@@ -141,7 +141,7 @@ test_that("Zero AUC for singleton-curve in empty label_strata", {
     "D", "h", 0.3 # only label from gnd_entity works, not in gold
   )
 
- label_groups <- tibble::tribble(
+  label_groups <- tibble::tribble(
     ~label_id, ~gnd_entity,
     "a", "pers",
     "b", "pers",
