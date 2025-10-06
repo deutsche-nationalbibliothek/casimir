@@ -46,7 +46,9 @@ test_that("grouping (doc-strata) of set retrieval computation works", {
   pred <- dplyr::bind_rows(pred_001, pred_002)
 
   # expect no error when adding strata
-  expect_silent(casimir:::create_comparison(gold, pred, doc_groups = doc_groups))
+  expect_silent(
+    casimir:::create_comparison(gold, pred, doc_groups = doc_groups)
+  )
   # expect NA in hsg-column of compare, when no doc_strata are defined
   compare_wo_explicit_strata <- casimir:::create_comparison(
     gold, pred, doc_groups = NULL

@@ -11,6 +11,7 @@ compute_pr_curve(
   label_groups = NULL,
   mode = "doc-avg",
   steps = 100,
+  thresholds = NULL,
   limit_range = NA_real_,
   optimize_cutoff = FALSE,
   graded_relevance = FALSE,
@@ -52,6 +53,10 @@ in these circumstances.}
 
 \item{steps}{how many steps to take between c(0,1) as a grid for computing
 the pr-curve}
+
+\item{thresholds}{alternatively to steps, one can manually set, which
+thresholds are used to build the pr_curve. Defaults to \code{steps}-percentiles
+of the score distribution of true positives suggestions}
 
 \item{limit_range}{a vector of limit values to apply on rank-column.
 Defaults to NA, applying no cutoff on label-rank of predictions.}

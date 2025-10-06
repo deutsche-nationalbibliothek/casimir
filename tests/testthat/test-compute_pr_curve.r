@@ -60,7 +60,8 @@ test_that("pr curve computation works", {
       .f = ~dplyr::arrange(
         expect_silent(
           compute_pr_curve(
-            gold, pred, mode = .x, thresholds = thresholds)$plot_data
+            gold, pred, mode = .x, thresholds = thresholds
+          )$plot_data
         ),
         .data$searchspace_id
       )
@@ -344,7 +345,6 @@ test_that("grouped cutoff works", {
     doc_groups = hsg_mapping,
     limit_range = c(1:5),
     steps = 10,
-    # thresholds = seq(0, 1, 1 / 10),
     optimize_cutoff = TRUE
   )
 
