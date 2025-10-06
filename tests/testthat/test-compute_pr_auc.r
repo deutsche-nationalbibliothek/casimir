@@ -1,54 +1,49 @@
 test_that("ci for pr_auc work", {
 
   library(purrr, quietly = TRUE, warn.conflicts = FALSE)
-  set.seed(20)
-  n_docs <- 20
-  n_label <- 26
-  gold_w_hsg <- tibble::tibble(
-    doc_id = LETTERS[1:n_docs],
-    hsg = sample(c("001", "002"), size = n_docs, replace = TRUE)
-  ) |>
-    dplyr::rowwise() |>
-    dplyr::mutate(
-      label_id = list(sample(letters[1:n_label], size = 5, replace = FALSE))
-    ) |>
-    tidyr::unnest(label_id)
+  # this code produces the testdata, but random data replication is
+  # not always reproducible
+  # nolint start
+  # set.seed(20)
+  # n_docs <- 20
+  # n_label <- 26
+  # gold_w_hsg <- tibble::tibble(
+  #   doc_id = LETTERS[1:n_docs],
+  #   hsg = sample(c("001", "002"), size = n_docs, replace = TRUE)
+  # ) |>
+  #   dplyr::rowwise() |>
+  #   dplyr::mutate(
+  #     label_id = list(sample(letters[1:n_label], size = 5, replace = FALSE))
+  #   ) |>
+  #   tidyr::unnest(label_id)
+  #
+  # doc_groups <- dplyr::distinct(
+  #   gold_w_hsg,
+  #   doc_id, hsg
+  # )
+  #
+  # gold <- dplyr::select(gold_w_hsg, -hsg)
+  #
+  # pred <- gold_w_hsg$doc_id |>
+  #   unique() |>
+  #   purrr::map_dfr(
+  #     .f = ~tibble::tibble(
+  #       doc_id = .x,
+  #       label_id = sample(letters[1:n_label], size = n_label, replace = FALSE),
+  #       score = runif(n_label)
+  #     )
+  #   ) |>
+  #   dplyr::group_by(doc_id) |>
+  #   dplyr::mutate(rank = dplyr::min_rank(-.data$score)) |>
+  #   dplyr::ungroup()
+  # nolint end
+  load(test_path("testdata/grouped_pr_auc_data_w_doc_strata.rds"))
 
-  doc_groups <- dplyr::distinct(
-    gold_w_hsg,
-    doc_id, hsg
-  )
-
-  gold <- dplyr::select(gold_w_hsg, -hsg)
-
-  pred <- gold_w_hsg$doc_id |>
-    unique() |>
-    purrr::map_dfr(
-      .f = ~tibble::tibble(
-        doc_id = .x,
-        label_id = sample(letters[1:n_label], size = n_label, replace = FALSE),
-        score = runif(n_label)
-      )
-    ) |>
-    dplyr::group_by(doc_id) |>
-    dplyr::mutate(rank = dplyr::min_rank(-.data$score)) |>
-    dplyr::ungroup()
-
-  # here are frozen results that have been computed for this random input
-  # previously
-  expected_pr_auc <- structure(
-    list(
-      pr_auc = 0.1923077,
-      ci_lower = c(0.1923077),
-      ci_upper = c(0.2173132)
-    ),
-    row.names = c(NA, -1L),
-    class = c("data.frame")
-  )
+  steps <- 15
 
   expect_error(
     compute_pr_auc(
-      gold, pred, steps = 15, mode = "subj-avg",
+      gold, pred, steps = steps, mode = "subj-avg",
       compute_bootstrap_ci = TRUE,
       n_bt = 20L
     )
@@ -58,7 +53,7 @@ test_that("ci for pr_auc work", {
 
   expect_silent(
     compute_pr_auc(
-      gold, pred, doc_groups = doc_groups, steps = 15,
+      gold, pred, doc_groups = doc_groups, steps = steps,
       compute_bootstrap_ci = TRUE,
       n_bt = 20L
     )
@@ -69,7 +64,22 @@ test_that("ci for pr_auc work", {
                            seed = 3426,
                            n_bt = 20L)
 
+  # here are frozen results that have been computed for this random input
+  # previously
+  expected_pr_auc <- structure(
+    list(
+      pr_auc = 0.2448474,
+      ci_lower = c(0.2030150),
+      ci_upper = c(0.2781834)
+    ),
+    row.names = c(NA, -1L),
+    class = c("data.frame")
+  )
 
+  # this test may fail on other architectures where random number generators
+  # work differently
+  skip_on_cran()
+  skip_on_ci()
   expect_equal(pr_auc, expected_pr_auc, tolerance = 10e-5)
 
   detach("package:purrr")
@@ -84,7 +94,7 @@ test_that("applying limit_range works", {
     gold_standard = dnb_gold_standard,
     predicted = dnb_test_predictions,
     limit_range = 1:5,
-    steps = 10
+    thresholds = seq(0, 1, 1/10)
   ))
 
   expect_equal(

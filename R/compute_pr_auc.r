@@ -56,6 +56,7 @@ compute_pr_auc <- function(
   label_groups = NULL,
   mode = "doc-avg",
   steps = 100,
+  thresholds = NULL,
   limit_range = NA_real_,
   compute_bootstrap_ci = FALSE,
   n_bt = 10L,
@@ -108,6 +109,7 @@ compute_pr_auc <- function(
       label_groups = label_groups,
       mode = mode,
       steps = steps,
+      thresholds = thresholds,
       limit_range = limit_range,
       graded_relevance = graded_relevance,
       propensity_scored = propensity_scored,
@@ -145,8 +147,19 @@ compute_pr_auc <- function(
 
     ps_flags <- set_ps_flags(mode, propensity_scored)
 
+    if (is.null(thresholds)) {
+      # condition on true positives
+      true_positives <- dplyr::filter(base_compare, .data$gold & .data$suggested)
+
+      thresholds <- unique(quantile(
+        true_positives[["score"]],
+        probs = seq(0, 1, 1 / steps),
+        type = 1,  na.rm = TRUE
+      ))
+    }
+
     searchspace <- tidyr::expand_grid(
-      thresholds = seq(0, 1, by = 1 / steps),
+      thresholds = thresholds,
       limits = limit_range
     )
 
