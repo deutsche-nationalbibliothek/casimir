@@ -4,6 +4,9 @@
 #'   with cols \emph{"label_id", "doc_id", "score"}
 #' @param steps how many steps to take between c(0,1) as a grid for computing
 #'  the pr-curve
+#' @param thresholds alternatively to steps, one can manually set, which
+#'   thresholds are used to build the pr_curve. Defaults to `steps`-percentiles
+#'   of the score distribution of true positives suggestions
 #' @param limit_range a vector of limit values to apply on rank-column.
 #'   Defaults to NA, applying no cutoff on label-rank of predictions.
 #' @param optimize_cutoff logical. If \code{TRUE} performs a grid search to
@@ -87,6 +90,7 @@ compute_pr_curve <- function(
   label_groups = NULL,
   mode = "doc-avg",
   steps = 100,
+  thresholds = NULL,
   limit_range = NA_real_,
   optimize_cutoff = FALSE,
   graded_relevance = FALSE,
@@ -123,6 +127,17 @@ compute_pr_curve <- function(
     ignore_inconsistencies = ignore_inconsistencies
   )
 
+  if (is.null(thresholds)) {
+    # condition on true positives
+    true_positives <- dplyr::filter(base_compare, .data$gold & .data$suggested)
+
+    thresholds <- unique(quantile(
+      true_positives[["score"]],
+      probs = seq(0, 1, 1 / steps),
+      type = 1,  na.rm = TRUE
+    ))
+  }
+
   if (propensity_scored && !is.null(cost_fp_constant))
     cost_fp_processed <- process_cost_fp(cost_fp_constant, base_compare)
   else
@@ -131,7 +146,7 @@ compute_pr_curve <- function(
   ps_flags <- set_ps_flags(mode, propensity_scored)
 
   searchspace <- tidyr::expand_grid(
-    thresholds = seq(0, 1, by = 1 / steps),
+    thresholds = thresholds,
     limits = limit_range
   )
   searchspace <- dplyr::mutate(

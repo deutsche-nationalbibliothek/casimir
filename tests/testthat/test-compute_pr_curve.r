@@ -29,68 +29,79 @@ test_that("pr curve computation works", {
     "C", "e", 0.2
   )
 
+  comp <- create_comparison(gold, pred)
+
+  thresholds <- unique(quantile(pred$score, probs = seq(0, 1, 0.1), type = 1))
+  # Here is code to "manually" compute the pr curves
+  # nolint start
+  # library(dplyr)
+  # library(purrr)
+  # library(tidyr)
+  #
+  # thresholds |>
+  #   map(.f = casimir:::apply_threshold, base_compare = comp) |>
+  #   map(
+  #     .f = compute_intermediate_results,
+  #     grouping_var = c("label_id", "doc_id")
+  #   ) |>
+  #   map(summarise_intermediate_results) |>
+  #   map(.f = ~filter(.x, metric %in% c("prec", "rec"))) |>
+  #   map(.f = ~select(.x,-support)) |>
+  #   map_dfr(.f = ~pivot_wider(.x, names_from = metric, values_from = value),
+  #           .id = "searchspace_id") |>
+  #   dput()
+  # nolint end
+
+
   res <- list(
     "doc-avg" = "doc-avg", "subj-avg" = "subj-avg", "micro" = "micro"
   ) |>
     purrr::map(
       .f = ~dplyr::arrange(
         expect_silent(
-          compute_pr_curve(gold, pred, mode = .x, steps = 10)$plot_data
-        ), .data$searchspace_id
+          compute_pr_curve(
+            gold, pred, mode = .x, thresholds = thresholds)$plot_data
+        ),
+        .data$searchspace_id
       )
     )
 
   expected <- list()
 
   expected[["doc-avg"]] <- tibble::tribble(
-    ~searchspace_id,     ~prec,              ~rec, ~prec_cummax,     ~mode,
-    0L,                0.0, 0.638888888888889,            0, "doc-avg",
-    1L,               0.5, 0.638888888888889,          0.5, "doc-avg",
-    2L,               0.5, 0.638888888888889,          0.5, "doc-avg",
-    3L, 0.277777777777778, 0.277777777777778,          0.5, "doc-avg",
-    4L,               0.5, 0.277777777777778,          0.5, "doc-avg",
-    5L,               0.5, 0.277777777777778,          0.5, "doc-avg",
-    6L,               0.5, 0.277777777777778,          0.5, "doc-avg",
-    7L,              0.75, 0.277777777777778,         0.75, "doc-avg",
-    8L,                 1, 0.277777777777778,            1, "doc-avg",
-    9L,                 1, 0.277777777777778,            1, "doc-avg",
-    10L,                 1, 0.111111111111111,            1, "doc-avg",
-    11L,                0.0,                 0,            1, "doc-avg",
-    12L,                1.0,                 0,            1, "doc-avg"
+    ~searchspace_id, ~prec,                ~rec, ~prec_cummax, ~mode,
+    0L,               0,    0.638888888888889, 0, "doc-avg",
+    1L,              0.5,   0.638888888888889, 0.5, "doc-avg",
+    2L, 0.277777777777778,   0.277777777777778, 0.5, "doc-avg",
+    3L,              0.5,   0.277777777777778, 0.5, "doc-avg",
+    4L,             0.75,   0.277777777777778, 0.75, "doc-avg",
+    5L,                1,   0.277777777777778, 1, "doc-avg",
+    6L,                1,   0.111111111111111, 1, "doc-avg",
+    7L,                1,   0,                 1, "doc-avg"
   )
 
   expected[["subj-avg"]] <- tibble::tribble(
-    ~searchspace_id,     ~prec,               ~rec, ~prec_cummax,      ~mode,
-    0L,                0.0,  0.633333333333333,            0, "subj-avg",
-    1L,               0.5,  0.633333333333333,          0.5, "subj-avg",
-    2L,               0.5,  0.633333333333333,          0.5, "subj-avg",
-    3L,               0.2,  0.133333333333333,          0.5, "subj-avg",
-    4L, 0.333333333333333,  0.133333333333333,          0.5, "subj-avg",
-    5L, 0.333333333333333,  0.133333333333333,          0.5, "subj-avg",
-    6L, 0.333333333333333,  0.133333333333333,          0.5, "subj-avg",
-    7L,               0.5,  0.133333333333333,          0.5, "subj-avg",
-    8L,                 1,  0.133333333333333,            1, "subj-avg",
-    9L,                 1,  0.133333333333333,            1, "subj-avg",
-    10L,                 1, 0.0666666666666667,            1, "subj-avg",
-    11L,                0.0,                  0,            1, "subj-avg",
-    12L,                1.0,                  0,            1, "subj-avg"
+    ~searchspace_id, ~prec,                ~rec, ~prec_cummax, ~mode,
+    0L,                0,   0.633333333333333, 0, "subj-avg",
+    1L,              0.5,   0.633333333333333, 0.5, "subj-avg",
+    2L,              0.2,   0.133333333333333, 0.5, "subj-avg",
+    3L, 0.333333333333333,   0.133333333333333, 0.5, "subj-avg",
+    4L,              0.5,   0.133333333333333, 0.5, "subj-avg",
+    5L,                1,   0.133333333333333, 1, "subj-avg",
+    6L,                1,   0.0666666666666667, 1, "subj-avg",
+    7L,                1,   0,                 1, "subj-avg"
   )
 
   expected[["micro"]] <- tibble::tribble(
-    ~searchspace_id,     ~prec,              ~rec,      ~prec_cummax,   ~mode,
-    0L,                0.0, 0.555555555555556,                 0, "micro",
-    1L,               0.5, 0.555555555555556,               0.5, "micro",
-    2L,               0.5, 0.555555555555556,               0.5, "micro",
-    3L, 0.285714285714286, 0.222222222222222,               0.5, "micro",
-    4L,               0.5, 0.222222222222222,               0.5, "micro",
-    5L,               0.5, 0.222222222222222,               0.5, "micro",
-    6L,               0.5, 0.222222222222222,               0.5, "micro",
-    7L, 0.666666666666667, 0.222222222222222, 0.666666666666667, "micro",
-    8L,                 1, 0.222222222222222,                 1, "micro",
-    9L,                 1, 0.222222222222222,                 1, "micro",
-    10L,                 1, 0.111111111111111,                 1, "micro",
-    11L,                0.0,                 0,                 1, "micro",
-    12L,                1.0,                 0,                 1, "micro"
+    ~searchspace_id, ~prec,                ~rec, ~prec_cummax, ~mode,
+    0L,                0,   0.555555555555556, 0, "micro",
+    1L,              0.5,   0.555555555555556, 0.5, "micro",
+    2L, 0.285714285714286,   0.222222222222222, 0.5, "micro",
+    3L,              0.5,   0.222222222222222, 0.5, "micro",
+    4L, 0.666666666666667,   0.222222222222222, 0.666666666666667, "micro",
+    5L,                1,   0.222222222222222, 1, "micro",
+    6L,                1,   0.111111111111111, 1, "micro",
+    7L,                1,   0,                 1, "micro"
   )
 
   # expect the actual curve to be as above
@@ -170,10 +181,14 @@ test_that("grouped pr-auc computation works with doc_groups", {
   doc_groups <- dplyr::distinct(gold_hsg, doc_id, hsg)
   gold <- dplyr::select(gold_hsg, -hsg)
 
+  steps <- 15
+  thresholds <- unique(quantile(
+    pred$score, probs = seq(0, 1, 1 / steps), type = 1
+  ))
   # test whether parallel computation yields the same as sequential computation
   pr_curve_by_hsg_parallel <- compute_pr_curve(
     gold, pred, doc_groups = doc_groups,
-    steps = 15
+    thresholds = thresholds
   )$plot_data |>
     dplyr::arrange(.data$hsg, .data$searchspace_id) |>
     dplyr::select("hsg", everything())
@@ -189,7 +204,7 @@ test_that("grouped pr-auc computation works with doc_groups", {
         compute_pr_curve(
           gold_standard = gold_1hsg,
           predicted = pred_1hsg,
-          steps = 15
+          thresholds = thresholds
         )$plot_data
 
       },
@@ -208,7 +223,7 @@ test_that("grouped pr-auc computation works with doc_groups", {
   expected_pr_auc_by_hsg <- structure(
     list(
       hsg = c("001", "002"),
-      pr_auc = c(0.1963002, 0.2019231)
+      pr_auc = c(0.1962930, 0.2476526)
     ),
     row.names = c(NA, -2L),
     class = c("tbl_df", "tbl", "data.frame")
@@ -254,10 +269,13 @@ test_that("grouped pr-auc computation works with label_strata", {
   # )
   # nolint end
   load(test_path("testdata/grouped_pr_curve_data_w_label_strata.rds"))
-
+  steps <- 15
+  thresholds <- unique(quantile(
+    pred$score, probs = seq(0, 1, 1 / steps), type = 1
+  ))
   pr_curve_by_lbl_grp <- compute_pr_curve(gold, pred,
                                           label_groups = label_dict,
-                                          steps = 15)
+                                          thresholds = seq(0, 1, 1 / steps))
   # expect 2x(number-of-steps + 1) + 2 = 34 rows in the resulting data.frame
   expect_equal(nrow(pr_curve_by_lbl_grp$plot_data), 36)
 
@@ -293,13 +311,14 @@ test_that("optimal cutoff works", {
     gold_standard = dnb_gold_standard,
     predicted = dnb_test_predictions,
     limit_range = 1:5,
-    steps = 10,
+    steps = 15,
     optimize_cutoff = TRUE
   ))
 
   expect_equal(
     pr_curve$opt_cutoff$f1_max,
-    0.377329
+    0.381083,
+    tolerance = 1e-6
   )
   detach("package:purrr")
 })
@@ -325,13 +344,16 @@ test_that("grouped cutoff works", {
     doc_groups = hsg_mapping,
     limit_range = c(1:5),
     steps = 10,
+    # thresholds = seq(0, 1, 1 / 10),
     optimize_cutoff = TRUE
   )
 
   expect_equal(
-    res$opt_cutoff$f1_max,
-    c(0.354, 0.344, 0.441),
-    tolerance = 1e-3
+    dplyr::arrange(
+      res$opt_cutoff, hsg
+    )$f1_max,
+    c(0.3710678, 0.3453102, 0.4409370),
+    tolerance = 1e-5
   )
 
   auc <- compute_pr_auc_from_curve(
@@ -340,8 +362,8 @@ test_that("grouped cutoff works", {
 
   expect_equal(
     auc$pr_auc,
-    c(0.272, 0.289, 0.400),
-    tolerance = 1e-3
+    c(0.2792714, 0.2880313, 0.4115362),
+    tolerance = 1e-5
   )
 
   detach("package:purrr")
@@ -404,12 +426,12 @@ test_that("Empty Recall in label strata gives singleton-curve", {
   # expected last row for entity type "location" should be
   last_row_entity_location <- tibble::tribble(
     ~searchspace_id, ~prec, ~rec, ~prec_cummax, ~gnd_entity, ~mode,
-    12, 0.0, 0.0, 0.0, "location", "micro"
+    5, 0.0, 0.0, 0.0, "location", "micro"
   )
 
   expect_equal(
     res$plot_data |>
-      dplyr::filter(gnd_entity == "location", searchspace_id == 12),
+      dplyr::filter(gnd_entity == "location", searchspace_id == 5),
     last_row_entity_location
   )
 
