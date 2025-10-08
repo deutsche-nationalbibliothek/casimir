@@ -248,6 +248,12 @@ compute_set_retrieval_scores <- function(
       by = smry_grouping_var
     )
 
+    results <- dplyr::mutate(
+      results,
+      ci_lower = pmin(ci_lower, value),
+      ci_upper = pmax(ci_upper, value)
+    )
+
     # rearrange cols, so that support is last col
     results <- dplyr::select(results, setdiff(colnames(results), "support"),
                              "support")
