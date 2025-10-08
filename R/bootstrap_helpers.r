@@ -12,7 +12,7 @@
 #' @inheritParams option_params
 #'
 #' @return \code{data.frame} containing \code{n_bt} boot replica of results
-#'   as returned by  compute_intermediate_results summarise_intermediate_results
+#'   as returned by  compute_intermediate_results + summarise_intermediate_results
 #'
 #' @examples
 #'
@@ -116,11 +116,13 @@ helper_f <- function(
   ps_flags = list("intermed" = FALSE, "summarise" = FALSE),
   cost_fp = NULL
 ) {
-  compare_resampled <- dplyr::inner_join(
+  compare_resampled <- collapse::join(
     compare_cpy, sampled_id_list,
-    by = "doc_id",
-    relationship = "many-to-many"
+    on = "doc_id", how = "inner", verbose = 0,
+    multiple = TRUE,
+    validate = "m:m"
   )
+
   intermediate_results_resampled <- compute_intermediate_results(
     compare_resampled,
     grouping_var,
