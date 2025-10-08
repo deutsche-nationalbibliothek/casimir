@@ -248,10 +248,39 @@ compute_set_retrieval_scores <- function(
       by = smry_grouping_var
     )
 
+    # detect values out of CI boundaries
+    skewed_ci <- results |>
+      dplyr::summarise(
+        ci_lower_too_high = sum(.data$value < .data$ci_lower, na.rm = TRUE),
+        ci_upper_too_low = sum(.data$value > .data$ci_upper, na.rm = TRUE)
+      )
+
+    if (skewed_ci[["ci_lower_too_high"]] > 0) {
+      warning(paste(
+        "CI computation produced skewed CI intervals",
+        "with metric value below ci_lower for ",
+        skewed_ci[["ci_lower_too_high"]],
+        "metric results. Extending CI to include metric value.",
+        "This is known to happen for subj-avg metrics with highly skewed",
+        "label distribution."
+      ))
+    }
+
+    if (skewed_ci[["ci_upper_too_low"]] > 0) {
+      warning(paste(
+        "CI computation produced skewed CI intervals",
+        "with metric value above ci_upper for",
+        skewed_ci[["ci_upper_too_low"]],
+        "metric results. Extending CI to include metric value.",
+        "This is known to happen for subj-avg metrics with highly skewed",
+        "label distribution."
+      ))
+    }
+
     results <- dplyr::mutate(
       results,
-      ci_lower = pmin(ci_lower, value),
-      ci_upper = pmax(ci_upper, value)
+      ci_lower = pmin(.data$ci_lower, .data$value),
+      ci_upper = pmax(.data$ci_upper, .data$value)
     )
 
     # rearrange cols, so that support is last col
