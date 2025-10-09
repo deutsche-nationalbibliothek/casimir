@@ -10,7 +10,8 @@ helper_f(
   grouping_var,
   label_distribution = NULL,
   ps_flags = list(intermed = FALSE, summarise = FALSE),
-  cost_fp = NULL
+  cost_fp = NULL,
+  drop_empty_groups = options::opt("drop_empty_groups")
 )
 }
 \arguments{
@@ -25,6 +26,9 @@ helper_f(
 \item{ps_flags}{list as returned by \code{set_ps_flags}}
 
 \item{cost_fp}{numeric > 0}
+
+\item{drop_empty_groups}{Should empty levels of factor variables be droped in grouped set retrieval
+computation? (Defaults to \code{TRUE}, overwritable using option 'casimir.drop_empty_groups' or environment variable 'R_CASIMIR_DROP_EMPTY_GROUPS')}
 }
 \value{
 as \code{summarise_intermediate_results}

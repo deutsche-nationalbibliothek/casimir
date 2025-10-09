@@ -47,6 +47,13 @@ computation, if you can make sure that all columns used for grouping
 \item{envvar: }{R_CASIMIR_CHECK_GROUP_NAMES (evaluated if possible, raw string otherwise)}
 }}
 
+\item{drop_empty_groups}{\describe{
+Should empty levels of factor variables be droped in grouped set retrieval
+computation?\item{default: }{\preformatted{TRUE}}
+\item{option: }{casimir.drop_empty_groups}
+\item{envvar: }{R_CASIMIR_DROP_EMPTY_GROUPS (evaluated if possible, raw string otherwise)}
+}}
+
 }
 }
 

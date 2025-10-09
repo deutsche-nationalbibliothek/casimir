@@ -9,5 +9,8 @@ options::define_options(
   "Perform replacement of dots in grouping columns. Disable for faster
    computation, if you can make sure that all columns used for grouping
    (doc_id, label_id, doc_groups, label_groups) do not contain dots",
-  check_group_names = TRUE
+  check_group_names = TRUE,
+  "Should empty levels of factor variables be droped in grouped set retrieval
+  computation?",
+  drop_empty_groups = TRUE
 )

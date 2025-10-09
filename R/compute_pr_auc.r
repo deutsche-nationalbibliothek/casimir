@@ -66,6 +66,7 @@ compute_pr_auc <- function(
     propensity_scored = FALSE,
     label_distribution = NULL,
     cost_fp_constant = NULL,
+    drop_empty_groups = options::opt("drop_empty_groups"),
     ignore_inconsistencies = options::opt("ignore_inconsistencies"),
     verbose = options::opt("verbose"),
     progress = options::opt("progress")) {
@@ -114,6 +115,7 @@ compute_pr_auc <- function(
       propensity_scored = propensity_scored,
       label_distribution = label_distribution,
       cost_fp_constant = cost_fp_constant,
+      drop_empty_groups = drop_empty_groups,
       ignore_inconsistencies = ignore_inconsistencies,
       verbose = verbose,
       progress = progress
@@ -125,7 +127,11 @@ compute_pr_auc <- function(
       set_grouping_var(mode, doc_groups, label_groups),
       c("doc_id", "label_id", "searchspace_id")
     )
-    pr_auc <- compute_pr_auc_from_curve(pr_curve, remaining_groupvars)
+    pr_auc <- compute_pr_auc_from_curve(
+      pr_curve,
+      remaining_groupvars,
+      drop_empty_groups = drop_empty_groups
+    )
   } else {
     grouping_var <- set_grouping_var(mode, doc_groups, label_groups)
 
@@ -168,7 +174,8 @@ compute_pr_auc <- function(
     get_intermed_res_per_searchspace_id <- function(threshold, # nolint
                                                     limit,
                                                     base_compare,
-                                                    grouping_var) {
+                                                    grouping_var,
+                                                    drop_empty_groups) {
       compare_all_thrsld <- apply_threshold(
         base_compare = base_compare,
         threshold = threshold,
@@ -178,7 +185,8 @@ compute_pr_auc <- function(
         gold_vs_pred = compare_all_thrsld,
         grouping_var = grouping_var,
         propensity_scored = ps_flags$intermed,
-        cost_fp = cost_fp_processed
+        cost_fp = cost_fp_processed,
+        drop_empty_groups = drop_empty_groups
       )
 
       res$results_table
@@ -197,6 +205,7 @@ compute_pr_auc <- function(
       .id = "searchspace_id",
       base_compare = base_compare,
       grouping_var = grouping_var,
+      drop_empty_groups = drop_empty_groups,
       .progress = progress
     )
     grouping_var_w_thrsld <- c("searchspace_id", grouping_var)
@@ -230,7 +239,8 @@ compute_pr_auc <- function(
     # stratification variables
     boot_results_grpd <- dplyr::group_by(
       boot_results,
-      !!!rlang::syms(smry_grouping_var)
+      !!!rlang::syms(smry_grouping_var),
+      .drop = drop_empty_groups
     )
     boot_ci <- dplyr::summarise(
       boot_results_grpd,

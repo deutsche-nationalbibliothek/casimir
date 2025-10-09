@@ -43,6 +43,17 @@ create_comparison <- function(
   stopifnot(all(c("label_id", "doc_id") %in% colnames(gold_standard)))
   stopifnot(all(c("label_id", "doc_id") %in% colnames(predicted)))
 
+  predicted <- check_id_vars(predicted)
+  gold_standard <- check_id_vars(gold_standard)
+  if (!is.null(doc_groups)) {
+    doc_groups <- check_id_vars(doc_groups)
+  }
+  if (!is.null(label_groups)) {
+    label_groups <- check_id_vars(label_groups)
+  }
+
+
+
   if (graded_relevance) {
     predicted <- check_repair_relevance_pred(predicted)
   }

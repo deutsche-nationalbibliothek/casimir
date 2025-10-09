@@ -4,6 +4,7 @@
 #'   a column \emph{"score"} is expected
 #' @param grouping_var character vector of variables that must be present in
 #'  base_compare
+#' @inheritParams option_params
 #'
 #' @return a \code{data.frame} with cols \emph{"dcg", "idcg", "ndcg", "lrap"}
 #'
@@ -40,19 +41,28 @@
 #' )
 compute_intermediate_results_rr <- function( # nolint styler: off
     gold_vs_pred,
-    grouping_var) {
+    grouping_var,
+    drop_empty_groups = options::opt("drop_empty_groups")) {
   stopifnot(all(c("doc_id", "score", "gold") %in% colnames(gold_vs_pred)))
 
+  my_rep_len <- function(x, length.out, empty_value) {
+    if (is.na(length.out)) {
+      empty_value
+    } else {
+      base::rep_len(x, length.out)
+    }
+  }
+
   gold_vs_pred |>
-    dplyr::group_by(!!!grouping_var) |>
+    dplyr::group_by(!!!grouping_var, .drop = drop_empty_groups) |>
     dplyr::arrange(dplyr::desc(score)) |>
     dplyr::mutate(n_gold = sum(gold), n_pred = sum(suggested)) |>
     dplyr::mutate(
       discount = log2(seq_len(dplyr::n()) + 1),
       gain = gold & suggested,
       ideal = c(
-        rep_len(1, n_gold[1]),
-        rep_len(0, dplyr::n() - n_gold[1])
+        my_rep_len(1, n_gold[1], NA_integer_),
+        my_rep_len(0, dplyr::n() - n_gold[1], integer(0))
       ),
       score_tp = dplyr::if_else(gold & suggested, score, NA_real_),
       L = rank(-score_tp, ties.method = "max"),

@@ -101,6 +101,7 @@ compute_pr_curve <- function(
     propensity_scored = FALSE,
     label_distribution = NULL,
     cost_fp_constant = NULL,
+    drop_empty_groups = options::opt("drop_empty_groups"),
     ignore_inconsistencies = options::opt("ignore_inconsistencies"),
     verbose = options::opt("verbose"),
     progress = options::opt("progress")) {
@@ -165,8 +166,8 @@ compute_pr_curve <- function(
     )
   )
 
-  get_results_per_searchspace_id <- function(
-      threshold, limit, base_compare, grouping_var) {
+  get_results_per_searchspace_id <- function(threshold, limit, base_compare,
+                                             grouping_var, drop_empty_groups) {
     compare_thresholded <- apply_threshold(
       threshold = threshold,
       limit = limit,
@@ -176,7 +177,8 @@ compute_pr_curve <- function(
       gold_vs_pred = compare_thresholded,
       grouping_var = grouping_var,
       propensity_scored = ps_flags$intermed,
-      cost_fp = cost_fp_processed
+      cost_fp = cost_fp_processed,
+      drop_empty_groups = drop_empty_groups
     )
 
     summarise_intermediate_results(
@@ -199,6 +201,7 @@ compute_pr_curve <- function(
     .progress = progress,
     base_compare = base_compare,
     grouping_var = grouping_var,
+    drop_empty_groups = drop_empty_groups,
     .options = furrr::furrr_options(seed = 43544)
   )
 

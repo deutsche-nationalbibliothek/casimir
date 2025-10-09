@@ -46,21 +46,17 @@
 #'
 #' results <- compute_ranked_retrieval_scores(
 #'   gold,
-#'   pred,
-#'   compute_bootstrap_ci = FALSE
+#'   pred
 #' )
 #'
 compute_ranked_retrieval_scores <- function( # nolint styler: off
     gold_standard,
     predicted,
     doc_groups = NULL,
-    compute_bootstrap_ci = FALSE,
-    n_bt = 10L,
-    seed = NULL,
+    drop_empty_groups = options::opt("drop_empty_groups"),
     progress = options::opt("progress")) {
   stopifnot(all(c("label_id", "doc_id") %in% colnames(gold_standard)))
   stopifnot(all(c("label_id", "doc_id", "score") %in% colnames(predicted)))
-  stopifnot(is.logical(compute_bootstrap_ci))
 
   gold_vs_pred <- create_comparison(gold_standard, predicted,
     doc_groups = doc_groups
@@ -69,12 +65,15 @@ compute_ranked_retrieval_scores <- function( # nolint styler: off
   grouping_var <- rlang::syms(colnames(doc_groups))
   doc_strata <- setdiff(colnames(doc_groups), "doc_id")
 
-  iterm <- compute_intermediate_results_rr(
-    gold_vs_pred, grouping_var
+  intermed <- compute_intermediate_results_rr(
+    # note: usually adding drop_empty_groups = TRUE here is false
+    # e.g. this would show empty subject groups for all documents
+    gold_vs_pred, grouping_var,
+    drop_empty_groups = TRUE
   )
 
-  iterm |>
-    dplyr::group_by(!!!rlang::syms(c(doc_strata))) |>
+  intermed |>
+    dplyr::group_by(!!!rlang::syms(c(doc_strata)), .drop = drop_empty_groups) |>
     dplyr::summarise(
       support = dplyr::n(),
       mode = "doc-avg",

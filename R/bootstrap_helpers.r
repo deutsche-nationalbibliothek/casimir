@@ -58,6 +58,7 @@ generate_replicate_results <- function(
     ps_flags = list("intermed" = FALSE, "summarise" = FALSE),
     label_distribution = NULL,
     cost_fp = NULL,
+    drop_empty_groups = options::opt("drop_empty_groups"),
     progress = options::opt("progress")) {
   stopifnot(is.data.frame(base_compare))
   stopifnot(is.integer(n_bt))
@@ -92,7 +93,8 @@ generate_replicate_results <- function(
     ps_flags = ps_flags,
     label_distribution = label_distribution,
     cost_fp = cost_fp,
-    grouping_var = grouping_var
+    grouping_var = grouping_var,
+    drop_empty_groups = drop_empty_groups
   )
 
   boot_results
@@ -106,6 +108,7 @@ generate_replicate_results <- function(
 #' @param ps_flags list as returned by `set_ps_flags`
 #' @param cost_fp numeric > 0
 #' @param label_distribution as in compute_set_retrieval_scores
+#' @inheritParams option_params
 #'
 #' @return as \code{summarise_intermediate_results}
 helper_f <- function(
@@ -114,7 +117,8 @@ helper_f <- function(
     grouping_var,
     label_distribution = NULL,
     ps_flags = list("intermed" = FALSE, "summarise" = FALSE),
-    cost_fp = NULL) {
+    cost_fp = NULL,
+    drop_empty_groups = options::opt("drop_empty_groups")) {
   compare_resampled <- collapse::join(
     compare_cpy, sampled_id_list,
     on = "doc_id", how = "inner", verbose = 0,
@@ -126,7 +130,8 @@ helper_f <- function(
     compare_resampled,
     grouping_var,
     propensity_scored = ps_flags$intermed,
-    cost_fp = cost_fp
+    cost_fp = cost_fp,
+    drop_empty_groups = drop_empty_groups
   )
   summarise_intermediate_results(
     intermediate_results_resampled,
