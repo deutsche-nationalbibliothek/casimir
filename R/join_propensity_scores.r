@@ -12,19 +12,19 @@
 #' library(casimir)
 #'
 #' gold <- tibble::tribble(
-#'     ~doc_id, ~label_id,
-#'     "A", "a",
-#'     "A", "b",
-#'     "A", "c",
-#'     "B", "a",
-#'     "B", "d",
-#'     "C", "a",
-#'     "C", "b",
-#'     "C", "d",
-#'     "C", "f"
+#'   ~doc_id, ~label_id,
+#'   "A", "a",
+#'   "A", "b",
+#'   "A", "c",
+#'   "B", "a",
+#'   "B", "d",
+#'   "C", "a",
+#'   "C", "b",
+#'   "C", "d",
+#'   "C", "f"
 #' )
 #'
-#' pred<- tibble::tribble(
+#' pred <- tibble::tribble(
 #'   ~doc_id, ~label_id,
 #'   "A", "a",
 #'   "A", "d",
@@ -51,32 +51,30 @@
 #'   input_data = comp,
 #'   label_weights = label_weights
 #' )
-
 join_propensity_scores <- function(
-  input_data,
-  label_weights
-) {
-
-  rlang::try_fetch({
-    compare <- collapse::join(
-      x = input_data,
-      y = label_weights,
-      on = "label_id",
-      how = "left",
-      validate = "m:1",
-      # expect every record in x to be matched
-      require =  list(x = 1, fail = "error"),
-      verbose = 0
-    ) # i.e. every label in gold_vs_pred must have
-    # exactly one weight, but the label_weights
-    # may contain more labels than compare
-  },
-  error = function(cnd) {
-    rlang::abort(
-      "Label distribution does not match input data.",
-      parent = cnd
-    )
-  }
+    input_data,
+    label_weights) {
+  rlang::try_fetch(
+    {
+      compare <- collapse::join(
+        x = input_data,
+        y = label_weights,
+        on = "label_id",
+        how = "left",
+        validate = "m:1",
+        # expect every record in x to be matched
+        require = list(x = 1, fail = "error"),
+        verbose = 0
+      ) # i.e. every label in gold_vs_pred must have
+      # exactly one weight, but the label_weights
+      # may contain more labels than compare
+    },
+    error = function(cnd) {
+      rlang::abort(
+        "Label distribution does not match input data.",
+        parent = cnd
+      )
+    }
   )
 
   compare
@@ -85,10 +83,8 @@ join_propensity_scores <- function(
 #' @describeIn join_propensity_scores variant with dplyr based
 #' internals rather then collapse internals
 join_propensity_scores_dplyr <- function(
-  input_data,
-  label_weights
-) {
-
+    input_data,
+    label_weights) {
   compare <- dplyr::inner_join(
     x = input_data,
     y = label_weights,

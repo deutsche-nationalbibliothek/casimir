@@ -6,6 +6,7 @@
 #'  gold_vs_pred (dplyr version requires rlang symbols)
 #' @inheritParams compute_set_retrieval_scores
 #' @param cost_fp numeric > 0, default is NULL
+#' @inheritParams option_params
 #'
 #' @return data.frame with cols "n_gold", "n_suggested", "tp", "fp", "fn",
 #'  "prec", "rec", "f1"
@@ -15,19 +16,19 @@
 #' @examples
 #'
 #' gold <- tibble::tribble(
-#'     ~doc_id, ~label_id,
-#'     "A", "a",
-#'     "A", "b",
-#'     "A", "c",
-#'     "B", "a",
-#'     "B", "d",
-#'     "C", "a",
-#'     "C", "b",
-#'     "C", "d",
-#'     "C", "f"
+#'   ~doc_id, ~label_id,
+#'   "A", "a",
+#'   "A", "b",
+#'   "A", "c",
+#'   "B", "a",
+#'   "B", "d",
+#'   "C", "a",
+#'   "C", "b",
+#'   "C", "d",
+#'   "C", "f"
 #' )
 #'
-#' pred<- tibble::tribble(
+#' pred <- tibble::tribble(
 #'   ~doc_id, ~label_id,
 #'   "A", "a",
 #'   "A", "d",
@@ -44,18 +45,20 @@ compute_intermediate_results <- function(
     gold_vs_pred,
     grouping_var,
     propensity_scored = FALSE,
-    cost_fp = NULL) {
-
+    cost_fp = NULL,
+    check_group_names = options::opt("check_group_names")) {
   stopifnot(all(c("suggested", "gold") %in% colnames(gold_vs_pred)))
 
   stopifnot(!is.null(grouping_var))
   # check that no levels of the grouping variables contain dots
-  for (var in grouping_var) {
-    n_dots <- sum(
-      stringr::str_detect(gold_vs_pred[[var]], pattern = "\\."), na.rm = TRUE
-    )
-    if (n_dots > 0)
-      stop("grouping variable must not contain levels that contain dots")
+  if (check_group_names) {
+    old_grouping_columns <- collapse::fselect(gold_vs_pred, grouping_var)
+    seperator <- "__SEP__4928873"
+    for (var in grouping_var) {
+      gold_vs_pred[[var]] <- stringr::str_replace_all(
+        gold_vs_pred[[var]], "\\.", seperator
+      )
+    }
   }
 
   g <- collapse::GRP(gold_vs_pred, grouping_var)
@@ -71,9 +74,7 @@ compute_intermediate_results <- function(
     stopifnot("label_weight" %in% colnames(gold_vs_pred))
 
     gold_vs_pred_smry <- find_ps_rprec_deno(gold_vs_pred, grouping_var, cost_fp)
-
   } else {
-
     rowwise_trans <- collapse::fcompute(
       .data = gold_vs_pred,
       n_gold = gold,
@@ -90,21 +91,23 @@ compute_intermediate_results <- function(
       rprec_deno = pmin(n_gold + delta_relevance, n_suggested),
       grp_names = row.names(gold_vs_pred_smry)
     )
-
   }
 
   gold_vs_pred_smry <- collapse::ftransform(
     .data = gold_vs_pred_smry,
     prec = ifelse(n_suggested == 0,
-                  NA_real_,
-                  (tp + delta_relevance) / (tp + fp)),
+      NA_real_,
+      (tp + delta_relevance) / (tp + fp)
+    ),
     # compute rprecision as in Manning etal.
     rprec = ifelse(pmin(n_gold, n_suggested) == 0,
-                   NA_real_,
-                   (tp + delta_relevance) / rprec_deno),
+      NA_real_,
+      (tp + delta_relevance) / rprec_deno
+    ),
     rec = ifelse(n_gold == 0,
-                 NA_real_,
-                 (tp + delta_relevance) / (tp + fn + delta_relevance)),
+      NA_real_,
+      (tp + delta_relevance) / (tp + fn + delta_relevance)
+    ),
     # NA-Handling for F1:
     # return NA if both prec and rec are NA
     # return 0 if only one of them is NA
@@ -113,7 +116,6 @@ compute_intermediate_results <- function(
       NA_real_,
       2 * (tp + delta_relevance) / (2 * tp + fp + fn + delta_relevance)
     )
-
   )
 
   gold_vs_pred_smry <- tidyr::separate(
@@ -125,13 +127,32 @@ compute_intermediate_results <- function(
   )
 
   # restore the factor structure of the original grouping_var
-  for (var in grouping_var) {
-    if (is.factor(gold_vs_pred[[var]])) {
-      gold_vs_pred_smry[[var]] <- factor(
-        x = gold_vs_pred_smry[[var]],
-        levels = levels(gold_vs_pred[[var]])
+  restore_factor_levels <- function(df, source_df, var) {
+    if (is.factor(source_df[[var]])) {
+      df[[var]] <- factor(
+        x = df[[var]],
+        levels = levels(source_df[[var]])
       )
+    }
+    df
+  }
 
+  for (var in grouping_var) {
+    if (check_group_names) {
+      gold_vs_pred_smry[[var]] <- stringr::str_replace_all(
+        gold_vs_pred_smry[[var]], seperator, "\\."
+      )
+      gold_vs_pred_smry <- restore_factor_levels(
+        gold_vs_pred_smry,
+        source_df = old_grouping_columns,
+        var = var
+      )
+    } else {
+      gold_vs_pred_smry <- restore_factor_levels(
+        gold_vs_pred_smry,
+        source_df = gold_vs_pred,
+        var = var
+      )
     }
   }
 
@@ -147,13 +168,11 @@ compute_intermediate_results <- function(
 
 #' @describeIn compute_intermediate_results variant with dplyr based
 #' internals rather then collapse internals
-compute_intermediate_results_dplyr <- function( # nolint
-  gold_vs_pred,
-  grouping_var,
-  propensity_scored = FALSE,
-  cost_fp = NULL
-) {
-
+compute_intermediate_results_dplyr <- function( # nolint styler: off
+    gold_vs_pred,
+    grouping_var,
+    propensity_scored = FALSE,
+    cost_fp = NULL) {
   stopifnot(all(c("suggested", "gold") %in% colnames(gold_vs_pred)))
 
   if (!("relevance") %in% colnames(gold_vs_pred)) {
@@ -171,7 +190,6 @@ compute_intermediate_results_dplyr <- function( # nolint
       grouping_var,
       cost_fp
     )
-
   } else {
     gold_vs_pred_smry <- dplyr::summarise(
       dplyr::group_by(gold_vs_pred, !!!grouping_var),
@@ -194,12 +212,14 @@ compute_intermediate_results_dplyr <- function( # nolint
   gold_vs_pred_smry <- dplyr::mutate(
     gold_vs_pred_smry,
     prec = ifelse(.data$n_suggested == 0,
-                  NA_real_,
-                  (.data$tp + .data$delta_relevance) / (.data$tp + .data$fp)),
+      NA_real_,
+      (.data$tp + .data$delta_relevance) / (.data$tp + .data$fp)
+    ),
     rec = ifelse(.data$n_gold == 0,
-                 NA_real_,
-                 (.data$tp + .data$delta_relevance) /
-                   (.data$tp + .data$fn + .data$delta_relevance)),
+      NA_real_,
+      (.data$tp + .data$delta_relevance) /
+        (.data$tp + .data$fn + .data$delta_relevance)
+    ),
     # NA-Handling for F1:
     # return NA if both prec and rec are NA
     # return 0 if only one of them is NA
@@ -215,8 +235,9 @@ compute_intermediate_results_dplyr <- function( # nolint
   gold_vs_pred_smry <- dplyr::mutate(
     gold_vs_pred_smry,
     rprec = ifelse(.data$rprec_deno == 0,
-                   NA_real_,
-                   (.data$tp + .data$delta_relevance) / .data$rprec_deno),
+      NA_real_,
+      (.data$tp + .data$delta_relevance) / .data$rprec_deno
+    ),
     .before = "rec"
   )
 

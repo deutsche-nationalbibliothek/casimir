@@ -1,4 +1,3 @@
-
 test_that("compute_set_retrieval_scores works", {
   library(purrr, quietly = TRUE, warn.conflicts = FALSE)
 
@@ -66,9 +65,10 @@ test_that("compute_set_retrieval_scores works", {
   # check that results are correct across all three aggregation modes
   res <- purrr::imap(
     .x = expected_results,
-    .f = ~expect_equal(
+    .f = ~ expect_equal(
       object = compute_set_retrieval_scores_dplyr(
-        gold, pred, mode = .y,
+        gold, pred,
+        mode = .y,
         ignore_inconsistencies = TRUE
       ),
       expected = .x
@@ -77,9 +77,10 @@ test_that("compute_set_retrieval_scores works", {
   # results with collapse internals work
   res_collapse <- purrr::imap(
     .x = expected_results,
-    .f = ~expect_equal(
+    .f = ~ expect_equal(
       object = compute_set_retrieval_scores(
-        gold, pred, mode = .y,
+        gold, pred,
+        mode = .y,
         ignore_inconsistencies = TRUE
       ),
       expected = .x
@@ -103,10 +104,11 @@ test_that("compute_set_retrieval_scores works", {
 
   res_across_config <- purrr::pmap(
     configuration,
-    .f = function(
-      .mode, .compute_bootstrap_ci, .graded_relevance, .propensity_scored,
-      .cost_fp_constant
-    ) {
+    .f = function(.mode,
+                  .compute_bootstrap_ci,
+                  .graded_relevance,
+                  .propensity_scored,
+                  .cost_fp_constant) {
       expect_silent(
         object = compute_set_retrieval_scores_dplyr(
           gold,
@@ -128,10 +130,8 @@ test_that("compute_set_retrieval_scores works", {
   # test the same for collapse version
   res_across_config_collapse <- purrr::pmap(
     configuration,
-    .f = function(
-      .mode, .compute_bootstrap_ci, .graded_relevance,
-      .propensity_scored, .cost_fp_constant
-    ) {
+    .f = function(.mode, .compute_bootstrap_ci, .graded_relevance,
+                  .propensity_scored, .cost_fp_constant) {
       expect_silent(
         object = compute_set_retrieval_scores(
           gold,
@@ -159,7 +159,6 @@ test_that("compute_set_retrieval_scores works", {
 })
 
 test_that("f1 scores handles missings expectedly for micro-avg", {
-
   # test if f1-micro-average still gives 0, if one of the
   # constituents is missing
   # label a: 1 gold, 0 pred --> prec = NA, rec = 0, f1 = 0
@@ -197,14 +196,11 @@ test_that("f1 scores handles missings expectedly for micro-avg", {
   expect_equal(
     res_dplyr, expected_micro
   )
-
-
 })
 
 test_that("graded relevance metrics are computed correctly", {
   # reference implementation adapted from markus' code
-  reference_graded_relevance <-  function(gold_standard, predicted) {
-
+  reference_graded_relevance <- function(gold_standard, predicted) {
     comp <- create_comparison(
       gold_standard,
       dplyr::filter(predicted, !is.na(relevance)),
@@ -236,7 +232,6 @@ test_that("graded relevance metrics are computed correctly", {
         GP = mean(GP, na.rm = TRUE),
         GR = mean(GR, na.rm = TRUE)
       )
-
   }
 
 
@@ -283,7 +278,7 @@ test_that("graded relevance metrics are computed correctly", {
     mode = "doc-avg"
   ) |>
     # prefix all column names by "binary_"
-    dplyr::rename_with(~paste0("binary_", .x))
+    dplyr::rename_with(~ paste0("binary_", .x))
 
   graded_relevance <- compute_set_retrieval_scores(
     gold,
@@ -292,7 +287,7 @@ test_that("graded relevance metrics are computed correctly", {
     mode = "doc-avg"
   ) |>
     # prefix all column names by "graded_"
-    dplyr::rename_with(~paste0("graded_", .x))
+    dplyr::rename_with(~ paste0("graded_", .x))
 
   n_monotonicity_faults <- dplyr::bind_cols(
     binary_relevance, graded_relevance
@@ -325,9 +320,11 @@ test_that("graded relevance metrics are computed correctly", {
     dplyr::pull(value)
 
   expect_equal(reference_res$GP, casimir_gp,
-               info = "results should match reference implementation")
+    info = "results should match reference implementation"
+  )
   expect_equal(reference_res$GR, casimir_gr,
-               info = "results should match reference implementation")
+    info = "results should match reference implementation"
+  )
 
   # expect a warning when inconsitent data is passed
   inconsistent_pred_w_relevance <- tibble::tribble(
@@ -400,11 +397,9 @@ test_that("graded relevance metrics are computed correctly", {
       "but gold_standard = FALSE."
     )
   )
-
 })
 
 test_that("propensity scores works", {
-
   # some dummy results
   gold <- tibble::tribble(
     ~doc_id, ~label_id,
@@ -495,7 +490,7 @@ test_that("propensity scores works", {
   expected_results <- list()
   expected_results[["doc-avg"]] <- tibble::tribble(
     ~metric, ~mode, ~value, ~support,
-    "f1", "doc-avg",  0.2782352, 3L,
+    "f1", "doc-avg", 0.2782352, 3L,
     "prec", "doc-avg", 0.403974, 3L,
     "rec", "doc-avg", 0.250505, 3L,
     "rprec", "doc-avg", 0.399360, 3L
@@ -507,7 +502,7 @@ test_that("propensity scores works", {
     "f1", "subj-avg", (1.085846 * 0.8 + 7.831511 * 0.5) / sum(1.085846 + 1.304366 + 2.072008 + 9.220291 + 9.220291 + 7.831511), 6L,
     "prec", "subj-avg", (1.085846 * 1.0 + 7.831511 * 1 / 3) / sum(1.085846 + 2.072008 + 9.220291 + 9.220291 + 7.831511), 5L,
     "rec", "subj-avg", (1.085846 * 2 / 3 + 7.831511 * 1.0) / sum(1.085846 + 1.304366 + 2.072008 + 9.220291 + 7.831511), 5L,
-    "rprec", "subj-avg", (1.085846 * 1.0 + 7.831511 * 1.0) / sum(1.085846  + 2.072008 + 9.220291 + 7.831511), 4L
+    "rprec", "subj-avg", (1.085846 * 1.0 + 7.831511 * 1.0) / sum(1.085846 + 2.072008 + 9.220291 + 7.831511), 4L
     # nolint end
   )
 
@@ -521,9 +516,10 @@ test_that("propensity scores works", {
 
   res_collapse <- purrr::imap(
     .x = expected_results,
-    .f = ~expect_equal(
+    .f = ~ expect_equal(
       object = compute_set_retrieval_scores(
-        gold, pred, mode = .y, propensity_scored = TRUE,
+        gold, pred,
+        mode = .y, propensity_scored = TRUE,
         label_distribution = label_distribution,
         cost_fp_constant = "mean"
       ),
@@ -534,9 +530,10 @@ test_that("propensity scores works", {
 
   res_dplyr <- purrr::imap(
     .x = expected_results,
-    .f = ~expect_equal(
+    .f = ~ expect_equal(
       object = compute_set_retrieval_scores_dplyr(
-        gold, pred, mode = .y, propensity_scored = TRUE,
+        gold, pred,
+        mode = .y, propensity_scored = TRUE,
         label_distribution = label_distribution,
         cost_fp_constant = "mean"
       ),
@@ -544,12 +541,10 @@ test_that("propensity scores works", {
       tolerance = 1e-5
     )
   )
-
 })
 
 
 test_that("altering cost_fp works", {
-
   test_cost_fp <- function(cost_fp) {
     compute_set_retrieval_scores(
       gold = dnb_gold_standard,
@@ -563,17 +558,18 @@ test_that("altering cost_fp works", {
 
   res <- c("mean", "max", "min") |>
     purrr::map(
-      .f = ~expect_silent(
+      .f = ~ expect_silent(
         test_cost_fp(.x)
       )
     )
-
+  # nolint start styler: off
   if (all(res[[1]] == res[[2]]) ||
-      all(res[[1]] == res[[3]]) ||
-      all(res[[2]] == res[[3]])
+        all(res[[1]] == res[[3]]) ||
+        all(res[[2]] == res[[3]])
   ) {
     stop("altering cost_fp_constant doesn't change the results")
   }
+  # nolint end styler on
 
 
   expect_error(
@@ -581,7 +577,6 @@ test_that("altering cost_fp works", {
     "cost_fp_constant must be a numeric value > 0 or one of
            'max', 'min', 'mean'; not cost_fp_constant = foo"
   )
-
 })
 
 
@@ -589,7 +584,6 @@ test_that(paste(
   "compute_set_retrieval_scores with propensity_scores",
   "is equivalent to building blocks"
 ), {
-
   res_wrapped <- compute_set_retrieval_scores(
     gold = dnb_gold_standard,
     pred = dnb_test_predictions,
@@ -618,14 +612,12 @@ test_that(paste(
     res,
     dplyr::select(res_wrapped, -"mode")
   )
-
 })
 
 test_that(paste(
   "compute_set_retrieval_scores with graded relevance is",
   "equivalent to building blocks"
 ), {
-
   gold <- tibble::tribble(
     ~doc_id, ~label_id,
     "A", "a",

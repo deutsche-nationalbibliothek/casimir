@@ -20,16 +20,16 @@
 #' library(casimir)
 #'
 #' gold <- tibble::tribble(
-#' ~doc_id, ~label_id,
-#' "A", "a",
-#' "A", "b",
-#' "A", "c",
-#' "B", "a",
-#' "B", "d",
-#' "C", "a",
-#' "C", "b",
-#' "C", "d",
-#' "C", "f"
+#'   ~doc_id, ~label_id,
+#'   "A", "a",
+#'   "A", "b",
+#'   "A", "c",
+#'   "B", "a",
+#'   "B", "d",
+#'   "C", "a",
+#'   "C", "b",
+#'   "C", "d",
+#'   "C", "f"
 #' )
 #'
 #' pred <- tibble::tribble(
@@ -57,21 +57,24 @@
 #'
 #'
 #' # note that pr-curves take the cummax(prec), not the precision
-#' ggplot(pr_curve$plot_data,   aes(x = rec, y = prec_cummax)) +
-#'   geom_point(data = pr_curve$opt_cutoff,
-#'              aes(x = rec, y = prec_cummax),
-#'              color = "red",
-#'              shape = "star"
+#' ggplot(pr_curve$plot_data, aes(x = rec, y = prec_cummax)) +
+#'   geom_point(
+#'     data = pr_curve$opt_cutoff,
+#'     aes(x = rec, y = prec_cummax),
+#'     color = "red",
+#'     shape = "star"
 #'   ) +
-#'   geom_text(data = pr_curve$opt_cutoff,
-#'             aes(x = rec + 0.2, y = prec_cummax,
-#'             label = paste("f1_opt =", round(f1_max,3))),
-#'             color = "red"
+#'   geom_text(
+#'     data = pr_curve$opt_cutoff,
+#'     aes(
+#'       x = rec + 0.2, y = prec_cummax,
+#'       label = paste("f1_opt =", round(f1_max, 3))
+#'     ),
+#'     color = "red"
 #'   ) +
 #'   geom_path() +
-#'   coord_cartesian(xlim = c(0,1), ylim = c(0,1))
+#'   coord_cartesian(xlim = c(0, 1), ylim = c(0, 1))
 compute_pr_auc_from_curve <- function(pr_curve_data, grouping_vars = NULL) {
-
   if (!is.data.frame(pr_curve_data) && !is.null(pr_curve_data$plot_data)) {
     plot_data <- pr_curve_data$plot_data
   } else {
@@ -83,14 +86,15 @@ compute_pr_auc_from_curve <- function(pr_curve_data, grouping_vars = NULL) {
   )
   stopifnot(all(grouping_vars %in% colnames(plot_data)))
 
-  if (!is.null(grouping_vars))
+  if (!is.null(grouping_vars)) {
     plot_data_grpd <- dplyr::group_by(
       plot_data,
       !!!rlang::syms(c(grouping_vars)),
       .add = TRUE
     )
-  else
+  } else {
     plot_data_grpd <- plot_data
+  }
 
   # sort the data by recall
   plot_data_grpd <- dplyr::arrange(
@@ -107,7 +111,8 @@ compute_pr_auc_from_curve <- function(pr_curve_data, grouping_vars = NULL) {
   )
   stopifnot(
     all(
-      utils::head(test_monotonicity[["increment_postive"]], -1), na.rm = TRUE
+      utils::head(test_monotonicity[["increment_postive"]], -1),
+      na.rm = TRUE
     )
   )
 
@@ -125,5 +130,4 @@ compute_pr_auc_from_curve <- function(pr_curve_data, grouping_vars = NULL) {
     prepare_integral,
     pr_auc = sum(.data$integrand, na.rm = TRUE)
   )
-
 }

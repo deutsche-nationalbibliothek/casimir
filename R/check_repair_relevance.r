@@ -6,10 +6,8 @@
 #'
 #' @return comparison matrix compatible with compute_intermediate_results
 check_repair_relevance_compare <- function(
-  gold_vs_pred,
-  ignore_inconsistencies = options::opt("ignore_inconsistencies")
-) {
-
+    gold_vs_pred,
+    ignore_inconsistencies = options::opt("ignore_inconsistencies")) {
   # set relevance to 1 if gold_standard = TRUE and relevance missing
   compare <- dplyr::mutate(
     gold_vs_pred,
@@ -41,7 +39,6 @@ check_repair_relevance_compare <- function(
           .data$relevance < 1, 1, .data$relevance
       )
     )
-
   }
 
   inconsistent_values_fp <- nrow(
@@ -72,9 +69,8 @@ check_repair_relevance_compare <- function(
 #'
 #' @return valid predicted data.frame with possibly eliminated missing values
 check_repair_relevance_pred <- function(
-  predicted,
-  ignore_inconsistencies = options::opt("ignore_inconsistencies")
-) {
+    predicted,
+    ignore_inconsistencies = options::opt("ignore_inconsistencies")) {
   stopifnot("relevance" %in% colnames(predicted))
   stopifnot(is.numeric(predicted[["relevance"]]))
   # check for missing relevance values

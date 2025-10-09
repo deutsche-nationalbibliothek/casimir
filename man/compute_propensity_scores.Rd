@@ -39,5 +39,4 @@ label_distribution <- dnb_label_distribution
 
 compute_propensity_scores(label_distribution)
 
-
 }

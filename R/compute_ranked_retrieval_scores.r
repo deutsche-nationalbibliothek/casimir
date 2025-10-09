@@ -32,40 +32,39 @@
 #'
 #' pred <- tibble::tribble(
 #'   ~doc_id, ~label_id, ~score,
-#'   "A", "f",	0.3277,
-#'   "A", "e",	0.32172,
-#'   "A", "b",	0.13517,
-#'   "A", "g",	0.10134,
-#'   "A", "h",	0.09152,
-#'   "A", "a",	0.07483,
-#'   "A", "i",	0.03649,
-#'   "A", "j",	0.03551,
-#'   "A", "k",	0.03397,
-#'   "A", "c",	0.03364
+#'   "A", "f", 0.3277,
+#'   "A", "e", 0.32172,
+#'   "A", "b", 0.13517,
+#'   "A", "g", 0.10134,
+#'   "A", "h", 0.09152,
+#'   "A", "a", 0.07483,
+#'   "A", "i", 0.03649,
+#'   "A", "j", 0.03551,
+#'   "A", "k", 0.03397,
+#'   "A", "c", 0.03364
 #' )
 #'
 #' results <- compute_ranked_retrieval_scores(
-#'     gold,
-#'     pred,
-#'     compute_bootstrap_ci = FALSE
+#'   gold,
+#'   pred,
+#'   compute_bootstrap_ci = FALSE
 #' )
 #'
-compute_ranked_retrieval_scores <- function( # nolint
-  gold_standard,
-  predicted,
-  doc_groups = NULL,
-  compute_bootstrap_ci = FALSE,
-  n_bt = 10L,
-  seed = NULL,
-  progress = options::opt("progress")
-) {
-
+compute_ranked_retrieval_scores <- function( # nolint styler: off
+    gold_standard,
+    predicted,
+    doc_groups = NULL,
+    compute_bootstrap_ci = FALSE,
+    n_bt = 10L,
+    seed = NULL,
+    progress = options::opt("progress")) {
   stopifnot(all(c("label_id", "doc_id") %in% colnames(gold_standard)))
   stopifnot(all(c("label_id", "doc_id", "score") %in% colnames(predicted)))
   stopifnot(is.logical(compute_bootstrap_ci))
 
   gold_vs_pred <- create_comparison(gold_standard, predicted,
-                                    doc_groups = doc_groups)
+    doc_groups = doc_groups
+  )
 
   grouping_var <- rlang::syms(colnames(doc_groups))
   doc_strata <- setdiff(colnames(doc_groups), "doc_id")

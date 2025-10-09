@@ -39,6 +39,14 @@ Verbose reorting of computation steps for debugging\item{default: }{\preformatte
 \item{envvar: }{R_CASIMIR_VERBOSE (evaluated if possible, raw string otherwise)}
 }}
 
+\item{check_group_names}{\describe{
+Perform replacement of dots in grouping columns. Disable for faster
+computation, if you can make sure that all columns used for grouping
+(doc_id, label_id, doc_groups, label_groups) do not contain dots\item{default: }{\preformatted{TRUE}}
+\item{option: }{casimir.check_group_names}
+\item{envvar: }{R_CASIMIR_CHECK_GROUP_NAMES (evaluated if possible, raw string otherwise)}
+}}
+
 }
 }
 

@@ -12,7 +12,7 @@ dcg_score <- function(df, limit = NULL) {
   # return the discounted cumulative gain (DCG) score for the selected
   #  labels vs. relevant labels
 
-  df <- df |>  dplyr::arrange(dplyr::desc(score))
+  df <- df |> dplyr::arrange(dplyr::desc(score))
   n_pred <- sum(!is.na(df$score))
   if (!is.null(limit)) n_pred <- min(limit, n_pred)
 
@@ -36,9 +36,8 @@ ndcg_score <- function(gold_vs_pred, limit = NULL) {
 
   scores <- c()
 
-  for (DOC_ID in unique(gold_vs_pred$doc_id)){
-
-    temp <- gold_vs_pred |>  dplyr::filter(doc_id == DOC_ID)
+  for (DOC_ID in unique(gold_vs_pred$doc_id)) {
+    temp <- gold_vs_pred |> dplyr::filter(doc_id == DOC_ID)
 
     idcg <- dcg_score(
       temp |> dplyr::mutate(score = gold), limit
@@ -52,7 +51,6 @@ ndcg_score <- function(gold_vs_pred, limit = NULL) {
     } else {
       scores <- c(scores, 1.0)
     }
-
   }
 
   return(mean(scores, na.rm = TRUE))
@@ -68,8 +66,7 @@ lrap_score <- function(gold_vs_pred) {
 
   out <- c()
 
-  for (DOC_ID in unique(gold_vs_pred$doc_id)){
-
+  for (DOC_ID in unique(gold_vs_pred$doc_id)) {
     temp <- gold_vs_pred |>
       dplyr::filter(doc_id == DOC_ID) |>
       dplyr::mutate(score = tidyr::replace_na(score, 0))
