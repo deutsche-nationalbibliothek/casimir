@@ -42,12 +42,12 @@
 #' casimir:::compute_intermediate_results(gold_vs_pred, "doc_id")
 #'
 compute_intermediate_results <- function(
-    gold_vs_pred,
-    grouping_var,
-    propensity_scored = FALSE,
-    cost_fp = NULL,
-    check_group_names = options::opt("check_group_names")
-    ) {
+  gold_vs_pred,
+  grouping_var,
+  propensity_scored = FALSE,
+  cost_fp = NULL,
+  check_group_names = options::opt("check_group_names")
+) {
 
   stopifnot(all(c("suggested", "gold") %in% colnames(gold_vs_pred)))
 
@@ -141,23 +141,22 @@ compute_intermediate_results <- function(
   }
 
   for (var in grouping_var) {
-     if (check_group_names) {
-       gold_vs_pred_smry[[var]] <- stringr::str_replace_all(
-         gold_vs_pred_smry[[var]], seperator, "\\."
-       )
-       gold_vs_pred_smry <- restore_factor_levels(
-         gold_vs_pred_smry,
-         source_df = old_grouping_columns,
-         var = var
-       )
-     } else {
-       gold_vs_pred_smry <- restore_factor_levels(
-         gold_vs_pred_smry,
-         source_df = gold_vs_pred,
-         var = var
-       )
-     }
-
+    if (check_group_names) {
+      gold_vs_pred_smry[[var]] <- stringr::str_replace_all(
+        gold_vs_pred_smry[[var]], seperator, "\\."
+      )
+      gold_vs_pred_smry <- restore_factor_levels(
+        gold_vs_pred_smry,
+        source_df = old_grouping_columns,
+        var = var
+      )
+    } else {
+      gold_vs_pred_smry <- restore_factor_levels(
+        gold_vs_pred_smry,
+        source_df = gold_vs_pred,
+        var = var
+      )
+    }
   }
 
   res_df <- dplyr::select(

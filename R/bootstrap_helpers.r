@@ -12,7 +12,8 @@
 #' @inheritParams option_params
 #'
 #' @return \code{data.frame} containing \code{n_bt} boot replica of results
-#'   as returned by  compute_intermediate_results + summarise_intermediate_results
+#'   as returned by compute_intermediate_results +
+#'   summarise_intermediate_results
 #'
 #' @examples
 #'

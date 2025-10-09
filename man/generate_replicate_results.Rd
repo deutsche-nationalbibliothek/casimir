@@ -49,7 +49,8 @@ PR-Curves) (Defaults to \code{FALSE}, overwritable using option 'casimir.progres
 }
 \value{
 \code{data.frame} containing \code{n_bt} boot replica of results
-as returned by  compute_intermediate_results + summarise_intermediate_results
+as returned by compute_intermediate_results +
+summarise_intermediate_results
 }
 \description{
 Compute n_bt bootstrap replica, wrapping the composure of
