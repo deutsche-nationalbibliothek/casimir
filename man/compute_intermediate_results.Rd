@@ -9,7 +9,8 @@ compute_intermediate_results(
   gold_vs_pred,
   grouping_var,
   propensity_scored = FALSE,
-  cost_fp = NULL
+  cost_fp = NULL,
+  check_group_names = options::opt("check_group_names")
 )
 
 compute_intermediate_results_dplyr(
@@ -29,6 +30,10 @@ gold_vs_pred (dplyr version requires rlang symbols)}
 \item{propensity_scored}{logical, whether to use propensity scores as weights}
 
 \item{cost_fp}{numeric > 0, default is NULL}
+
+\item{check_group_names}{Perform replacement of dots in grouping columns. Disable for faster
+computation, if you can make sure that all columns used for grouping
+(doc_id, label_id, doc_groups, label_groups) do not contain dots (Defaults to \code{TRUE}, overwritable using option 'casimir.check_group_names' or environment variable 'R_CASIMIR_CHECK_GROUP_NAMES')}
 }
 \value{
 data.frame with cols "n_gold", "n_suggested", "tp", "fp", "fn",

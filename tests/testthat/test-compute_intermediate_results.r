@@ -110,11 +110,19 @@ test_that("grouping vars with dots are rejected", {
     "C", "f",
   )
 
-  doc_groups <- tibble::tribble(
+  doc_groups_w_dots <- tibble::tribble(
     ~doc_id, ~hsg,
     "A", "0.1.1",
     "B", "0.1.1",
     "C", "0.2.1"
+  )
+
+
+  doc_groups_no_dots <- tibble::tribble(
+    ~doc_id, ~hsg,
+    "A", "0_1_1",
+    "B", "0_1_1",
+    "C", "0_2_1"
   )
 
   pred <- tibble::tribble(
@@ -127,15 +135,25 @@ test_that("grouping vars with dots are rejected", {
     "C", "f"
   )
 
-  cmp <- create_comparison(gold, pred, doc_groups = doc_groups)
-  expect_error(
-    object =  compute_intermediate_results(
-      cmp, grouping_var = c("doc_id", "hsg")
-    ),
-    regexp = "grouping variable must not contain levels that contain dots"
+  cmp_w_dots <- create_comparison(gold, pred, doc_groups = doc_groups_w_dots)
+  cmp_no_dots <- create_comparison(gold, pred, doc_groups = doc_groups_no_dots)
+  res_w_dots <- compute_intermediate_results(
+    cmp_w_dots, grouping_var = c("doc_id", "hsg")
+  )
+  res_no_dots <- compute_intermediate_results(
+    cmp_no_dots, grouping_var = c("doc_id", "hsg")
   )
 
-  label_groups <- tibble::tribble(
+  res_no_dots$results_table$hsg <- stringr::str_replace_all(
+    res_no_dots$results_table$hsg, "_", "\\."
+  )
+
+  expect_equal(
+    object =  res_w_dots,
+    expected = res_no_dots
+  )
+
+  label_groups_w_dots <- tibble::tribble(
     ~label_id, ~strata,
     "a", "12.1",
     "b", "12.1",
@@ -145,13 +163,36 @@ test_that("grouping vars with dots are rejected", {
     "f", "12.3"
   )
 
-  cmp <- create_comparison(gold, pred, label_groups = label_groups)
+  label_groups_no_dots <- tibble::tribble(
+    ~label_id, ~strata,
+    "a", "12_1",
+    "b", "12_1",
+    "c", "12_1",
+    "d", "12_2",
+    "e", "12_2",
+    "f", "12_3"
+  )
 
-  expect_error(
-    object = compute_intermediate_results(
-      cmp, grouping_var = c("label_id", "strata")
-    ),
-    regexp = "grouping variable must not contain levels that contain dots"
+  cmp_w_dots <- create_comparison(
+    gold, pred, label_groups = label_groups_w_dots
+  )
+  cmp_no_dots <- create_comparison(
+    gold, pred, label_groups = label_groups_no_dots
+  )
+  res_w_dots <- compute_intermediate_results(
+    cmp_w_dots, grouping_var = c("label_id", "strata")
+  )
+  res_no_dots <- compute_intermediate_results(
+    cmp_no_dots, grouping_var = c("label_id", "strata")
+  )
+
+  res_no_dots$results_table$strata <- stringr::str_replace_all(
+    res_no_dots$results_table$strata, "_", "\\."
+  )
+
+  expect_equal(
+    object =  res_w_dots,
+    expected = res_no_dots
   )
 })
 

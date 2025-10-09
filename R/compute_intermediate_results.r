@@ -6,6 +6,7 @@
 #'  gold_vs_pred (dplyr version requires rlang symbols)
 #' @inheritParams compute_set_retrieval_scores
 #' @param cost_fp numeric > 0, default is NULL
+#' @inheritParams option_params
 #'
 #' @return data.frame with cols "n_gold", "n_suggested", "tp", "fp", "fn",
 #'  "prec", "rec", "f1"
@@ -44,18 +45,22 @@ compute_intermediate_results <- function(
     gold_vs_pred,
     grouping_var,
     propensity_scored = FALSE,
-    cost_fp = NULL) {
+    cost_fp = NULL,
+    check_group_names = options::opt("check_group_names")
+    ) {
 
   stopifnot(all(c("suggested", "gold") %in% colnames(gold_vs_pred)))
 
   stopifnot(!is.null(grouping_var))
   # check that no levels of the grouping variables contain dots
-  for (var in grouping_var) {
-    n_dots <- sum(
-      stringr::str_detect(gold_vs_pred[[var]], pattern = "\\."), na.rm = TRUE
-    )
-    if (n_dots > 0)
-      stop("grouping variable must not contain levels that contain dots")
+  if (check_group_names) {
+    old_grouping_columns <- collapse::fselect(gold_vs_pred, grouping_var)
+    seperator <- "__SEP__4928873"
+    for (var in grouping_var) {
+      gold_vs_pred[[var]] <- stringr::str_replace_all(
+        gold_vs_pred[[var]], "\\.", seperator
+      )
+    }
   }
 
   g <- collapse::GRP(gold_vs_pred, grouping_var)
@@ -125,14 +130,34 @@ compute_intermediate_results <- function(
   )
 
   # restore the factor structure of the original grouping_var
-  for (var in grouping_var) {
-    if (is.factor(gold_vs_pred[[var]])) {
-      gold_vs_pred_smry[[var]] <- factor(
-        x = gold_vs_pred_smry[[var]],
-        levels = levels(gold_vs_pred[[var]])
+  restore_factor_levels <- function(df, source_df, var) {
+    if (is.factor(source_df[[var]])) {
+      df[[var]] <- factor(
+        x = df[[var]],
+        levels = levels(source_df[[var]])
       )
-
     }
+    df
+  }
+
+  for (var in grouping_var) {
+     if (check_group_names) {
+       gold_vs_pred_smry[[var]] <- stringr::str_replace_all(
+         gold_vs_pred_smry[[var]], seperator, "\\."
+       )
+       gold_vs_pred_smry <- restore_factor_levels(
+         gold_vs_pred_smry,
+         source_df = old_grouping_columns,
+         var = var
+       )
+     } else {
+       gold_vs_pred_smry <- restore_factor_levels(
+         gold_vs_pred_smry,
+         source_df = gold_vs_pred,
+         var = var
+       )
+     }
+
   }
 
   res_df <- dplyr::select(
