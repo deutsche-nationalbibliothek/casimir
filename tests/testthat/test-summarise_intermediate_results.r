@@ -74,6 +74,7 @@ test_that("f1-score handles missings expectedly in summarise stage", {
     results_table = intermediate_results, grouping_var = c("doc_id", "label_id")
   ))
 
+
   expect_equal(observed, expected)
 
   # Scenraio 2: Micro-Averaged precision is NA and recall is zero
@@ -270,4 +271,52 @@ test_that("Summarise works with weighted mean", {
     expected_vs_observed$value.obs,
     expected_vs_observed$value.exp
   )
+})
+
+test_that("summarise can replace na precison", {
+  gold <- tibble::tribble(
+    ~doc_id, ~label_id,
+    "A", "a",
+    "A", "c",
+  )
+
+  pred <- tibble::tribble(
+    ~doc_id, ~label_id,
+    "A", "b",
+    "A", "c"
+  )
+
+  comp <- create_comparison(gold, pred)
+
+  interm <- compute_intermediate_results(comp, "label_id")
+
+  res_case_1 <- summarise_intermediate_results(
+    interm,
+    replace_zero_division_with = 0, set = FALSE
+  )
+
+  expected_case_1 <- tibble::tribble(
+    ~metric, ~value, ~support,
+    "f1", 1 / 3, 3,
+    "prec", 1 / 3, 3,
+    "rec", 1 / 3, 3,
+    "rprec", 1 / 3, 3
+  )
+
+  expect_equal(res_case_1, expected_case_1)
+
+  res_case_2 <- summarise_intermediate_results(
+    interm,
+    replace_zero_division_with = NULL
+  )
+
+  expected_case_2 <- tibble::tribble(
+    ~metric, ~value, ~support,
+    "f1", 1 / 3, 3,
+    "prec", 1 / 2, 2,
+    "rec", 1 / 2, 2,
+    "rprec", 1, 1
+  )
+
+  expect_equal(res_case_2, expected_case_2)
 })

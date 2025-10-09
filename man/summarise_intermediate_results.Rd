@@ -7,7 +7,9 @@
 summarise_intermediate_results(
   intermediate_results,
   propensity_scored = FALSE,
-  label_distribution = NULL
+  label_distribution = NULL,
+  set = FALSE,
+  replace_zero_division_with = options::opt("replace_zero_division_with")
 )
 }
 \arguments{
@@ -24,6 +26,17 @@ This requires a list containing
 \emph{"label_id", "label_freq", "n_docs"}. \code{label_freq} corresonds to
 the number of occurences a label has in the gold_standard. \code{n_docs}
 corresponds to the total number of documents in the gold_standard.}
+
+\item{set}{logical. allow in place modification of intermediate_results
+only recommended for internal package usage}
+
+\item{replace_zero_division_with}{In macro averaged results (doc-avg, subj-avg) it may occur that some
+instances have no predictions or no gold-standard. In these cases calculating
+precision and recall may lead to zero divisions. CASIMiR standardly removes
+these missing values from macro averages, leading to a smaller \code{support}
+(count of instances that were averaged). Other implementations of macro
+averaged precision and recall default to 0 in these cases. This option
+will allow to control the default. Set any value between 0 and 1. (Defaults to \code{NULL}, overwritable using option 'casimir.replace_zero_division_with' or environment variable 'R_CASIMIR_REPLACE_ZERO_DIVISION_WITH')}
 }
 \value{
 data.frame with cols metric, value

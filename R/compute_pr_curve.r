@@ -101,6 +101,7 @@ compute_pr_curve <- function(
     propensity_scored = FALSE,
     label_distribution = NULL,
     cost_fp_constant = NULL,
+    replace_zero_division_with = options::opt("replace_zero_division_with"),
     drop_empty_groups = options::opt("drop_empty_groups"),
     ignore_inconsistencies = options::opt("ignore_inconsistencies"),
     verbose = options::opt("verbose"),
@@ -183,7 +184,9 @@ compute_pr_curve <- function(
 
     summarise_intermediate_results(
       intermed_res,
-      propensity_scored = ps_flags$summarise
+      propensity_scored = ps_flags$summarise,
+      replace_zero_division_with = replace_zero_division_with,
+      set = TRUE
     )
   }
   if (verbose) {

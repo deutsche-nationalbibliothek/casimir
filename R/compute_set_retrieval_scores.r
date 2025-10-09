@@ -136,6 +136,7 @@ compute_set_retrieval_scores <- function(
     propensity_scored = FALSE,
     label_distribution = NULL,
     cost_fp_constant = NULL,
+    replace_zero_division_with = options::opt("replace_zero_division_with"),
     drop_empty_groups = options::opt("drop_empty_groups"),
     ignore_inconsistencies = options::opt("ignore_inconsistencies"),
     verbose = options::opt("verbose"),
@@ -205,7 +206,9 @@ compute_set_retrieval_scores <- function(
     results <- summarise_intermediate_results(
       intermediate_results,
       propensity_scored = ps_flags$summarise,
-      label_distribution = label_distribution
+      label_distribution = label_distribution,
+      replace_zero_division_with = replace_zero_division_with,
+      set = TRUE
     )
   } else {
     # generate n_bt copies of results, plus one original
@@ -222,6 +225,7 @@ compute_set_retrieval_scores <- function(
       ps_flags = ps_flags,
       label_distribution = label_distribution,
       cost_fp = cost_fp_processed,
+      replace_zero_division_with = replace_zero_division_with,
       drop_empty_groups = drop_empty_groups,
       progress = progress
     )

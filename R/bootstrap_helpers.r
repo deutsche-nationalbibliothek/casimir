@@ -58,6 +58,7 @@ generate_replicate_results <- function(
     ps_flags = list("intermed" = FALSE, "summarise" = FALSE),
     label_distribution = NULL,
     cost_fp = NULL,
+    replace_zero_division_with = options::opt("replace_zero_division_with"),
     drop_empty_groups = options::opt("drop_empty_groups"),
     progress = options::opt("progress")) {
   stopifnot(is.data.frame(base_compare))
@@ -94,6 +95,7 @@ generate_replicate_results <- function(
     label_distribution = label_distribution,
     cost_fp = cost_fp,
     grouping_var = grouping_var,
+    replace_zero_division_with = replace_zero_division_with,
     drop_empty_groups = drop_empty_groups
   )
 
@@ -118,6 +120,7 @@ helper_f <- function(
     label_distribution = NULL,
     ps_flags = list("intermed" = FALSE, "summarise" = FALSE),
     cost_fp = NULL,
+    replace_zero_division_with = options::opt("replace_zero_division_with"),
     drop_empty_groups = options::opt("drop_empty_groups")) {
   compare_resampled <- collapse::join(
     compare_cpy, sampled_id_list,
@@ -136,7 +139,9 @@ helper_f <- function(
   summarise_intermediate_results(
     intermediate_results_resampled,
     propensity_scored = ps_flags$summarise,
-    label_distribution = label_distribution
+    label_distribution = label_distribution,
+    replace_zero_division_with = replace_zero_division_with,
+    set = TRUE
   )
 }
 

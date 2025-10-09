@@ -12,5 +12,13 @@ options::define_options(
   check_group_names = TRUE,
   "Should empty levels of factor variables be droped in grouped set retrieval
   computation?",
-  drop_empty_groups = TRUE
+  drop_empty_groups = TRUE,
+  "In macro averaged results (doc-avg, subj-avg) it may occur that some
+   instances have no predictions or no gold-standard. In these cases calculating
+   precision and recall may lead to zero divisions. CASIMiR standardly removes
+   these missing values from macro averages, leading to a smaller `support`
+   (count of instances that were averaged). Other implementations of macro
+   averaged precision and recall default to 0 in these cases. This option
+   will allow to control the default. Set any value between 0 and 1.",
+  replace_zero_division_with = NULL
 )

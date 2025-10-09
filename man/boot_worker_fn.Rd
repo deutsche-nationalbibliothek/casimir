@@ -11,7 +11,12 @@ which covers the repeated application of
 \item auc computation
 }}
 \usage{
-boot_worker_fn(sampled_id_list, intermed_res, propensity_scored)
+boot_worker_fn(
+  sampled_id_list,
+  intermed_res,
+  propensity_scored,
+  replace_zero_division_with
+)
 }
 \arguments{
 \item{sampled_id_list}{doc_ids of the examples drawn in each bootstrap
