@@ -20,16 +20,16 @@
 #'
 #' pred <- tibble::tribble(
 #'   ~doc_id, ~label_id, ~score,
-#'   "A", "f",	0.3277,
-#'   "A", "e",	0.32172,
-#'   "A", "b",	0.13517,
-#'   "A", "g",	0.10134,
-#'   "A", "h",	0.09152,
-#'   "A", "a",	0.07483,
-#'   "A", "i",	0.03649,
-#'   "A", "j",	0.03551,
-#'   "A", "k",	0.03397,
-#'   "A", "c",	0.03364
+#'   "A", "f", 0.3277,
+#'   "A", "e", 0.32172,
+#'   "A", "b", 0.13517,
+#'   "A", "g", 0.10134,
+#'   "A", "h", 0.09152,
+#'   "A", "a", 0.07483,
+#'   "A", "i", 0.03649,
+#'   "A", "j", 0.03551,
+#'   "A", "k", 0.03397,
+#'   "A", "c", 0.03364
 #' )
 #'
 #' gold_vs_pred <- create_comparison(gold, pred)
@@ -38,10 +38,9 @@
 #'   gold_vs_pred,
 #'   rlang::syms(c("doc_id"))
 #' )
-compute_intermediate_results_rr <- function( # nolint
-  gold_vs_pred, grouping_var
-) {
-
+compute_intermediate_results_rr <- function( # nolint styler: off
+    gold_vs_pred,
+    grouping_var) {
   stopifnot(all(c("doc_id", "score", "gold") %in% colnames(gold_vs_pred)))
 
   gold_vs_pred |>

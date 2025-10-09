@@ -1,5 +1,4 @@
 test_that("threshold application works", {
-
   gold <- tibble::tribble(
     ~doc_id, ~label_id,
     "A", "a",
@@ -55,22 +54,22 @@ test_that("threshold application works", {
     dplyr::select(-rank)
   exp_0p5 <- tibble::tribble(
     ~doc_id, ~label_id, ~gold, ~score, ~suggested, ~relevance,
-    "A",   "a", TRUE, 0.9, TRUE, 0,
-    "A",   "b", TRUE, NA,  FALSE, 0,
-    "A",   "c", TRUE, 0.1, FALSE, 0,
-    "B",   "a", TRUE, 0.8, TRUE, 0,
-    "B",   "d", TRUE, 0.1, FALSE, 0,
-    "C",   "a", TRUE, NA,  FALSE, 0,
-    "C",   "b", TRUE, NA,  FALSE, 0,
-    "C",   "d", TRUE, NA,  FALSE, 0,
-    "C",   "f", TRUE, 0.1, FALSE, 0,
-    "A",   "d", FALSE, 0.7, TRUE, 0,
-    "B",   "e", FALSE, 0.6, TRUE, 0
+    "A", "a", TRUE, 0.9, TRUE, 0,
+    "A", "b", TRUE, NA, FALSE, 0,
+    "A", "c", TRUE, 0.1, FALSE, 0,
+    "B", "a", TRUE, 0.8, TRUE, 0,
+    "B", "d", TRUE, 0.1, FALSE, 0,
+    "C", "a", TRUE, NA, FALSE, 0,
+    "C", "b", TRUE, NA, FALSE, 0,
+    "C", "d", TRUE, NA, FALSE, 0,
+    "C", "f", TRUE, 0.1, FALSE, 0,
+    "A", "d", FALSE, 0.7, TRUE, 0,
+    "B", "e", FALSE, 0.6, TRUE, 0
   )
 
   expect_equal(res_0p5, exp_0p5)
 
-  pred2 <-  tibble::tribble(
+  pred2 <- tibble::tribble(
     ~doc_id, ~label_id, ~score,
     "A", "a", 0.9,
     "A", "d", 0.7,
@@ -93,7 +92,6 @@ test_that("threshold application works", {
 })
 
 test_that("limits are applied correctly", {
-
   base_compare <- casimir:::create_comparison(
     dnb_gold_standard, dnb_test_predictions
   )
@@ -118,11 +116,9 @@ test_that("limits are applied correctly", {
     ),
     regexp = '.*\\"rank\\" %in% colnames\\(base_compare\\) is not TRUE'
   )
-
 })
 
 test_that("Handling of NULL and inf-limits works", {
-
   base_compare <- casimir:::create_comparison(
     dnb_gold_standard, dnb_test_predictions
   )

@@ -1,5 +1,4 @@
 test_that("grouping_var selection works", {
-
   # test that function remains siltnt across all possible configs
   config <- expand.grid(
     .mode = c("micro", "subj-avg", "doc-avg"),
@@ -38,11 +37,9 @@ test_that("grouping_var selection works", {
         )
       }
     )
-
 })
 
 test_that("set_ps_flags is correct", {
-
   expect_equal(
     set_ps_flags(mode = "subj-avg", propensity_scored = TRUE),
     list(intermed = FALSE, summarise = TRUE)
@@ -57,5 +54,4 @@ test_that("set_ps_flags is correct", {
     set_ps_flags(mode = "micro", propensity_scored = TRUE),
     list(intermed = TRUE, summarise = FALSE)
   )
-
 })

@@ -1,5 +1,4 @@
 test_that("propensity score computation works", {
-
   label_distribution <- dnb_label_distribution
 
   expect_silent(
@@ -15,7 +14,7 @@ test_that("propensity score computation works", {
 
   expected <- tibble::tribble(
     ~label_id, ~label_weight,
-    "040118827", 1.03659472212516, #head label with low weight
+    "040118827", 1.03659472212516, # head label with low weight
     "118515500", 6.96995526877882,
     "04256235X", 14.1449272483688 # tail label with high weight
   )
@@ -24,7 +23,6 @@ test_that("propensity score computation works", {
 })
 
 test_that("propensity scores work out on toy example", {
-
   label_distribution <- tibble::tribble(
     ~label_id, ~label_freq, ~n_docs,
     "a", 10000, 10100,

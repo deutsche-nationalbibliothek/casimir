@@ -96,7 +96,6 @@ test_that("compute_intermediate_results checks out", {
 })
 
 test_that("grouping vars with dots are rejected", {
-
   gold <- tibble::tribble(
     ~doc_id, ~label_id,
     "A", "a",
@@ -138,10 +137,12 @@ test_that("grouping vars with dots are rejected", {
   cmp_w_dots <- create_comparison(gold, pred, doc_groups = doc_groups_w_dots)
   cmp_no_dots <- create_comparison(gold, pred, doc_groups = doc_groups_no_dots)
   res_w_dots <- compute_intermediate_results(
-    cmp_w_dots, grouping_var = c("doc_id", "hsg")
+    cmp_w_dots,
+    grouping_var = c("doc_id", "hsg")
   )
   res_no_dots <- compute_intermediate_results(
-    cmp_no_dots, grouping_var = c("doc_id", "hsg")
+    cmp_no_dots,
+    grouping_var = c("doc_id", "hsg")
   )
 
   res_no_dots$results_table$hsg <- stringr::str_replace_all(
@@ -149,7 +150,7 @@ test_that("grouping vars with dots are rejected", {
   )
 
   expect_equal(
-    object =  res_w_dots,
+    object = res_w_dots,
     expected = res_no_dots
   )
 
@@ -174,16 +175,20 @@ test_that("grouping vars with dots are rejected", {
   )
 
   cmp_w_dots <- create_comparison(
-    gold, pred, label_groups = label_groups_w_dots
+    gold, pred,
+    label_groups = label_groups_w_dots
   )
   cmp_no_dots <- create_comparison(
-    gold, pred, label_groups = label_groups_no_dots
+    gold, pred,
+    label_groups = label_groups_no_dots
   )
   res_w_dots <- compute_intermediate_results(
-    cmp_w_dots, grouping_var = c("label_id", "strata")
+    cmp_w_dots,
+    grouping_var = c("label_id", "strata")
   )
   res_no_dots <- compute_intermediate_results(
-    cmp_no_dots, grouping_var = c("label_id", "strata")
+    cmp_no_dots,
+    grouping_var = c("label_id", "strata")
   )
 
   res_no_dots$results_table$strata <- stringr::str_replace_all(
@@ -191,13 +196,12 @@ test_that("grouping vars with dots are rejected", {
   )
 
   expect_equal(
-    object =  res_w_dots,
+    object = res_w_dots,
     expected = res_no_dots
   )
 })
 
 test_that("f1-score handles missings expectedly in intermediate stage", {
-
   # label a: 1 gold, no pred --> f1 = 0
   # label b: 0 gold, 1 pred --> f1 = 0
   # label c: 1 gold, 1 pred --> f1 = 1
@@ -237,8 +241,6 @@ test_that("f1-score handles missings expectedly in intermediate stage", {
     dplyr::ungroup(res_dplyr),
     expected_res
   )
-
-
 })
 
 test_that("propensity scored rprecision is correct on intermediate level", {
@@ -319,7 +321,8 @@ test_that("propensity scored rprecision is correct on intermediate level", {
   expect_equal(
     doc_wise_res$results_table |>
       dplyr::select(-c(rprec, prec, rec, f1, delta_relevance)),
-    exp_docwise_res, tolerance = 1e-6
+    exp_docwise_res,
+    tolerance = 1e-6
   )
 
 
@@ -331,19 +334,20 @@ test_that("propensity scored rprecision is correct on intermediate level", {
   )
 
   exp_label_wise_res <- tibble::tribble(
-    ~label_id, ~n_gold, ~n_suggested,        ~tp, ~fp,        ~fn, ~rprec_deno,
-    "a",             3,            2, 2*1.085846,   0,   1.085846,  2 * 1.085846, # nolint
-    "b",             2,            0,          0,   0, 2 * 1.304366,           0, # nolint
-    "c",             1,            1,          0,   mlw,   2.072009,    2.072009, # nolint
-    "d",             2,            1,          0,   mlw, 2*9.220291,    9.220291, # nolint
-    "e",             0,            1,          0,   mlw,          0,           0, # nolint
-    "f",             1,            3,   7.831511,   2*mlw,          0,    7.831511 # nolint
+    ~label_id, ~n_gold, ~n_suggested, ~tp, ~fp, ~fn, ~rprec_deno,
+    "a", 3, 2, 2 * 1.085846, 0, 1.085846, 2 * 1.085846, # nolint
+    "b", 2, 0, 0, 0, 2 * 1.304366, 0, # nolint
+    "c", 1, 1, 0, mlw, 2.072009, 2.072009, # nolint
+    "d", 2, 1, 0, mlw, 2 * 9.220291, 9.220291, # nolint
+    "e", 0, 1, 0, mlw, 0, 0, # nolint
+    "f", 1, 3, 7.831511, 2 * mlw, 0, 7.831511 # nolint
   )
 
   expect_equal(
     label_wise_res$results_table |>
       dplyr::select(-c(rprec, prec, rec, f1, delta_relevance)),
-    exp_label_wise_res, tolerance = 1e-6
+    exp_label_wise_res,
+    tolerance = 1e-6
   )
 
   case_wise_res <- compute_intermediate_results(
@@ -354,27 +358,28 @@ test_that("propensity scored rprecision is correct on intermediate level", {
   )
 
   exp_case_wise_res <- tibble::tribble(
-    ~doc_id, ~label_id, ~n_gold, ~n_suggested,      ~tp, ~fp, ~fn,
-    "A",       "a",       1,            1, 1.085846,   0,   0,
-    "A",       "b",       1,            0,        0,   0,   1.304366,
-    "A",       "c",       1,            0,        0,   0,   2.072008,
-    "B",       "a",       1,            1, 1.085846,   0,   0,
-    "B",       "d",       1,            0,        0,   0,   9.220291,
-    "C",       "a",       1,            0,        0,   0,   1.085846,
-    "C",       "b",       1,            0,        0,   0,   1.304366,
-    "C",       "d",       1,            0,        0,   0,   9.220291,
-    "C",       "f",       1,            1, 7.831511,   0,   0,
-    "A",       "d",       0,            1,        0,   mlw,   0,  # 9.220291
-    "A",       "f",       0,            1,        0,   mlw,   0,  # 7.831511
-    "B",       "e",       0,            1,        0,   mlw,   0,  #9.220291
-    "B",       "f",       0,            1,        0,   mlw,   0,  #7.831511
-    "B",       "c",       0,            1,        0,   mlw,   0,  #2.072008
+    ~doc_id, ~label_id, ~n_gold, ~n_suggested, ~tp, ~fp, ~fn,
+    "A", "a", 1, 1, 1.085846, 0, 0,
+    "A", "b", 1, 0, 0, 0, 1.304366,
+    "A", "c", 1, 0, 0, 0, 2.072008,
+    "B", "a", 1, 1, 1.085846, 0, 0,
+    "B", "d", 1, 0, 0, 0, 9.220291,
+    "C", "a", 1, 0, 0, 0, 1.085846,
+    "C", "b", 1, 0, 0, 0, 1.304366,
+    "C", "d", 1, 0, 0, 0, 9.220291,
+    "C", "f", 1, 1, 7.831511, 0, 0,
+    "A", "d", 0, 1, 0, mlw, 0, # 9.220291
+    "A", "f", 0, 1, 0, mlw, 0, # 7.831511
+    "B", "e", 0, 1, 0, mlw, 0, # 9.220291
+    "B", "f", 0, 1, 0, mlw, 0, # 7.831511
+    "B", "c", 0, 1, 0, mlw, 0, # 2.072008
   )
 
   expect_equal(
     case_wise_res$results_table |>
       dplyr::select(-c(rprec, prec, rec, f1, rprec_deno, delta_relevance)),
-    dplyr::arrange(exp_case_wise_res, doc_id, label_id), tolerance = 1e-6
+    dplyr::arrange(exp_case_wise_res, doc_id, label_id),
+    tolerance = 1e-6
   )
 })
 

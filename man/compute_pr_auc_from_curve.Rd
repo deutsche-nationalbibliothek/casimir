@@ -27,16 +27,16 @@ library(ggplot2)
 library(casimir)
 
 gold <- tibble::tribble(
-~doc_id, ~label_id,
-"A", "a",
-"A", "b",
-"A", "c",
-"B", "a",
-"B", "d",
-"C", "a",
-"C", "b",
-"C", "d",
-"C", "f"
+  ~doc_id, ~label_id,
+  "A", "a",
+  "A", "b",
+  "A", "c",
+  "B", "a",
+  "B", "d",
+  "C", "a",
+  "C", "b",
+  "C", "d",
+  "C", "f"
 )
 
 pred <- tibble::tribble(
@@ -64,19 +64,23 @@ auc <- compute_pr_auc_from_curve(pr_curve)
 
 
 # note that pr-curves take the cummax(prec), not the precision
-ggplot(pr_curve$plot_data,   aes(x = rec, y = prec_cummax)) +
-  geom_point(data = pr_curve$opt_cutoff,
-             aes(x = rec, y = prec_cummax),
-             color = "red",
-             shape = "star"
+ggplot(pr_curve$plot_data, aes(x = rec, y = prec_cummax)) +
+  geom_point(
+    data = pr_curve$opt_cutoff,
+    aes(x = rec, y = prec_cummax),
+    color = "red",
+    shape = "star"
   ) +
-  geom_text(data = pr_curve$opt_cutoff,
-            aes(x = rec + 0.2, y = prec_cummax,
-            label = paste("f1_opt =", round(f1_max,3))),
-            color = "red"
+  geom_text(
+    data = pr_curve$opt_cutoff,
+    aes(
+      x = rec + 0.2, y = prec_cummax,
+      label = paste("f1_opt =", round(f1_max, 3))
+    ),
+    color = "red"
   ) +
   geom_path() +
-  coord_cartesian(xlim = c(0,1), ylim = c(0,1))
+  coord_cartesian(xlim = c(0, 1), ylim = c(0, 1))
 }
 \seealso{
 compute_pr_curve

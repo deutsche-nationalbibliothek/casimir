@@ -1,5 +1,4 @@
 test_that("compute_ranked_retrieval_scores works", {
-
   # some dummy results
   gold <- tibble::tribble(
     ~doc_id, ~label_id,
@@ -12,16 +11,16 @@ test_that("compute_ranked_retrieval_scores works", {
 
   pred <- tibble::tribble(
     ~doc_id, ~label_id, ~score,
-    "A", "f",	0.3277,
-    "A", "e",	0.32172,
-    "A", "b",	0.13517,
-    "A", "g",	0.10134,
-    "A", "h",	0.09152,
-    "A", "a",	0.07483,
-    "A", "i",	0.03649,
-    "A", "j",	0.03551,
-    "A", "k",	0.03397,
-    "A", "c",	0.03364
+    "A", "f", 0.3277,
+    "A", "e", 0.32172,
+    "A", "b", 0.13517,
+    "A", "g", 0.10134,
+    "A", "h", 0.09152,
+    "A", "a", 0.07483,
+    "A", "i", 0.03649,
+    "A", "j", 0.03551,
+    "A", "k", 0.03397,
+    "A", "c", 0.03364
   )
 
   expect_silent(
@@ -34,17 +33,15 @@ test_that("compute_ranked_retrieval_scores works", {
 
   expected <- tibble::tribble(
     ~metric, ~mode, ~value, ~support,
-    "dcg",    "doc-avg", 1.776202, 1,
-    "ndcg",   "doc-avg", 0.602417, 1,
-    "lrap",   "doc-avg", 0.413333, 1
+    "dcg", "doc-avg", 1.776202, 1,
+    "ndcg", "doc-avg", 0.602417, 1,
+    "lrap", "doc-avg", 0.413333, 1
   )
 
   expect_equal(observed, expected, tolerance = 10e-6)
-
 })
 
 test_that("grouped ranked retrieval works", {
-
   # some dummy results
   gold <- tibble::tribble(
     ~doc_id, ~label_id,
@@ -94,9 +91,11 @@ test_that("grouped ranked retrieval works", {
 
   doc_wise_results <- create_comparison(gold, pred, doc_groups = doc_groups) |>
     dplyr::group_by(doc_id, hsg) |>
-    dplyr::do(ndcg = ndcg_score(.), # according to Reference implementation
-              dcg = dcg_score(.), # according to Reference implementation
-              lrap = lrap_score(.)) |> # according to Reference implementation
+    dplyr::do(
+      ndcg = ndcg_score(.), # according to Reference implementation
+      dcg = dcg_score(.), # according to Reference implementation
+      lrap = lrap_score(.)
+    ) |> # according to Reference implementation
     tidyr::unnest(c(ndcg, dcg, lrap))
 
   expected <- doc_wise_results |>
@@ -117,5 +116,4 @@ test_that("grouped ranked retrieval works", {
 
 
   expect_equal(observed, expected, tolerance = 10e-6)
-
 })

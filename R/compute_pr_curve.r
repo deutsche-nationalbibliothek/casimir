@@ -34,16 +34,16 @@
 #' library(casimir)
 #'
 #' gold <- tibble::tribble(
-#' ~doc_id, ~label_id,
-#' "A", "a",
-#' "A", "b",
-#' "A", "c",
-#' "B", "a",
-#' "B", "d",
-#' "C", "a",
-#' "C", "b",
-#' "C", "d",
-#' "C", "f"
+#'   ~doc_id, ~label_id,
+#'   "A", "a",
+#'   "A", "b",
+#'   "A", "c",
+#'   "B", "a",
+#'   "B", "d",
+#'   "C", "a",
+#'   "C", "b",
+#'   "C", "d",
+#'   "C", "f"
 #' )
 #'
 #' pred <- tibble::tribble(
@@ -71,40 +71,43 @@
 #'
 #'
 #' # note that pr-curves take the cummax(prec), not the precision
-#' ggplot(pr_curve$plot_data,   aes(x = rec, y = prec_cummax)) +
-#'   geom_point(data = pr_curve$opt_cutoff,
-#'              aes(x = rec, y = prec_cummax),
-#'              color = "red",
-#'              shape = "star"
+#' ggplot(pr_curve$plot_data, aes(x = rec, y = prec_cummax)) +
+#'   geom_point(
+#'     data = pr_curve$opt_cutoff,
+#'     aes(x = rec, y = prec_cummax),
+#'     color = "red",
+#'     shape = "star"
 #'   ) +
-#'   geom_text(data = pr_curve$opt_cutoff,
-#'             aes(x = rec + 0.2, y = prec_cummax,
-#'             label = paste("f1_opt =", round(f1_max,3))),
-#'             color = "red"
+#'   geom_text(
+#'     data = pr_curve$opt_cutoff,
+#'     aes(
+#'       x = rec + 0.2, y = prec_cummax,
+#'       label = paste("f1_opt =", round(f1_max, 3))
+#'     ),
+#'     color = "red"
 #'   ) +
 #'   geom_path() +
-#'   coord_cartesian(xlim = c(0,1), ylim = c(0,1))
+#'   coord_cartesian(xlim = c(0, 1), ylim = c(0, 1))
 compute_pr_curve <- function(
-  gold_standard, predicted,
-  doc_groups = NULL,
-  label_groups = NULL,
-  mode = "doc-avg",
-  steps = 100,
-  thresholds = NULL,
-  limit_range = NA_real_,
-  optimize_cutoff = FALSE,
-  graded_relevance = FALSE,
-  propensity_scored = FALSE,
-  label_distribution = NULL,
-  cost_fp_constant = NULL,
-  ignore_inconsistencies = options::opt("ignore_inconsistencies"),
-  verbose = options::opt("verbose"),
-  progress = options::opt("progress")
-) {
-
+    gold_standard, predicted,
+    doc_groups = NULL,
+    label_groups = NULL,
+    mode = "doc-avg",
+    steps = 100,
+    thresholds = NULL,
+    limit_range = NA_real_,
+    optimize_cutoff = FALSE,
+    graded_relevance = FALSE,
+    propensity_scored = FALSE,
+    label_distribution = NULL,
+    cost_fp_constant = NULL,
+    ignore_inconsistencies = options::opt("ignore_inconsistencies"),
+    verbose = options::opt("verbose"),
+    progress = options::opt("progress")) {
   stopifnot(is.numeric(limit_range))
-  if (!all(is.na(limit_range)))
+  if (!all(is.na(limit_range))) {
     stopifnot(all(limit_range >= 1L))
+  }
 
   grouping_var <- set_grouping_var(mode, doc_groups, label_groups)
 
@@ -134,14 +137,15 @@ compute_pr_curve <- function(
     thresholds <- unique(stats::quantile(
       true_positives[["score"]],
       probs = seq(0, 1, 1 / steps),
-      type = 1,  na.rm = TRUE
+      type = 1, na.rm = TRUE
     ))
   }
 
-  if (propensity_scored && !is.null(cost_fp_constant))
+  if (propensity_scored && !is.null(cost_fp_constant)) {
     cost_fp_processed <- process_cost_fp(cost_fp_constant, base_compare)
-  else
+  } else {
     cost_fp_processed <- NULL
+  }
 
   ps_flags <- set_ps_flags(mode, propensity_scored)
 
@@ -154,14 +158,15 @@ compute_pr_curve <- function(
     searchspace_id = seq_len(dplyr::n())
   )
   thresholds_list <- tibble::deframe(
-    dplyr::select(searchspace,
-                  "searchspace_id",
-                  "thresholds")
+    dplyr::select(
+      searchspace,
+      "searchspace_id",
+      "thresholds"
+    )
   )
 
   get_results_per_searchspace_id <- function(
-    threshold, limit, base_compare, grouping_var
-  ) {
+      threshold, limit, base_compare, grouping_var) {
     compare_thresholded <- apply_threshold(
       threshold = threshold,
       limit = limit,
@@ -178,10 +183,10 @@ compute_pr_curve <- function(
       intermed_res,
       propensity_scored = ps_flags$summarise
     )
-
   }
-  if (verbose)
+  if (verbose) {
     message("Computing set retrieval metrics for all thresholds and limits.")
+  }
 
 
   # get results per searchspace_id and
@@ -226,17 +231,19 @@ compute_pr_curve <- function(
     opt_cutoff <- dplyr::select(
       dplyr::left_join(
         opt_cutoff,
-        f1_opt, by = c("searchspace_id", grouping_var_stripped)
+        f1_opt,
+        by = c("searchspace_id", grouping_var_stripped)
       ),
       dplyr::all_of(
-        c("thresholds",
+        c(
+          "thresholds",
           "limits",
           "searchspace_id",
           "f1_max",
-          grouping_var_stripped)
+          grouping_var_stripped
+        )
       )
     )
-
   } else {
     opt_cutoff <- NULL
     all_cutoffs <- NULL
@@ -264,7 +271,7 @@ compute_pr_curve <- function(
     )
 
     all_cutoffs <- dplyr::ungroup(f1_results_grpd)
-    all_cutoffs <-  dplyr::mutate(
+    all_cutoffs <- dplyr::mutate(
       all_cutoffs,
       searchspace_id = as.integer(.data$searchspace_id)
     )
@@ -276,11 +283,12 @@ compute_pr_curve <- function(
     all_cutoffs <- dplyr::left_join(
       all_cutoffs,
       pr_all_thrsld_reshaped,
-      by = c("searchspace_id",  grouping_var_stripped)
+      by = c("searchspace_id", grouping_var_stripped)
     )
   }
 
-  list(plot_data = pr_all_thrsld_reshaped, opt_cutoff = opt_cutoff,
-       all_cutoffs = all_cutoffs)
-
+  list(
+    plot_data = pr_all_thrsld_reshaped, opt_cutoff = opt_cutoff,
+    all_cutoffs = all_cutoffs
+  )
 }

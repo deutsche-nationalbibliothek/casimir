@@ -1,5 +1,5 @@
 test_that("summarise_intermediate_results checks out", {
-  intermediate_results <-  structure(
+  intermediate_results <- structure(
     list(
       doc_id = c("A", "B", "C"),
       n_gold = c(3L, 2L, 4L),
@@ -21,7 +21,7 @@ test_that("summarise_intermediate_results checks out", {
     "f1", (1 / 3 + 0.5 + 0.4) / 3, 3,
     "prec", (1 / 3 + 0.5 + 1) / 3, 3,
     "rec", (1 / 3 + 0.5 + 0.25) / 3, 3,
-    "rprec", (1 / 3 +  0.5 + 1) / 3, 3,
+    "rprec", (1 / 3 + 0.5 + 1) / 3, 3,
   )
 
   intermediate_results_grpd <- dplyr::group_by(
@@ -37,11 +37,9 @@ test_that("summarise_intermediate_results checks out", {
 
   expect_equal(actual_res, expected_res)
   expect_equal(actual_res_collapse, expected_res)
-
 })
 
 test_that("f1-score handles missings expectedly in summarise stage", {
-
   # Scenraio 1: Micro-Averaged precision and recall are both 0
   intermediate_results <- structure(
     list(
@@ -65,7 +63,7 @@ test_that("f1-score handles missings expectedly in summarise stage", {
   expected <- structure(
     list(
       metric = c("f1", "prec", "rec", "rprec"),
-      value = c(0,  0, 0, 0),
+      value = c(0, 0, 0, 0),
       support = c(1, 1, 1, 1)
     ),
     class = c("tbl_df", "tbl", "data.frame"),
@@ -101,7 +99,7 @@ test_that("f1-score handles missings expectedly in summarise stage", {
   expected <- structure(
     list(
       metric = c("f1", "prec", "rec", "rprec"),
-      value = c(0,  NA, 0, NA),
+      value = c(0, NA, 0, NA),
       support = c(1, 0, 2, 0)
     ),
     class = c("tbl_df", "tbl", "data.frame"),
@@ -138,7 +136,7 @@ test_that("f1-score handles missings expectedly in summarise stage", {
   expected <- structure(
     list(
       metric = c("f1", "prec", "rec", "rprec"),
-      value = c(0,  0, NA, NA),
+      value = c(0, 0, NA, NA),
       support = c(1, 2, 0, 0)
     ),
     class = c("tbl_df", "tbl", "data.frame"),
@@ -175,7 +173,7 @@ test_that("f1-score handles missings expectedly in summarise stage", {
   expected <- structure(
     list(
       metric = c("f1", "prec", "rec", "rprec"),
-      value = c(NA_real_,  NA_real_, NA_real_, NA_real_),
+      value = c(NA_real_, NA_real_, NA_real_, NA_real_),
       support = c(0, 0, 0, 0)
     ),
     class = c("tbl_df", "tbl", "data.frame"),
@@ -191,7 +189,6 @@ test_that("f1-score handles missings expectedly in summarise stage", {
 })
 
 test_that("Summarise works with weighted mean", {
-
   gold <- tibble::tribble(
     ~doc_id, ~label_id,
     "A", "a",
@@ -244,7 +241,7 @@ test_that("Summarise works with weighted mean", {
     .data = label_wise_res_no_weight$results_table,
     dplyr::across(
       prec:f1,
-      .fns =  ~ sum(.x * .data$label_weight, na.rm = TRUE) /
+      .fns = ~ sum(.x * .data$label_weight, na.rm = TRUE) /
         sum(as.numeric(!is.na(.x)) * .data$label_weight, na.rm = TRUE)
     )
   )
@@ -273,5 +270,4 @@ test_that("Summarise works with weighted mean", {
     expected_vs_observed$value.obs,
     expected_vs_observed$value.exp
   )
-
 })

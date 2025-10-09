@@ -16,19 +16,19 @@
 #' @examples
 #'
 #' gold <- tibble::tribble(
-#'     ~doc_id, ~label_id,
-#'     "A", "a",
-#'     "A", "b",
-#'     "A", "c",
-#'     "B", "a",
-#'     "B", "d",
-#'     "C", "a",
-#'     "C", "b",
-#'     "C", "d",
-#'     "C", "f"
+#'   ~doc_id, ~label_id,
+#'   "A", "a",
+#'   "A", "b",
+#'   "A", "c",
+#'   "B", "a",
+#'   "B", "d",
+#'   "C", "a",
+#'   "C", "b",
+#'   "C", "d",
+#'   "C", "f"
 #' )
 #'
-#' pred<- tibble::tribble(
+#' pred <- tibble::tribble(
 #'   ~doc_id, ~label_id,
 #'   "A", "a",
 #'   "A", "d",
@@ -42,13 +42,11 @@
 #' casimir:::compute_intermediate_results(gold_vs_pred, "doc_id")
 #'
 compute_intermediate_results <- function(
-  gold_vs_pred,
-  grouping_var,
-  propensity_scored = FALSE,
-  cost_fp = NULL,
-  check_group_names = options::opt("check_group_names")
-) {
-
+    gold_vs_pred,
+    grouping_var,
+    propensity_scored = FALSE,
+    cost_fp = NULL,
+    check_group_names = options::opt("check_group_names")) {
   stopifnot(all(c("suggested", "gold") %in% colnames(gold_vs_pred)))
 
   stopifnot(!is.null(grouping_var))
@@ -76,9 +74,7 @@ compute_intermediate_results <- function(
     stopifnot("label_weight" %in% colnames(gold_vs_pred))
 
     gold_vs_pred_smry <- find_ps_rprec_deno(gold_vs_pred, grouping_var, cost_fp)
-
   } else {
-
     rowwise_trans <- collapse::fcompute(
       .data = gold_vs_pred,
       n_gold = gold,
@@ -95,21 +91,23 @@ compute_intermediate_results <- function(
       rprec_deno = pmin(n_gold + delta_relevance, n_suggested),
       grp_names = row.names(gold_vs_pred_smry)
     )
-
   }
 
   gold_vs_pred_smry <- collapse::ftransform(
     .data = gold_vs_pred_smry,
     prec = ifelse(n_suggested == 0,
-                  NA_real_,
-                  (tp + delta_relevance) / (tp + fp)),
+      NA_real_,
+      (tp + delta_relevance) / (tp + fp)
+    ),
     # compute rprecision as in Manning etal.
     rprec = ifelse(pmin(n_gold, n_suggested) == 0,
-                   NA_real_,
-                   (tp + delta_relevance) / rprec_deno),
+      NA_real_,
+      (tp + delta_relevance) / rprec_deno
+    ),
     rec = ifelse(n_gold == 0,
-                 NA_real_,
-                 (tp + delta_relevance) / (tp + fn + delta_relevance)),
+      NA_real_,
+      (tp + delta_relevance) / (tp + fn + delta_relevance)
+    ),
     # NA-Handling for F1:
     # return NA if both prec and rec are NA
     # return 0 if only one of them is NA
@@ -118,7 +116,6 @@ compute_intermediate_results <- function(
       NA_real_,
       2 * (tp + delta_relevance) / (2 * tp + fp + fn + delta_relevance)
     )
-
   )
 
   gold_vs_pred_smry <- tidyr::separate(
@@ -171,13 +168,11 @@ compute_intermediate_results <- function(
 
 #' @describeIn compute_intermediate_results variant with dplyr based
 #' internals rather then collapse internals
-compute_intermediate_results_dplyr <- function( # nolint
-  gold_vs_pred,
-  grouping_var,
-  propensity_scored = FALSE,
-  cost_fp = NULL
-) {
-
+compute_intermediate_results_dplyr <- function( # nolint styler: off
+    gold_vs_pred,
+    grouping_var,
+    propensity_scored = FALSE,
+    cost_fp = NULL) {
   stopifnot(all(c("suggested", "gold") %in% colnames(gold_vs_pred)))
 
   if (!("relevance") %in% colnames(gold_vs_pred)) {
@@ -195,7 +190,6 @@ compute_intermediate_results_dplyr <- function( # nolint
       grouping_var,
       cost_fp
     )
-
   } else {
     gold_vs_pred_smry <- dplyr::summarise(
       dplyr::group_by(gold_vs_pred, !!!grouping_var),
@@ -218,12 +212,14 @@ compute_intermediate_results_dplyr <- function( # nolint
   gold_vs_pred_smry <- dplyr::mutate(
     gold_vs_pred_smry,
     prec = ifelse(.data$n_suggested == 0,
-                  NA_real_,
-                  (.data$tp + .data$delta_relevance) / (.data$tp + .data$fp)),
+      NA_real_,
+      (.data$tp + .data$delta_relevance) / (.data$tp + .data$fp)
+    ),
     rec = ifelse(.data$n_gold == 0,
-                 NA_real_,
-                 (.data$tp + .data$delta_relevance) /
-                   (.data$tp + .data$fn + .data$delta_relevance)),
+      NA_real_,
+      (.data$tp + .data$delta_relevance) /
+        (.data$tp + .data$fn + .data$delta_relevance)
+    ),
     # NA-Handling for F1:
     # return NA if both prec and rec are NA
     # return 0 if only one of them is NA
@@ -239,8 +235,9 @@ compute_intermediate_results_dplyr <- function( # nolint
   gold_vs_pred_smry <- dplyr::mutate(
     gold_vs_pred_smry,
     rprec = ifelse(.data$rprec_deno == 0,
-                   NA_real_,
-                   (.data$tp + .data$delta_relevance) / .data$rprec_deno),
+      NA_real_,
+      (.data$tp + .data$delta_relevance) / .data$rprec_deno
+    ),
     .before = "rec"
   )
 

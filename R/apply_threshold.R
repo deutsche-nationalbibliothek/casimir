@@ -52,7 +52,6 @@
 #'   base_compare = base_compare
 #' )
 apply_threshold <- function(threshold, limit = NA_real_, base_compare) {
-
   stopifnot(all(c("gold", "score") %in% colnames(base_compare)))
   stopifnot(is.numeric(base_compare[["score"]]))
   stopifnot(sum(base_compare[["score"]] > 1, na.rm = TRUE) == 0)
@@ -85,7 +84,8 @@ apply_threshold <- function(threshold, limit = NA_real_, base_compare) {
     compare_w_cutoff <- dplyr::mutate(
       compare_w_cutoff,
       suggested = dplyr::if_else(.data$suggested & .data$rank <= limit,
-                                 TRUE, FALSE, FALSE)
+        TRUE, FALSE, FALSE
+      )
     )
   }
   compare_w_cutoff

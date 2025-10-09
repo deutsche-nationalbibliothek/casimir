@@ -163,10 +163,11 @@ pred <- tibble::tribble(
 plan(sequential) # or whatever resources you have
 
 a <- compute_set_retrieval_scores(
-gold, pred,
-mode = "doc-avg",
-compute_bootstrap_ci = TRUE,
-n_bt = 100L)
+  gold, pred,
+  mode = "doc-avg",
+  compute_bootstrap_ci = TRUE,
+  n_bt = 100L
+)
 
 
 ggplot(a, aes(x = metric, y = value)) +
@@ -181,7 +182,7 @@ pred_w_relevance <- tibble::tribble(
   "A", "d", 0.0,
   "A", "f", 0.0,
   "B", "a", 1.0,
-  "B", "e", 1/3,
+  "B", "e", 1 / 3,
   "C", "f", 1.0,
 )
 
@@ -190,6 +191,5 @@ b <- compute_set_retrieval_scores(
   mode = "doc-avg",
   graded_relevance = TRUE
 )
-
 
 }

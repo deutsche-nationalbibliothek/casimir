@@ -5,7 +5,6 @@
 #'
 #' @return a character vector of variables that determine the grouping structure
 set_grouping_var <- function(mode, doc_groups, label_groups, var = NULL) {
-
   if (!is.null(doc_groups)) {
     stopifnot("doc_id" %in% colnames(doc_groups))
     doc_strata <- setdiff(colnames(doc_groups), "doc_id")
@@ -21,14 +20,17 @@ set_grouping_var <- function(mode, doc_groups, label_groups, var = NULL) {
   }
 
   stopifnot(mode %in% c("doc-avg", "subj-avg", "micro"))
-  if (mode == "doc-avg")
+  if (mode == "doc-avg") {
     grouping_var <- c("doc_id", doc_strata, label_strata, var)
+  }
 
-  if (mode == "subj-avg")
+  if (mode == "subj-avg") {
     grouping_var <- c("label_id", doc_strata, label_strata, var)
+  }
 
-  if (mode == "micro")
+  if (mode == "micro") {
     grouping_var <- c("doc_id", "label_id", doc_strata, label_strata, var)
+  }
 
   grouping_var
 }
@@ -40,7 +42,6 @@ set_grouping_var <- function(mode, doc_groups, label_groups, var = NULL) {
 #'
 #' @return a numeric value > 0
 process_cost_fp <- function(cost_fp_constant, gold_vs_pred) {
-
   label_stats <- gold_vs_pred |>
     collapse::fsubset(gold == TRUE) |>
     collapse::fsummarise(
@@ -52,8 +53,7 @@ process_cost_fp <- function(cost_fp_constant, gold_vs_pred) {
   if (is.numeric(cost_fp_constant) && cost_fp_constant > 0) {
     cost_fp_processed <- cost_fp_constant
   } else if (cost_fp_constant %in% c("max", "min", "mean")) {
-    cost_fp_processed <- switch(
-      cost_fp_constant,
+    cost_fp_processed <- switch(cost_fp_constant,
       max = label_stats$max,
       min = label_stats$min,
       mean = label_stats$mean

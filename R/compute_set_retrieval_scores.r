@@ -93,10 +93,11 @@
 #' plan(sequential) # or whatever resources you have
 #'
 #' a <- compute_set_retrieval_scores(
-#' gold, pred,
-#' mode = "doc-avg",
-#' compute_bootstrap_ci = TRUE,
-#' n_bt = 100L)
+#'   gold, pred,
+#'   mode = "doc-avg",
+#'   compute_bootstrap_ci = TRUE,
+#'   n_bt = 100L
+#' )
 #'
 #'
 #' ggplot(a, aes(x = metric, y = value)) +
@@ -111,7 +112,7 @@
 #'   "A", "d", 0.0,
 #'   "A", "f", 0.0,
 #'   "B", "a", 1.0,
-#'   "B", "e", 1/3,
+#'   "B", "e", 1 / 3,
 #'   "C", "f", 1.0,
 #' )
 #'
@@ -121,26 +122,23 @@
 #'   graded_relevance = TRUE
 #' )
 #'
-#'
 compute_set_retrieval_scores <- function(
-  gold_standard,
-  predicted,
-  mode = "doc-avg",
-  compute_bootstrap_ci = FALSE,
-  n_bt = 10L,
-  doc_groups = NULL,
-  label_groups = NULL,
-  graded_relevance = FALSE,
-  rename_graded_metrics = FALSE,
-  seed = NULL,
-  propensity_scored = FALSE,
-  label_distribution = NULL,
-  cost_fp_constant = NULL,
-  ignore_inconsistencies = options::opt("ignore_inconsistencies"),
-  verbose = options::opt("verbose"),
-  progress = options::opt("progress")
-) {
-
+    gold_standard,
+    predicted,
+    mode = "doc-avg",
+    compute_bootstrap_ci = FALSE,
+    n_bt = 10L,
+    doc_groups = NULL,
+    label_groups = NULL,
+    graded_relevance = FALSE,
+    rename_graded_metrics = FALSE,
+    seed = NULL,
+    propensity_scored = FALSE,
+    label_distribution = NULL,
+    cost_fp_constant = NULL,
+    ignore_inconsistencies = options::opt("ignore_inconsistencies"),
+    verbose = options::opt("verbose"),
+    progress = options::opt("progress")) {
   stopifnot(mode %in% c("doc-avg", "subj-avg", "micro"))
   stopifnot(all(c("label_id", "doc_id") %in% colnames(gold_standard)))
   stopifnot(all(c("label_id", "doc_id") %in% colnames(predicted)))
@@ -156,10 +154,11 @@ compute_set_retrieval_scores <- function(
     ignore_inconsistencies = ignore_inconsistencies
   )
 
-  if (propensity_scored && !is.null(cost_fp_constant))
+  if (propensity_scored && !is.null(cost_fp_constant)) {
     cost_fp_processed <- process_cost_fp(cost_fp_constant, compare)
-  else
+  } else {
     cost_fp_processed <- NULL
+  }
 
   ps_flags <- set_ps_flags(mode, propensity_scored)
 
@@ -167,24 +166,27 @@ compute_set_retrieval_scores <- function(
 
   # give warnings, when additional stratification variables are not factors
   test_factor <- function(var) {
-    if (!is.factor(compare[[var]]))
+    if (!is.factor(compare[[var]])) {
       warning(paste(
         var,
         "is not a factor variable.",
         "Some levels may be lost in bootstrap replications"
       ))
+    }
   }
   if (compute_bootstrap_ci) {
     purrr::map(setdiff(grouping_var, c("doc_id", "label_id")),
-               .f = test_factor)
+      .f = test_factor
+    )
   }
 
   if (compute_bootstrap_ci == FALSE) {
     boot_results <- NULL
 
 
-    if (verbose)
+    if (verbose) {
       message("Computing intermediate results...")
+    }
 
     intermediate_results <- compute_intermediate_results(
       compare,
@@ -193,8 +195,9 @@ compute_set_retrieval_scores <- function(
       cost_fp = cost_fp_processed
     )
 
-    if (verbose)
+    if (verbose) {
       message("Summarizing intermediate results...")
+    }
 
 
     results <- summarise_intermediate_results(
@@ -203,11 +206,11 @@ compute_set_retrieval_scores <- function(
       label_distribution = label_distribution
     )
   } else {
-
     # generate n_bt copies of results, plus one original
 
-    if (verbose)
+    if (verbose) {
       message("Computing bootstrap confidence intervals...")
+    }
 
     boot_results <- generate_replicate_results(
       base_compare = compare,
@@ -234,8 +237,10 @@ compute_set_retrieval_scores <- function(
       "metric",
       setdiff(grouping_var, c("doc_id", "label_id"))
     )
-    boot_results_grpd <- dplyr::group_by(boot_results,
-                                         !!!rlang::syms(smry_grouping_var))
+    boot_results_grpd <- dplyr::group_by(
+      boot_results,
+      !!!rlang::syms(smry_grouping_var)
+    )
     boot_ci <- dplyr::summarise(
       boot_results_grpd,
       ci_lower = stats::quantile(x = .data$value, probs = 0.025, na.rm = TRUE),
@@ -284,8 +289,10 @@ compute_set_retrieval_scores <- function(
     )
 
     # rearrange cols, so that support is last col
-    results <- dplyr::select(results, setdiff(colnames(results), "support"),
-                             "support")
+    results <- dplyr::select(
+      results, setdiff(colnames(results), "support"),
+      "support"
+    )
   }
 
   # add column that indicates the aggregation mode
@@ -296,31 +303,28 @@ compute_set_retrieval_scores <- function(
   }
 
   results
-
 }
 
 
 #' @describeIn compute_set_retrieval_scores variant with internal usage of
 #'  dplyr rather than collapse library. Tends to be slower, but more stable
-compute_set_retrieval_scores_dplyr <- function( # nolint
-  gold_standard,
-  predicted,
-  mode = "doc-avg",
-  compute_bootstrap_ci = FALSE,
-  n_bt = 10L,
-  doc_groups = NULL,
-  label_groups = NULL,
-  graded_relevance = FALSE,
-  rename_graded_metrics = FALSE,
-  seed = NULL,
-  propensity_scored = FALSE,
-  label_distribution = NULL,
-  cost_fp_constant = NULL,
-  ignore_inconsistencies = FALSE,
-  verbose = FALSE,
-  progress = FALSE
-) {
-
+compute_set_retrieval_scores_dplyr <- function( # nolint styler: off
+    gold_standard,
+    predicted,
+    mode = "doc-avg",
+    compute_bootstrap_ci = FALSE,
+    n_bt = 10L,
+    doc_groups = NULL,
+    label_groups = NULL,
+    graded_relevance = FALSE,
+    rename_graded_metrics = FALSE,
+    seed = NULL,
+    propensity_scored = FALSE,
+    label_distribution = NULL,
+    cost_fp_constant = NULL,
+    ignore_inconsistencies = FALSE,
+    verbose = FALSE,
+    progress = FALSE) {
   stopifnot(is.logical(compute_bootstrap_ci))
 
   if (propensity_scored) {
@@ -345,43 +349,48 @@ compute_set_retrieval_scores_dplyr <- function( # nolint
   if (propensity_scored) {
     label_weights <- compute_propensity_scores(label_distribution)
 
-    rlang::try_fetch({
-      compare <- dplyr::inner_join(
-        x = compare,
-        y = label_weights,
-        by = c("label_id"),
-        relationship = "many-to-one",
-        unmatched = c("error", "drop") # i.e. every label in compare must have
-        # exactly one weight, but the label_weights
-        # may contain more labels than compare
-      )
-    },
-    error = function(cnd) {
-      rlang::abort(
-        "Label distribution does not match gold_standard or predicted labels.",
-        parent = cnd
-      )
-    })
+    rlang::try_fetch(
+      {
+        compare <- dplyr::inner_join(
+          x = compare,
+          y = label_weights,
+          by = c("label_id"),
+          relationship = "many-to-one",
+          unmatched = c("error", "drop") # i.e. every label in compare must have
+          # exactly one weight, but the label_weights
+          # may contain more labels than compare
+        )
+      },
+      error = function(cnd) {
+        rlang::abort(
+          paste0(
+            "Label distribution does not match gold_standard ",
+            "or predicted labels."
+          ),
+          parent = cnd
+        )
+      }
+    )
 
     cost_fp_processed <- process_cost_fp(cost_fp_constant, compare)
-
   }
 
   grouping_var <- set_grouping_var(mode, doc_groups, label_groups)
 
   # give warnings, when additional stratification variables are not factors
   test_factor <- function(var) {
-    if (!is.factor(compare[[var]]))
+    if (!is.factor(compare[[var]])) {
       warning(paste(
         var,
         "is not a factor variable.",
         "Some levels may be lost in bootstrap replications"
       ))
+    }
   }
   if (compute_bootstrap_ci) {
     purrr::map(setdiff(grouping_var, c("doc_id", "label_id")),
-               .f = test_factor)
-
+      .f = test_factor
+    )
   }
 
   if (compute_bootstrap_ci == FALSE) {
@@ -399,10 +408,10 @@ compute_set_retrieval_scores_dplyr <- function( # nolint
       label_distribution = label_distribution
     )
   } else {
-
     # generate n_bt copies of results, plus one original
-    if (verbose)
+    if (verbose) {
       message("Computing bootstrap confidence intervals...")
+    }
 
     boot_results <- generate_replicate_results_dplyr(
       base_compare = compare,
@@ -429,8 +438,10 @@ compute_set_retrieval_scores_dplyr <- function( # nolint
       "metric",
       setdiff(grouping_var, c("doc_id", "label_id"))
     )
-    boot_results_grpd <- dplyr::group_by(boot_results,
-                                         !!!rlang::syms(smry_grouping_var))
+    boot_results_grpd <- dplyr::group_by(
+      boot_results,
+      !!!rlang::syms(smry_grouping_var)
+    )
     boot_ci <- dplyr::summarise(
       boot_results_grpd,
       ci_lower = stats::quantile(x = .data$value, probs = 0.025, na.rm = TRUE),
@@ -444,8 +455,10 @@ compute_set_retrieval_scores_dplyr <- function( # nolint
     )
 
     # rearrange cols, so that support is last col
-    results <- dplyr::select(results, setdiff(colnames(results), "support"),
-                             "support")
+    results <- dplyr::select(
+      results, setdiff(colnames(results), "support"),
+      "support"
+    )
   }
 
   # add column that indicates the aggregation mode
@@ -456,5 +469,4 @@ compute_set_retrieval_scores_dplyr <- function( # nolint
   }
 
   results
-
 }

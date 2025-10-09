@@ -23,16 +23,16 @@
 #' library(casimir)
 #'
 #' gold <- tibble::tribble(
-#' ~doc_id, ~label_id,
-#' "A", "a",
-#' "A", "b",
-#' "A", "c",
-#' "B", "a",
-#' "B", "d",
-#' "C", "a",
-#' "C", "b",
-#' "C", "d",
-#' "C", "f"
+#'   ~doc_id, ~label_id,
+#'   "A", "a",
+#'   "A", "b",
+#'   "A", "c",
+#'   "B", "a",
+#'   "B", "d",
+#'   "C", "a",
+#'   "C", "b",
+#'   "C", "d",
+#'   "C", "f"
 #' )
 #'
 #' pred <- tibble::tribble(
@@ -51,35 +51,33 @@
 #'
 #' auc <- compute_pr_auc(gold, pred, mode = "doc-avg")
 compute_pr_auc <- function(
-  gold_standard, predicted,
-  doc_groups = NULL,
-  label_groups = NULL,
-  mode = "doc-avg",
-  steps = 100,
-  thresholds = NULL,
-  limit_range = NA_real_,
-  compute_bootstrap_ci = FALSE,
-  n_bt = 10L,
-  seed = NULL,
-  graded_relevance = FALSE,
-  rename_graded_metrics = FALSE,
-  propensity_scored = FALSE,
-  label_distribution = NULL,
-  cost_fp_constant = NULL,
-  ignore_inconsistencies = options::opt("ignore_inconsistencies"),
-  verbose = options::opt("verbose"),
-  progress = options::opt("progress")
-) {
-
-
+    gold_standard, predicted,
+    doc_groups = NULL,
+    label_groups = NULL,
+    mode = "doc-avg",
+    steps = 100,
+    thresholds = NULL,
+    limit_range = NA_real_,
+    compute_bootstrap_ci = FALSE,
+    n_bt = 10L,
+    seed = NULL,
+    graded_relevance = FALSE,
+    rename_graded_metrics = FALSE,
+    propensity_scored = FALSE,
+    label_distribution = NULL,
+    cost_fp_constant = NULL,
+    ignore_inconsistencies = options::opt("ignore_inconsistencies"),
+    verbose = options::opt("verbose"),
+    progress = options::opt("progress")) {
   stopifnot(all(c("label_id", "doc_id") %in% colnames(gold_standard)))
   stopifnot(all(c("label_id", "doc_id") %in% colnames(predicted)))
   stopifnot(is.logical(compute_bootstrap_ci))
   stopifnot(is.logical(progress))
   stopifnot(is.integer(n_bt))
   stopifnot(is.numeric(limit_range))
-  if (!all(is.na(limit_range)))
+  if (!all(is.na(limit_range))) {
     stopifnot(all(limit_range >= 1L))
+  }
 
 
   if (!all(is.na(limit_range)) && !"rank" %in% colnames(predicted)) {
@@ -99,8 +97,9 @@ compute_pr_auc <- function(
   }
 
   if (compute_bootstrap_ci == FALSE) {
-    if (verbose)
+    if (verbose) {
       message("Computing pr-curve")
+    }
 
     pr_curve <- compute_pr_curve(
       gold_standard = gold_standard,
@@ -119,15 +118,15 @@ compute_pr_auc <- function(
       verbose = verbose,
       progress = progress
     )
-    if (verbose)
+    if (verbose) {
       message("Computing pr-auc from pr-curve")
+    }
     remaining_groupvars <- setdiff(
       set_grouping_var(mode, doc_groups, label_groups),
       c("doc_id", "label_id", "searchspace_id")
     )
     pr_auc <- compute_pr_auc_from_curve(pr_curve, remaining_groupvars)
   } else {
-
     grouping_var <- set_grouping_var(mode, doc_groups, label_groups)
 
     base_compare <- create_comparison(
@@ -140,10 +139,11 @@ compute_pr_auc <- function(
       ignore_inconsistencies = ignore_inconsistencies
     )
 
-    if (propensity_scored && !is.null(cost_fp_constant))
+    if (propensity_scored && !is.null(cost_fp_constant)) {
       cost_fp_processed <- process_cost_fp(cost_fp_constant, base_compare)
-    else
+    } else {
       cost_fp_processed <- NULL
+    }
 
     ps_flags <- set_ps_flags(mode, propensity_scored)
 
@@ -156,7 +156,7 @@ compute_pr_auc <- function(
       thresholds <- unique(stats::quantile(
         true_positives[["score"]],
         probs = seq(0, 1, 1 / steps),
-        type = 1,  na.rm = TRUE
+        type = 1, na.rm = TRUE
       ))
     }
 
@@ -165,12 +165,10 @@ compute_pr_auc <- function(
       limits = limit_range
     )
 
-    get_intermed_res_per_searchspace_id <- function( # nolint
-      threshold,
-      limit,
-      base_compare,
-      grouping_var
-    ) {
+    get_intermed_res_per_searchspace_id <- function(threshold, # nolint
+                                                    limit,
+                                                    base_compare,
+                                                    grouping_var) {
       compare_all_thrsld <- apply_threshold(
         base_compare = base_compare,
         threshold = threshold,
@@ -187,8 +185,9 @@ compute_pr_auc <- function(
     }
 
     # glue together data.frames with different searchspace_id
-    if (verbose)
+    if (verbose) {
       message("Computing intermediate results for all thresholds and limits")
+    }
 
     intermed_res_all_thrsld <- list()
     intermed_res_all_thrsld[["results_table"]] <- furrr::future_map2_dfr(
@@ -207,8 +206,9 @@ compute_pr_auc <- function(
 
     smry_grouping_var <- setdiff(grouping_var, c("doc_id", "label_id"))
 
-    if (verbose)
+    if (verbose) {
       message("Computing bootstrap confidence intervals")
+    }
 
     boot_results <- generate_pr_auc_replica(
       intermed_res_all_thrsld,
@@ -228,8 +228,10 @@ compute_pr_auc <- function(
     # coming from the boot-strap copies
     # Note: this has to respect the desired grouping structure for the various
     # stratification variables
-    boot_results_grpd <- dplyr::group_by(boot_results,
-                                         !!!rlang::syms(smry_grouping_var))
+    boot_results_grpd <- dplyr::group_by(
+      boot_results,
+      !!!rlang::syms(smry_grouping_var)
+    )
     boot_ci <- dplyr::summarise(
       boot_results_grpd,
       ci_lower = stats::quantile(x = .data$pr_auc, probs = 0.025, na.rm = TRUE),
@@ -245,7 +247,6 @@ compute_pr_auc <- function(
         by = smry_grouping_var
       )
     }
-
   }
 
   if (graded_relevance && rename_graded_metrics) {
@@ -256,7 +257,6 @@ compute_pr_auc <- function(
   }
 
   pr_auc
-
 }
 
 #' Compute bootstrap replica of pr-auc
@@ -275,11 +275,10 @@ compute_pr_auc <- function(
 #'
 #' @return \code{data.frame} with cols \code{c("boot_replicate", "pr_auc")}
 generate_pr_auc_replica <- function(
-  intermed_res_all_thrsld,
-  seed, n_bt,
-  propensity_scored,
-  progress = options::opt("progress")
-) {
+    intermed_res_all_thrsld,
+    seed, n_bt,
+    propensity_scored,
+    progress = options::opt("progress")) {
   doc_id_list <- dplyr::distinct(
     intermed_res_all_thrsld$results_table,
     .data$doc_id

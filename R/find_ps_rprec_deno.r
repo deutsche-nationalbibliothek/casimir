@@ -6,7 +6,6 @@
 #' @return data.frame with cols "n_gold", "n_suggested", "tp", "fp",
 #'   "fn", "rprec_deno"
 find_ps_rprec_deno <- function(gold_vs_pred, grouping_var, cost_fp) {
-
   stopifnot(
     all(c("label_weight") %in% colnames(gold_vs_pred))
   )
@@ -64,11 +63,12 @@ find_ps_rprec_deno <- function(gold_vs_pred, grouping_var, cost_fp) {
 
   cumsums <- collapse::ftransform(
     cumsums,
-    grp_names = purrr::map_chr(grp_id_col, ~group_names[.x])
+    grp_names = purrr::map_chr(grp_id_col, ~ group_names[.x])
   )
 
   gold_vs_pred_smry <- collapse::join(
-    gold_vs_pred_smry, cumsums, on = "grp_names",
+    gold_vs_pred_smry, cumsums,
+    on = "grp_names",
     how = "left",
     multiple = TRUE,
     validate = "1:m",
@@ -77,8 +77,8 @@ find_ps_rprec_deno <- function(gold_vs_pred, grouping_var, cost_fp) {
 
   gold_vs_pred_smry <- collapse::fsubset(
     gold_vs_pred_smry,
-    rank_gold == pmin(n_suggested, n_gold)
-    | pmin(n_gold, n_suggested) == 0
+    rank_gold == pmin(n_suggested, n_gold) |
+      pmin(n_gold, n_suggested) == 0
   )
 
   gold_vs_pred_smry <- collapse::ftransform(
@@ -104,14 +104,12 @@ find_ps_rprec_deno <- function(gold_vs_pred, grouping_var, cost_fp) {
       "fp", "fn", "delta_relevance", "rprec_deno"
     )
   )
-
 }
 
 
 #' @describeIn find_ps_rprec_deno variant with dplyr based
 #' internals rather then collapse internals
 find_ps_rprec_deno_dplyr <- function(gold_vs_pred, grouping_var, cost_fp) {
-
   stopifnot(
     all(c("label_weight") %in% colnames(gold_vs_pred))
   )
@@ -159,5 +157,4 @@ find_ps_rprec_deno_dplyr <- function(gold_vs_pred, grouping_var, cost_fp) {
     )
 
   gold_vs_pred_smry
-
 }

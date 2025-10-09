@@ -20,19 +20,19 @@
 #' library(casimir)
 #'
 #' gold <- tibble::tribble(
-#'     ~doc_id, ~label_id,
-#'     "A", "a",
-#'     "A", "b",
-#'     "A", "c",
-#'     "B", "a",
-#'     "B", "d",
-#'     "C", "a",
-#'     "C", "b",
-#'     "C", "d",
-#'     "C", "f"
+#'   ~doc_id, ~label_id,
+#'   "A", "a",
+#'   "A", "b",
+#'   "A", "c",
+#'   "B", "a",
+#'   "B", "d",
+#'   "C", "a",
+#'   "C", "b",
+#'   "C", "d",
+#'   "C", "f"
 #' )
 #'
-#' pred<- tibble::tribble(
+#' pred <- tibble::tribble(
 #'   ~doc_id, ~label_id,
 #'   "A", "a",
 #'   "A", "d",
@@ -45,21 +45,20 @@
 #' base_compare <- casimir:::create_comparison(gold, pred)
 #'
 #' boot_replica <- casimir:::generate_replicate_results(
-#'   base_compare, n_bt = 10L,
+#'   base_compare,
+#'   n_bt = 10L,
 #'   grouping_var = c("doc_id")
-#'   )
+#' )
 #'
 generate_replicate_results <- function(
-  base_compare,
-  n_bt,
-  grouping_var,
-  seed = NULL,
-  ps_flags = list("intermed" = FALSE, "summarise" = FALSE),
-  label_distribution = NULL,
-  cost_fp = NULL,
-  progress = options::opt("progress")
-) {
-
+    base_compare,
+    n_bt,
+    grouping_var,
+    seed = NULL,
+    ps_flags = list("intermed" = FALSE, "summarise" = FALSE),
+    label_distribution = NULL,
+    cost_fp = NULL,
+    progress = options::opt("progress")) {
   stopifnot(is.data.frame(base_compare))
   stopifnot(is.integer(n_bt))
   stopifnot("gold" %in% colnames(base_compare))
@@ -110,13 +109,12 @@ generate_replicate_results <- function(
 #'
 #' @return as \code{summarise_intermediate_results}
 helper_f <- function(
-  sampled_id_list,
-  compare_cpy,
-  grouping_var,
-  label_distribution = NULL,
-  ps_flags = list("intermed" = FALSE, "summarise" = FALSE),
-  cost_fp = NULL
-) {
+    sampled_id_list,
+    compare_cpy,
+    grouping_var,
+    label_distribution = NULL,
+    ps_flags = list("intermed" = FALSE, "summarise" = FALSE),
+    cost_fp = NULL) {
   compare_resampled <- collapse::join(
     compare_cpy, sampled_id_list,
     on = "doc_id", how = "inner", verbose = 0,
@@ -140,17 +138,15 @@ helper_f <- function(
 
 #' @describeIn generate_replicate_results variant with dplyr based
 #' internals rather then collapse internals
-generate_replicate_results_dplyr <- function( # nolint
-  base_compare,
-  n_bt,
-  grouping_var,
-  seed = NULL,
-  label_distribution = NULL,
-  ps_flags = list("intermed" = FALSE, "summarise" = FALSE),
-  cost_fp = NULL,
-  progress = FALSE
-) {
-
+generate_replicate_results_dplyr <- function( # nolint styler: off
+    base_compare,
+    n_bt,
+    grouping_var,
+    seed = NULL,
+    label_distribution = NULL,
+    ps_flags = list("intermed" = FALSE, "summarise" = FALSE),
+    cost_fp = NULL,
+    progress = FALSE) {
   stopifnot(is.data.frame(base_compare))
   stopifnot(is.integer(n_bt))
   stopifnot("gold" %in% colnames(base_compare))
@@ -200,13 +196,12 @@ generate_replicate_results_dplyr <- function( # nolint
 #'
 #' @return as \code{summarise_intermediate_results_dplyr}
 helper_f_dplyr <- function(
-  sampled_id_list,
-  compare_cpy,
-  grouping_var,
-  label_distribution = NULL,
-  ps_flags = list("intermed" = FALSE, "summarise" = FALSE),
-  cost_fp = NULL
-) {
+    sampled_id_list,
+    compare_cpy,
+    grouping_var,
+    label_distribution = NULL,
+    ps_flags = list("intermed" = FALSE, "summarise" = FALSE),
+    cost_fp = NULL) {
   compare_resampled <- dplyr::inner_join(
     compare_cpy, sampled_id_list,
     by = "doc_id",

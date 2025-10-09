@@ -1,5 +1,4 @@
 test_that("compute_pr_auc_from_curve is computed correctly", {
-
   pr_curve_ideal <- tibble::tribble(
     ~searchspace_id, ~rec, ~prec_cummax,
     1, 1.0, 1.0,
@@ -96,5 +95,4 @@ test_that("compute_pr_auc_from_curve is computed correctly", {
     exp_grpd,
     tolerance = 1e-3
   )
-
 })

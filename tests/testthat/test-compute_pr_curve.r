@@ -1,5 +1,4 @@
 test_that("pr curve computation works", {
-
   library(purrr, quietly = TRUE, warn.conflicts = FALSE)
 
   gold <- tibble::tribble(
@@ -57,10 +56,11 @@ test_that("pr curve computation works", {
     "doc-avg" = "doc-avg", "subj-avg" = "subj-avg", "micro" = "micro"
   ) |>
     purrr::map(
-      .f = ~dplyr::arrange(
+      .f = ~ dplyr::arrange(
         expect_silent(
           compute_pr_curve(
-            gold, pred, mode = .x, thresholds = thresholds
+            gold, pred,
+            mode = .x, thresholds = thresholds
           )$plot_data
         ),
         .data$searchspace_id
@@ -70,39 +70,39 @@ test_that("pr curve computation works", {
   expected <- list()
 
   expected[["doc-avg"]] <- tibble::tribble(
-    ~searchspace_id, ~prec,                ~rec, ~prec_cummax, ~mode,
-    0L,               0,    0.638888888888889, 0, "doc-avg",
-    1L,              0.5,   0.638888888888889, 0.5, "doc-avg",
-    2L, 0.277777777777778,   0.277777777777778, 0.5, "doc-avg",
-    3L,              0.5,   0.277777777777778, 0.5, "doc-avg",
-    4L,             0.75,   0.277777777777778, 0.75, "doc-avg",
-    5L,                1,   0.277777777777778, 1, "doc-avg",
-    6L,                1,   0.111111111111111, 1, "doc-avg",
-    7L,                1,   0,                 1, "doc-avg"
+    ~searchspace_id, ~prec, ~rec, ~prec_cummax, ~mode,
+    0L, 0, 0.638888888888889, 0, "doc-avg",
+    1L, 0.5, 0.638888888888889, 0.5, "doc-avg",
+    2L, 0.277777777777778, 0.277777777777778, 0.5, "doc-avg",
+    3L, 0.5, 0.277777777777778, 0.5, "doc-avg",
+    4L, 0.75, 0.277777777777778, 0.75, "doc-avg",
+    5L, 1, 0.277777777777778, 1, "doc-avg",
+    6L, 1, 0.111111111111111, 1, "doc-avg",
+    7L, 1, 0, 1, "doc-avg"
   )
 
   expected[["subj-avg"]] <- tibble::tribble(
-    ~searchspace_id, ~prec,                ~rec, ~prec_cummax, ~mode,
-    0L,                0,   0.633333333333333, 0, "subj-avg",
-    1L,              0.5,   0.633333333333333, 0.5, "subj-avg",
-    2L,              0.2,   0.133333333333333, 0.5, "subj-avg",
-    3L, 0.333333333333333,   0.133333333333333, 0.5, "subj-avg",
-    4L,              0.5,   0.133333333333333, 0.5, "subj-avg",
-    5L,                1,   0.133333333333333, 1, "subj-avg",
-    6L,                1,   0.0666666666666667, 1, "subj-avg",
-    7L,                1,   0,                 1, "subj-avg"
+    ~searchspace_id, ~prec, ~rec, ~prec_cummax, ~mode,
+    0L, 0, 0.633333333333333, 0, "subj-avg",
+    1L, 0.5, 0.633333333333333, 0.5, "subj-avg",
+    2L, 0.2, 0.133333333333333, 0.5, "subj-avg",
+    3L, 0.333333333333333, 0.133333333333333, 0.5, "subj-avg",
+    4L, 0.5, 0.133333333333333, 0.5, "subj-avg",
+    5L, 1, 0.133333333333333, 1, "subj-avg",
+    6L, 1, 0.0666666666666667, 1, "subj-avg",
+    7L, 1, 0, 1, "subj-avg"
   )
 
   expected[["micro"]] <- tibble::tribble(
-    ~searchspace_id, ~prec,                ~rec, ~prec_cummax, ~mode,
-    0L,                0,   0.555555555555556, 0, "micro",
-    1L,              0.5,   0.555555555555556, 0.5, "micro",
-    2L, 0.285714285714286,   0.222222222222222, 0.5, "micro",
-    3L,              0.5,   0.222222222222222, 0.5, "micro",
-    4L, 0.666666666666667,   0.222222222222222, 0.666666666666667, "micro",
-    5L,                1,   0.222222222222222, 1, "micro",
-    6L,                1,   0.111111111111111, 1, "micro",
-    7L,                1,   0,                 1, "micro"
+    ~searchspace_id, ~prec, ~rec, ~prec_cummax, ~mode,
+    0L, 0, 0.555555555555556, 0, "micro",
+    1L, 0.5, 0.555555555555556, 0.5, "micro",
+    2L, 0.285714285714286, 0.222222222222222, 0.5, "micro",
+    3L, 0.5, 0.222222222222222, 0.5, "micro",
+    4L, 0.666666666666667, 0.222222222222222, 0.666666666666667, "micro",
+    5L, 1, 0.222222222222222, 1, "micro",
+    6L, 1, 0.111111111111111, 1, "micro",
+    7L, 1, 0, 1, "micro"
   )
 
   # expect the actual curve to be as above
@@ -112,7 +112,7 @@ test_that("pr curve computation works", {
   expect_equal(
     purrr::map(
       res,
-      ~compute_pr_auc_from_curve(
+      ~ compute_pr_auc_from_curve(
         .x,
         grouping_vars = NULL
       )$pr_auc[1]
@@ -143,12 +143,10 @@ test_that("pr curve computation works", {
   )
 
   detach("package:purrr")
-
 })
 
 
 test_that("grouped pr-auc computation works with doc_groups", {
-
   library(purrr, quietly = TRUE, warn.conflicts = FALSE)
 
   # Randomly generated testdata seems not reproducible in R CMD check
@@ -184,11 +182,13 @@ test_that("grouped pr-auc computation works with doc_groups", {
 
   steps <- 15
   thresholds <- unique(quantile(
-    pred$score, probs = seq(0, 1, 1 / steps), type = 1
+    pred$score,
+    probs = seq(0, 1, 1 / steps), type = 1
   ))
   # test whether parallel computation yields the same as sequential computation
   pr_curve_by_hsg_parallel <- compute_pr_curve(
-    gold, pred, doc_groups = doc_groups,
+    gold, pred,
+    doc_groups = doc_groups,
     thresholds = thresholds
   )$plot_data |>
     dplyr::arrange(.data$hsg, .data$searchspace_id) |>
@@ -199,18 +199,18 @@ test_that("grouped pr-auc computation works with doc_groups", {
       .f = function(x) {
         gold_1hsg <- dplyr::filter(gold_hsg, .data$hsg == x)
         pred_1hsg <- dplyr::inner_join(pred,
-                                       dplyr::distinct(gold_1hsg, .data$doc_id),
-                                       by = c("doc_id"))
+          dplyr::distinct(gold_1hsg, .data$doc_id),
+          by = c("doc_id")
+        )
 
         compute_pr_curve(
           gold_standard = gold_1hsg,
           predicted = pred_1hsg,
           thresholds = thresholds
         )$plot_data
-
       },
       .id = "hsg"
-    )  |>
+    ) |>
     dplyr::arrange(.data$hsg, .data$searchspace_id)
 
   expect_equal(pr_curve_by_hsg_parallel, pr_curve_by_hsg_sequential)
@@ -219,7 +219,8 @@ test_that("grouped pr-auc computation works with doc_groups", {
   expect_equal(nrow(pr_curve_by_hsg_parallel), 36)
 
   pr_auc_by_hsg <- compute_pr_auc_from_curve(pr_curve_by_hsg_parallel,
-                                             grouping_vars = "hsg")
+    grouping_vars = "hsg"
+  )
 
   expected_pr_auc_by_hsg <- structure(
     list(
@@ -231,7 +232,6 @@ test_that("grouped pr-auc computation works with doc_groups", {
   )
 
   expect_equal(pr_auc_by_hsg, expected_pr_auc_by_hsg, tolerance = 10e-5)
-
 })
 
 test_that("grouped pr-auc computation works with label_strata", {
@@ -272,16 +272,19 @@ test_that("grouped pr-auc computation works with label_strata", {
   load(test_path("testdata/grouped_pr_curve_data_w_label_strata.rds"))
   steps <- 15
   thresholds <- unique(quantile(
-    pred$score, probs = seq(0, 1, 1 / steps), type = 1
+    pred$score,
+    probs = seq(0, 1, 1 / steps), type = 1
   ))
   pr_curve_by_lbl_grp <- compute_pr_curve(gold, pred,
-                                          label_groups = label_dict,
-                                          thresholds = seq(0, 1, 1 / steps))
+    label_groups = label_dict,
+    thresholds = seq(0, 1, 1 / steps)
+  )
   # expect 2x(number-of-steps + 1) + 2 = 34 rows in the resulting data.frame
   expect_equal(nrow(pr_curve_by_lbl_grp$plot_data), 36)
 
   pr_auc_by_label_group <- compute_pr_auc_from_curve(
-    pr_curve_by_lbl_grp$plot_dat, grouping_vars = "label_group"
+    pr_curve_by_lbl_grp$plot_dat,
+    grouping_vars = "label_group"
   )
 
   expected_pr_auc_by_label_group <- structure(
@@ -300,11 +303,9 @@ test_that("grouped pr-auc computation works with label_strata", {
   )
 
   detach("package:purrr")
-
 })
 
 test_that("optimal cutoff works", {
-
   library(purrr, quietly = TRUE, warn.conflicts = FALSE)
   # purrr would cause an attach massage otherwise
 
@@ -325,7 +326,6 @@ test_that("optimal cutoff works", {
 })
 
 test_that("grouped cutoff works", {
-
   library(purrr, quietly = TRUE, warn.conflicts = FALSE)
   # Randomly generated testdata seems not reproducible in R CMD check
   # so we use this code and save the testdata along with the package
@@ -357,7 +357,8 @@ test_that("grouped cutoff works", {
   )
 
   auc <- compute_pr_auc_from_curve(
-    res, grouping_vars = "hsg"
+    res,
+    grouping_vars = "hsg"
   )
 
   expect_equal(
@@ -371,7 +372,6 @@ test_that("grouped cutoff works", {
 
 
 test_that("Empty Recall in label strata gives singleton-curve", {
-
   library(purrr, quietly = TRUE, warn.conflicts = FALSE)
 
   gold <- tibble::tribble(
@@ -420,7 +420,8 @@ test_that("Empty Recall in label strata gives singleton-curve", {
   )
 
   res <- compute_pr_curve(
-    gold, pred, label_groups = label_groups, steps = 10, mode = "micro"
+    gold, pred,
+    label_groups = label_groups, steps = 10, mode = "micro"
   )
 
   # expected last row for entity type "location" should be

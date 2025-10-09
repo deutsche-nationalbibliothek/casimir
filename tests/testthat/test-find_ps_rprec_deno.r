@@ -1,6 +1,4 @@
 test_that("ps_rprec_deno is computed correctly", {
-
-
   # some dummy results
   gold <- tibble::tribble(
     ~doc_id, ~label_id,
@@ -100,39 +98,39 @@ test_that("ps_rprec_deno is computed correctly", {
     )
 
   expected_res[["labelwise"]] <- tibble::tribble(
-    ~label_id, ~n_gold, ~n_suggested,        ~tp, ~fp,        ~fn, ~rprec_deno,
+    ~label_id, ~n_gold, ~n_suggested, ~tp, ~fp, ~fn, ~rprec_deno,
     # nolint start
-    "a",             3,            2, 2 * 1.085846,   0,   1.085846,  2 * 1.085846,
-    "b",             2,            0,            0,   0, 2 * 1.304366,           0,
-    "c",             1,            1,            0,   mlw,   2.072009,    2.072009,
-    "d",             2,            1,            0,   mlw, 2*9.220291,    9.220291,
-    "e",             0,            1,            0,   mlw,          0,           0,
-    "f",             1,            3,     7.831511,   2 * mlw,          0,    7.831511
+    "a", 3, 2, 2 * 1.085846, 0, 1.085846, 2 * 1.085846,
+    "b", 2, 0, 0, 0, 2 * 1.304366, 0,
+    "c", 1, 1, 0, mlw, 2.072009, 2.072009,
+    "d", 2, 1, 0, mlw, 2 * 9.220291, 9.220291,
+    "e", 0, 1, 0, mlw, 0, 0,
+    "f", 1, 3, 7.831511, 2 * mlw, 0, 7.831511
     # nolint end
-  )  |>
+  ) |>
     dplyr::mutate(
       delta_relevance = 0,
       .after = fn
     )
 
   expected_res[["casewise"]] <- tibble::tribble(
-    ~doc_id, ~label_id, ~n_gold, ~n_suggested,      ~tp, ~fp, ~fn, ~rprec_deno,
-    "A",       "a",       1,            1, 1.085846,   0,   0,         1.085846,
-    "A",       "b",       1,            0,        0,   0,   1.304366,  0,
-    "A",       "c",       1,            0,        0,   0,   2.072008,  0,
-    "B",       "a",       1,            1, 1.085846,   0,   0,         1.085846,
-    "B",       "d",       1,            0,        0,   0,   9.220291,  0,
-    "C",       "a",       1,            0,        0,   0,   1.085846,  0,
-    "C",       "b",       1,            0,        0,   0,   1.304366,  0,
-    "C",       "d",       1,            0,        0,   0,   9.220291,  0,
-    "C",       "f",       1,            1, 7.831511,   0,   0,         7.831511,
-    "A",       "d",       0,            1,        0,   mlw,   0,         0,
-    "A",       "f",       0,            1,        0,   mlw,   0,         0,
-    "B",       "e",       0,            1,        0,   mlw,   0,         0,
-    "B",       "f",       0,            1,        0,   mlw,   0,         0,
-    "B",       "c",       0,            1,        0,   mlw,   0,         0
+    ~doc_id, ~label_id, ~n_gold, ~n_suggested, ~tp, ~fp, ~fn, ~rprec_deno,
+    "A", "a", 1, 1, 1.085846, 0, 0, 1.085846,
+    "A", "b", 1, 0, 0, 0, 1.304366, 0,
+    "A", "c", 1, 0, 0, 0, 2.072008, 0,
+    "B", "a", 1, 1, 1.085846, 0, 0, 1.085846,
+    "B", "d", 1, 0, 0, 0, 9.220291, 0,
+    "C", "a", 1, 0, 0, 0, 1.085846, 0,
+    "C", "b", 1, 0, 0, 0, 1.304366, 0,
+    "C", "d", 1, 0, 0, 0, 9.220291, 0,
+    "C", "f", 1, 1, 7.831511, 0, 0, 7.831511,
+    "A", "d", 0, 1, 0, mlw, 0, 0,
+    "A", "f", 0, 1, 0, mlw, 0, 0,
+    "B", "e", 0, 1, 0, mlw, 0, 0,
+    "B", "f", 0, 1, 0, mlw, 0, 0,
+    "B", "c", 0, 1, 0, mlw, 0, 0
   ) |>
-    dplyr::arrange(doc_id, label_id)  |>
+    dplyr::arrange(doc_id, label_id) |>
     dplyr::mutate(
       delta_relevance = 0,
       .after = fn
@@ -141,7 +139,7 @@ test_that("ps_rprec_deno is computed correctly", {
   res_dplyr <- purrr::map2(
     .x = expected_res,
     .y = list(c("doc_id"), c("label_id"), c("doc_id", "label_id")),
-    .f = ~expect_equal(
+    .f = ~ expect_equal(
       object = find_ps_rprec_deno_dplyr(
         gold_vs_pred = comp,
         grouping_var = rlang::syms(c(.y)),
@@ -154,14 +152,13 @@ test_that("ps_rprec_deno is computed correctly", {
   )
 
   convert_grp_names <- function(expected_res) {
-
     if (all(c("doc_id", "label_id") %in% colnames(expected_res))) {
       res <- expected_res |>
         dplyr::mutate(
           grp_names = paste0(doc_id, ".", label_id),
           .before = n_gold
         ) |>
-        dplyr::select(- doc_id, -label_id)
+        dplyr::select(-doc_id, -label_id)
     } else if ("doc_id" %in% colnames(expected_res)) {
       res <- expected_res |>
         dplyr::mutate(
@@ -186,7 +183,7 @@ test_that("ps_rprec_deno is computed correctly", {
   res_collapse <- purrr::map2(
     .x = expected_res,
     .y = list(c("doc_id"), c("label_id"), c("doc_id", "label_id")),
-    .f = ~expect_equal(
+    .f = ~ expect_equal(
       object = find_ps_rprec_deno(
         gold_vs_pred = comp,
         grouping_var = c(.y),
@@ -197,6 +194,4 @@ test_that("ps_rprec_deno is computed correctly", {
       tolerance = 1e-5
     )
   )
-
-
 })

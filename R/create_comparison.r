@@ -10,19 +10,19 @@
 #' library(casimir)
 #'
 #' gold <- tibble::tribble(
-#'     ~doc_id, ~label_id,
-#'     "A", "a",
-#'     "A", "b",
-#'     "A", "c",
-#'     "B", "a",
-#'     "B", "d",
-#'     "C", "a",
-#'     "C", "b",
-#'     "C", "d",
-#'     "C", "f"
+#'   ~doc_id, ~label_id,
+#'   "A", "a",
+#'   "A", "b",
+#'   "A", "c",
+#'   "B", "a",
+#'   "B", "d",
+#'   "C", "a",
+#'   "C", "b",
+#'   "C", "d",
+#'   "C", "f"
 #' )
 #'
-#' pred<- tibble::tribble(
+#' pred <- tibble::tribble(
 #'   ~doc_id, ~label_id,
 #'   "A", "a",
 #'   "A", "d",
@@ -34,19 +34,18 @@
 #'
 #' casimir::create_comparison(gold, pred)
 create_comparison <- function(
-  gold_standard, predicted,
-  doc_groups = NULL, label_groups = NULL,
-  graded_relevance = FALSE,
-  propensity_scored = FALSE,
-  label_distribution = NULL,
-  ignore_inconsistencies = options::opt("ignore_inconsistencies")
-) {
-
+    gold_standard, predicted,
+    doc_groups = NULL, label_groups = NULL,
+    graded_relevance = FALSE,
+    propensity_scored = FALSE,
+    label_distribution = NULL,
+    ignore_inconsistencies = options::opt("ignore_inconsistencies")) {
   stopifnot(all(c("label_id", "doc_id") %in% colnames(gold_standard)))
   stopifnot(all(c("label_id", "doc_id") %in% colnames(predicted)))
 
-  if (graded_relevance)
+  if (graded_relevance) {
     predicted <- check_repair_relevance_pred(predicted)
+  }
 
   if (graded_relevance && propensity_scored) {
     warning(
@@ -85,11 +84,12 @@ create_comparison <- function(
   )
 
   stopifnot(nrow(predicted_wo_gold) == 0)
-  if (nrow(gold_wo_predicted) > 0 && !ignore_inconsistencies)
+  if (nrow(gold_wo_predicted) > 0 && !ignore_inconsistencies) {
     warning(
       "gold standard data contains documents ",
       "that are not in predicted set"
     )
+  }
 
   compare <- collapse::join(
     x = collapse::ftransform(gold_standard, gold = TRUE),
@@ -150,5 +150,4 @@ create_comparison <- function(
     }
     result <- collapse::ftransform(result, relevance = 0)
   }
-
 }

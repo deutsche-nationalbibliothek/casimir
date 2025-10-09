@@ -1,5 +1,4 @@
 test_that("ci for pr_auc work", {
-
   library(purrr, quietly = TRUE, warn.conflicts = FALSE)
   # this code produces the testdata, but random data replication is
   # not always reproducible
@@ -43,26 +42,29 @@ test_that("ci for pr_auc work", {
 
   expect_error(
     compute_pr_auc(
-      gold, pred, steps = steps, mode = "subj-avg",
+      gold, pred,
+      steps = steps, mode = "subj-avg",
       compute_bootstrap_ci = TRUE,
       n_bt = 20L
-    )
-    ,
+    ),
     regexp = "Confidence intervals for pr-auc in subj-avg-mode are not supported yet" # nolint
   )
 
   expect_silent(
     compute_pr_auc(
-      gold, pred, doc_groups = doc_groups, steps = steps,
+      gold, pred,
+      doc_groups = doc_groups, steps = steps,
       compute_bootstrap_ci = TRUE,
       n_bt = 20L
     )
   )
 
-  pr_auc <- compute_pr_auc(gold, pred, steps = 15,
-                           compute_bootstrap_ci = TRUE,
-                           seed = 3426,
-                           n_bt = 20L)
+  pr_auc <- compute_pr_auc(gold, pred,
+    steps = 15,
+    compute_bootstrap_ci = TRUE,
+    seed = 3426,
+    n_bt = 20L
+  )
 
   # here are frozen results that have been computed for this random input
   # previously
@@ -86,7 +88,6 @@ test_that("ci for pr_auc work", {
 })
 
 test_that("applying limit_range works", {
-
   library(purrr, quietly = TRUE, warn.conflicts = FALSE)
   # purrr would cause an attach massage otherwise
 
@@ -99,14 +100,14 @@ test_that("applying limit_range works", {
 
   expect_equal(
     pr_auc$pr_auc,
-    0.3194, tolerance = 1e-4
+    0.3194,
+    tolerance = 1e-4
   )
   detach("package:purrr")
 })
 
 
 test_that("Zero AUC for singleton-curve in empty label_strata", {
-
   library(purrr, quietly = TRUE, warn.conflicts = FALSE)
 
   gold <- tibble::tribble(
@@ -170,7 +171,6 @@ test_that("Zero AUC for singleton-curve in empty label_strata", {
 })
 
 test_that("pr_auc with propensity scored metrics works", {
-
   library(purrr, quietly = TRUE, warn.conflicts = FALSE)
 
   gold <- tibble::tribble(
@@ -226,7 +226,6 @@ test_that("pr_auc with propensity scored metrics works", {
 })
 
 test_that("parallel compute_pr_auc handles large shared objects gracefully", {
-
   library(future)
   plan(multisession, workers = 2)
 
@@ -250,5 +249,4 @@ test_that("parallel compute_pr_auc handles large shared objects gracefully", {
       )
     }
   )
-
 })

@@ -29,13 +29,10 @@
 #'
 #' compute_propensity_scores(label_distribution)
 #'
-#'
 compute_propensity_scores <- function(
-  label_distribution,
-  a = 0.55,
-  b = 1.5
-) {
-
+    label_distribution,
+    a = 0.55,
+    b = 1.5) {
   stopifnot(all(
     c("label_id", "label_freq", "n_docs") %in% colnames(label_distribution)
   ))
@@ -50,5 +47,4 @@ compute_propensity_scores <- function(
     label_id = .data$label_id,
     label_weight = 1 + c * (.data$label_freq + b)**(-a)
   )
-
 }
