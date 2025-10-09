@@ -136,6 +136,7 @@ compute_set_retrieval_scores <- function(
     propensity_scored = FALSE,
     label_distribution = NULL,
     cost_fp_constant = NULL,
+    drop_empty_groups = options::opt("drop_empty_groups"),
     ignore_inconsistencies = options::opt("ignore_inconsistencies"),
     verbose = options::opt("verbose"),
     progress = options::opt("progress")) {
@@ -192,7 +193,8 @@ compute_set_retrieval_scores <- function(
       compare,
       grouping_var,
       propensity_scored = ps_flags$intermed,
-      cost_fp = cost_fp_processed
+      cost_fp = cost_fp_processed,
+      drop_empty_groups = drop_empty_groups
     )
 
     if (verbose) {
@@ -220,6 +222,7 @@ compute_set_retrieval_scores <- function(
       ps_flags = ps_flags,
       label_distribution = label_distribution,
       cost_fp = cost_fp_processed,
+      drop_empty_groups = drop_empty_groups,
       progress = progress
     )
 

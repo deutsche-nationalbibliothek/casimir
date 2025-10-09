@@ -14,6 +14,7 @@ generate_replicate_results(
   ps_flags = list(intermed = FALSE, summarise = FALSE),
   label_distribution = NULL,
   cost_fp = NULL,
+  drop_empty_groups = options::opt("drop_empty_groups"),
   progress = options::opt("progress")
 )
 
@@ -43,6 +44,9 @@ base_compare}
 \item{label_distribution}{as in compute_set_retrieval_scores}
 
 \item{cost_fp}{numeric > 0, default is NULL}
+
+\item{drop_empty_groups}{Should empty levels of factor variables be droped in grouped set retrieval
+computation? (Defaults to \code{TRUE}, overwritable using option 'casimir.drop_empty_groups' or environment variable 'R_CASIMIR_DROP_EMPTY_GROUPS')}
 
 \item{progress}{Display progress bars for iterated computations (like bootstrap CI or
 PR-Curves) (Defaults to \code{FALSE}, overwritable using option 'casimir.progress' or environment variable 'R_CASIMIR_PROGRESS')}

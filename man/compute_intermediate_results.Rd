@@ -10,6 +10,7 @@ compute_intermediate_results(
   grouping_var,
   propensity_scored = FALSE,
   cost_fp = NULL,
+  drop_empty_groups = options::opt("drop_empty_groups"),
   check_group_names = options::opt("check_group_names")
 )
 
@@ -30,6 +31,9 @@ gold_vs_pred (dplyr version requires rlang symbols)}
 \item{propensity_scored}{logical, whether to use propensity scores as weights}
 
 \item{cost_fp}{numeric > 0, default is NULL}
+
+\item{drop_empty_groups}{Should empty levels of factor variables be droped in grouped set retrieval
+computation? (Defaults to \code{TRUE}, overwritable using option 'casimir.drop_empty_groups' or environment variable 'R_CASIMIR_DROP_EMPTY_GROUPS')}
 
 \item{check_group_names}{Perform replacement of dots in grouping columns. Disable for faster
 computation, if you can make sure that all columns used for grouping

@@ -4,7 +4,11 @@
 \alias{compute_pr_auc_from_curve}
 \title{Compute area under precision-recall curve given pr-curve data}
 \usage{
-compute_pr_auc_from_curve(pr_curve_data, grouping_vars = NULL)
+compute_pr_auc_from_curve(
+  pr_curve_data,
+  grouping_vars = NULL,
+  drop_empty_groups = options::opt("drop_empty_groups")
+)
 }
 \arguments{
 \item{pr_curve_data}{a \code{data.frame} as produced by
@@ -12,6 +16,9 @@ compute_pr_auc_from_curve(pr_curve_data, grouping_vars = NULL)
 "prec", "rec", "prec_cummax", "mode"}
 
 \item{grouping_vars}{additional columns of the input data to group by}
+
+\item{drop_empty_groups}{Should empty levels of factor variables be droped in grouped set retrieval
+computation? (Defaults to \code{TRUE}, overwritable using option 'casimir.drop_empty_groups' or environment variable 'R_CASIMIR_DROP_EMPTY_GROUPS')}
 }
 \value{
 a \code{data.frame} with col pr_auc and potential grouping_vars

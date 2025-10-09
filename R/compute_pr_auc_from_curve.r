@@ -8,6 +8,7 @@
 #'   \code{compute_pr_curve}, containing cols "searchspace_id",
 #'   "prec", "rec", "prec_cummax", "mode"
 #' @param grouping_vars additional columns of the input data to group by
+#' @inheritParams option_params
 #'
 #' @return a \code{data.frame} with col pr_auc and potential grouping_vars
 #' @export
@@ -74,7 +75,10 @@
 #'   ) +
 #'   geom_path() +
 #'   coord_cartesian(xlim = c(0, 1), ylim = c(0, 1))
-compute_pr_auc_from_curve <- function(pr_curve_data, grouping_vars = NULL) {
+compute_pr_auc_from_curve <- function(
+    pr_curve_data,
+    grouping_vars = NULL,
+    drop_empty_groups = options::opt("drop_empty_groups")) {
   if (!is.data.frame(pr_curve_data) && !is.null(pr_curve_data$plot_data)) {
     plot_data <- pr_curve_data$plot_data
   } else {
@@ -90,7 +94,8 @@ compute_pr_auc_from_curve <- function(pr_curve_data, grouping_vars = NULL) {
     plot_data_grpd <- dplyr::group_by(
       plot_data,
       !!!rlang::syms(c(grouping_vars)),
-      .add = TRUE
+      .add = TRUE,
+      .drop = drop_empty_groups
     )
   } else {
     plot_data_grpd <- plot_data

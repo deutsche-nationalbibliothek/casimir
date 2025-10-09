@@ -46,6 +46,7 @@ compute_intermediate_results <- function(
     grouping_var,
     propensity_scored = FALSE,
     cost_fp = NULL,
+    drop_empty_groups = options::opt("drop_empty_groups"),
     check_group_names = options::opt("check_group_names")) {
   stopifnot(all(c("suggested", "gold") %in% colnames(gold_vs_pred)))
 
@@ -127,12 +128,15 @@ compute_intermediate_results <- function(
   )
 
   # restore the factor structure of the original grouping_var
-  restore_factor_levels <- function(df, source_df, var) {
+  restore_factor_levels <- function(df, source_df, var, drop) {
     if (is.factor(source_df[[var]])) {
       df[[var]] <- factor(
         x = df[[var]],
         levels = levels(source_df[[var]])
       )
+      if (!drop) {
+        df <- tidyr::complete(df, !!!rlang::syms(var))
+      }
     }
     df
   }
@@ -145,13 +149,15 @@ compute_intermediate_results <- function(
       gold_vs_pred_smry <- restore_factor_levels(
         gold_vs_pred_smry,
         source_df = old_grouping_columns,
-        var = var
+        var = var,
+        drop = drop_empty_groups
       )
     } else {
       gold_vs_pred_smry <- restore_factor_levels(
         gold_vs_pred_smry,
         source_df = gold_vs_pred,
-        var = var
+        var = var,
+        drop = drop_empty_groups
       )
     }
   }

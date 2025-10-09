@@ -19,6 +19,7 @@ compute_set_retrieval_scores(
   propensity_scored = FALSE,
   label_distribution = NULL,
   cost_fp_constant = NULL,
+  drop_empty_groups = options::opt("drop_empty_groups"),
   ignore_inconsistencies = options::opt("ignore_inconsistencies"),
   verbose = options::opt("verbose"),
   progress = options::opt("progress")
@@ -99,6 +100,9 @@ a numeric value > 0 or one of 'max', 'min', 'mean' (computed with reference
 to the \code{gold_standard} label distribution). The default is NULL, i.e.
 label weights are applied to false positives as to false negatives and
 true positives.}
+
+\item{drop_empty_groups}{Should empty levels of factor variables be droped in grouped set retrieval
+computation? (Defaults to \code{TRUE}, overwritable using option 'casimir.drop_empty_groups' or environment variable 'R_CASIMIR_DROP_EMPTY_GROUPS')}
 
 \item{ignore_inconsistencies}{Warnings about data inconsistencies will be silenced. (Defaults to \code{FALSE}, overwritable using option 'casimir.ignore_inconsistencies' or environment variable 'R_CASIMIR_IGNORE_INCONSISTENCIES')}
 
