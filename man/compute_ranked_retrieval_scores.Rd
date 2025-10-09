@@ -8,9 +8,7 @@ compute_ranked_retrieval_scores(
   gold_standard,
   predicted,
   doc_groups = NULL,
-  compute_bootstrap_ci = FALSE,
-  n_bt = 10L,
-  seed = NULL,
+  drop_empty_groups = options::opt("drop_empty_groups"),
   progress = options::opt("progress")
 )
 }
@@ -26,11 +24,8 @@ and a second column that defines groups of labels to stratify results by.
 It is recommended that groups are of type factor, so that levels are
 not implicitly dropped during bootstrap replications}
 
-\item{compute_bootstrap_ci}{logical indicator for computing bootstrap CIs}
-
-\item{n_bt}{an integer number of resamples to undergo in bootstrapping}
-
-\item{seed}{pass seed to make bootstrap replication reproducible}
+\item{drop_empty_groups}{Should empty levels of factor variables be droped in grouped set retrieval
+computation? (Defaults to \code{TRUE}, overwritable using option 'casimir.drop_empty_groups' or environment variable 'R_CASIMIR_DROP_EMPTY_GROUPS')}
 
 \item{progress}{Display progress bars for iterated computations (like bootstrap CI or
 PR-Curves) (Defaults to \code{FALSE}, overwritable using option 'casimir.progress' or environment variable 'R_CASIMIR_PROGRESS')}
@@ -79,8 +74,7 @@ pred <- tibble::tribble(
 
 results <- compute_ranked_retrieval_scores(
   gold,
-  pred,
-  compute_bootstrap_ci = FALSE
+  pred
 )
 
 }

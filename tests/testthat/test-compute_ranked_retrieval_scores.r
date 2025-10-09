@@ -24,11 +24,7 @@ test_that("compute_ranked_retrieval_scores works", {
   )
 
   expect_silent(
-    observed <- compute_ranked_retrieval_scores(
-      gold,
-      pred,
-      compute_bootstrap_ci = FALSE
-    )
+    observed <- compute_ranked_retrieval_scores(gold, pred)
   )
 
   expected <- tibble::tribble(
@@ -71,14 +67,17 @@ test_that("grouped ranked retrieval works", {
     "B", "002",
     "C", "003",
     "D", "004",
-    "E", "005"
-  )
+    "E", "005",
+    "F", "006"
+  ) |>
+    dplyr::mutate(hsg = as.factor(hsg))
 
   set.seed(2)
 
   pred <- expand.grid(
     doc_id = LETTERS[1:5],
-    label_id = letters[1:11]
+    label_id = letters[1:11],
+    stringsAsFactors = FALSE
   ) |>
     dplyr::mutate(score = runif(dplyr::n()))
 
@@ -86,7 +85,12 @@ test_that("grouped ranked retrieval works", {
     gold,
     pred,
     doc_groups = doc_groups,
-    compute_bootstrap_ci = FALSE
+    drop_empty_groups = FALSE
+  )
+
+  # test that empty factor group is reported back
+  expect_equal(
+    nrow(dplyr::filter(observed, hsg == "006")), 3L
   )
 
   doc_wise_results <- create_comparison(gold, pred, doc_groups = doc_groups) |>
@@ -99,7 +103,7 @@ test_that("grouped ranked retrieval works", {
     tidyr::unnest(c(ndcg, dcg, lrap))
 
   expected <- doc_wise_results |>
-    dplyr::group_by(hsg) |>
+    dplyr::group_by(hsg, .drop = FALSE) |>
     dplyr::summarise(
       mode = "doc-avg",
       ndcg = mean(ndcg),

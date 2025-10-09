@@ -92,3 +92,30 @@ set_ps_flags <- function(mode, propensity_scored) {
 
   list("intermed" = intermed, "summarise" = summarise)
 }
+
+#' Check variable col in df for factor type, and coerce to character
+#'
+#' @param df input data.frame
+#' @param col column name to check
+#'
+#' @returns \code{df}, without factor column on id var col
+check_id_vars_col <- function(df, col) {
+  if (col %in% colnames(df) && is.factor(df[[col]])) {
+    warning(col, " should never be factor. Coercing to character.")
+    df[[col]] <- as.character(df[[col]])
+  }
+  df
+}
+
+#' Internal helper function designed to ensure that id columns are not
+#'  passed as factor variables. Factor variables in id columns may
+#'  cause undesired behaviour with the drop_emtpy_group argument
+#'
+#' @param df data.frame to check id columns
+#'
+#' @returns \code{df}, without factor column on id vars
+check_id_vars <- function(df) {
+  df <- check_id_vars_col(df, "doc_id")
+  df <- check_id_vars_col(df, "label_id")
+  df
+}
