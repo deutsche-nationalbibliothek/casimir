@@ -18,6 +18,10 @@ generate_pr_auc_replica(
 \code{compute_intermediate_results}, with a column \code{"searchspace_id"}
 as grouping variable}
 
+\item{seed}{pass seed to make bootstrap replication reproducible}
+
+\item{n_bt}{an integer number of resamples to undergo in bootstrapping}
+
 \item{propensity_scored}{logical, whether to use propensity scores as weights}
 
 \item{replace_zero_division_with}{In macro averaged results (doc-avg, subj-avg) it may occur that some

@@ -280,7 +280,7 @@ compute_pr_auc <- function(
 #' @param intermed_res_all_thrsld intermediate results as produced by
 #'   \code{compute_intermediate_results}, with a column \code{"searchspace_id"}
 #'   as grouping variable
-#' @inheritParams compute_pr_curve
+#' @inheritParams compute_pr_auc
 #'
 #' @return \code{data.frame} with cols \code{c("boot_replicate", "pr_auc")}
 generate_pr_auc_replica <- function(
@@ -347,7 +347,7 @@ generate_pr_auc_replica <- function(
 #' @param intermed_res intermediate results as produced by
 #'   \code{compute_intermediate_results}, with a column \code{"searchspace_id"}
 #'   as grouping variable
-#' @param propensity_scored as in `compute_pr_auc`
+#' @inheritParams compute_pr_auc
 #'
 #' @return  a \code{data.frame} with col pr_auc and potential grouping_vars
 boot_worker_fn <- function(sampled_id_list,
