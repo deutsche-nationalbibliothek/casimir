@@ -7,16 +7,20 @@
 #'    \item \code{results_table}  a  with cols "prec", "rprec", "rec", "f1" as
 #'   }
 #' @inheritParams compute_set_retrieval_scores
+#' @param set logical. allow in place modification of intermediate_results
+#'  only recommended for internal package usage
 #' @export
 #'
 #' @return data.frame with cols metric, value
 summarise_intermediate_results <- function(
     intermediate_results,
     propensity_scored = FALSE,
-    label_distribution = NULL) {
+    label_distribution = NULL,
+    set = FALSE,
+    replace_zero_division_with = options::opt("replace_zero_division_with")) {
   grouping_var <- intermediate_results$grouping_var
   intrmd_res <- intermediate_results$results_table
-  if (propensity_scored) {
+  if (propensity_scored && ("label_id" %in% grouping_var)) {
     if (is.null(label_distribution)) {
       stop("applying propensity scores requires label_distribution")
     }
@@ -109,6 +113,15 @@ summarise_intermediate_results <- function(
       f1_support = 0.5 * (n_suggested + n_gold)
     )
   } else { # for macro-avegared results
+
+    if (!is.null(replace_zero_division_with)) {
+      intrmd_res_regrouped <- collapse::replace_na(
+        X = intrmd_res_regrouped,
+        cols = c("prec", "rec", "rprec", "f1"),
+        value = replace_zero_division_with,
+        set = set # allow inplace modification
+      )
+    }
 
     im_res_smry <- collapse::fsummarise(
       intrmd_res_regrouped,

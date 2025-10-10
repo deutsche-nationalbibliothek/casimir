@@ -66,6 +66,7 @@ compute_pr_auc <- function(
     propensity_scored = FALSE,
     label_distribution = NULL,
     cost_fp_constant = NULL,
+    replace_zero_division_with = options::opt("replace_zero_division_with"),
     drop_empty_groups = options::opt("drop_empty_groups"),
     ignore_inconsistencies = options::opt("ignore_inconsistencies"),
     verbose = options::opt("verbose"),
@@ -115,6 +116,7 @@ compute_pr_auc <- function(
       propensity_scored = propensity_scored,
       label_distribution = label_distribution,
       cost_fp_constant = cost_fp_constant,
+      replace_zero_division_with = replace_zero_division_with,
       drop_empty_groups = drop_empty_groups,
       ignore_inconsistencies = ignore_inconsistencies,
       verbose = verbose,
@@ -278,16 +280,14 @@ compute_pr_auc <- function(
 #' @param intermed_res_all_thrsld intermediate results as produced by
 #'   \code{compute_intermediate_results}, with a column \code{"searchspace_id"}
 #'   as grouping variable
-#' @param seed set seed for reproducibility of bootstrap run
-#' @param n_bt integer number of bootstrap-replica to draw
-#' @param propensity_scored as in `compute_pr_auc`
-#' @inheritParams option_params
+#' @inheritParams compute_pr_auc
 #'
 #' @return \code{data.frame} with cols \code{c("boot_replicate", "pr_auc")}
 generate_pr_auc_replica <- function(
     intermed_res_all_thrsld,
     seed, n_bt,
     propensity_scored,
+    replace_zero_division_with = options::opt("replace_zero_division_with"),
     progress = options::opt("progress")) {
   doc_id_list <- dplyr::distinct(
     intermed_res_all_thrsld$results_table,
@@ -327,7 +327,8 @@ generate_pr_auc_replica <- function(
     .id = "boot_replicate",
     .options = furrr::furrr_options(seed = seed),
     intermed_res = intermed_res_all_thrsld,
-    propensity_scored = propensity_scored
+    propensity_scored = propensity_scored,
+    replace_zero_division_with = replace_zero_division_with
   )
 
   boot_results
@@ -346,10 +347,13 @@ generate_pr_auc_replica <- function(
 #' @param intermed_res intermediate results as produced by
 #'   \code{compute_intermediate_results}, with a column \code{"searchspace_id"}
 #'   as grouping variable
-#' @param propensity_scored as in `compute_pr_auc`
+#' @inheritParams compute_pr_auc
 #'
 #' @return  a \code{data.frame} with col pr_auc and potential grouping_vars
-boot_worker_fn <- function(sampled_id_list, intermed_res, propensity_scored) {
+boot_worker_fn <- function(sampled_id_list,
+                           intermed_res,
+                           propensity_scored,
+                           replace_zero_division_with) {
   # 1. join with resampled doc_ids
   intermed_resampled <- dplyr::inner_join(
     x = intermed_res$results_table,
@@ -363,7 +367,9 @@ boot_worker_fn <- function(sampled_id_list, intermed_res, propensity_scored) {
       results_table = intermed_resampled,
       grouping_var = intermed_res$grouping_var
     ),
-    propensity_scored = propensity_scored
+    propensity_scored = propensity_scored,
+    replace_zero_division_with = replace_zero_division_with,
+    set = TRUE
   )
 
   # 3. post_processing_of_curve data

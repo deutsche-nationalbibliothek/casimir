@@ -19,6 +19,7 @@ compute_set_retrieval_scores(
   propensity_scored = FALSE,
   label_distribution = NULL,
   cost_fp_constant = NULL,
+  replace_zero_division_with = options::opt("replace_zero_division_with"),
   drop_empty_groups = options::opt("drop_empty_groups"),
   ignore_inconsistencies = options::opt("ignore_inconsistencies"),
   verbose = options::opt("verbose"),
@@ -100,6 +101,14 @@ a numeric value > 0 or one of 'max', 'min', 'mean' (computed with reference
 to the \code{gold_standard} label distribution). The default is NULL, i.e.
 label weights are applied to false positives as to false negatives and
 true positives.}
+
+\item{replace_zero_division_with}{In macro averaged results (doc-avg, subj-avg) it may occur that some
+instances have no predictions or no gold-standard. In these cases calculating
+precision and recall may lead to zero divisions. CASIMiR standardly removes
+these missing values from macro averages, leading to a smaller \code{support}
+(count of instances that were averaged). Other implementations of macro
+averaged precision and recall default to 0 in these cases. This option
+will allow to control the default. Set any value between 0 and 1. (Defaults to \code{NULL}, overwritable using option 'casimir.replace_zero_division_with' or environment variable 'R_CASIMIR_REPLACE_ZERO_DIVISION_WITH')}
 
 \item{drop_empty_groups}{Should empty levels of factor variables be droped in grouped set retrieval
 computation? (Defaults to \code{TRUE}, overwritable using option 'casimir.drop_empty_groups' or environment variable 'R_CASIMIR_DROP_EMPTY_GROUPS')}
