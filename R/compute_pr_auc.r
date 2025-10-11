@@ -83,12 +83,7 @@ compute_pr_auc <- function(
 
 
   if (!all(is.na(limit_range)) && !"rank" %in% colnames(predicted)) {
-    predicted <- dplyr::ungroup(
-      dplyr::mutate(
-        dplyr::group_by(predicted, .data$doc_id),
-        rank = dplyr::min_rank(-.data$score)
-      )
-    )
+    predicted <- create_rank_col(predicted)
   }
 
   if (mode == "subj-avg" && compute_bootstrap_ci == TRUE) {
