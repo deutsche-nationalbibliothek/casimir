@@ -5,19 +5,19 @@
 \title{Compute ranked retrieval scores}
 \usage{
 compute_ranked_retrieval_scores(
-  gold_standard,
   predicted,
+  gold_standard,
   doc_groups = NULL,
   drop_empty_groups = options::opt("drop_empty_groups"),
   progress = options::opt("progress")
 )
 }
 \arguments{
-\item{gold_standard}{expects \code{data.frame} with cols
-\emph{"label_id", "doc_id"}}
-
 \item{predicted}{multi-label prediction results. expects \code{data.frame}
 with cols \emph{"label_id", "doc_id", "score"}}
+
+\item{gold_standard}{expects \code{data.frame} with cols
+\emph{"label_id", "doc_id"}}
 
 \item{doc_groups}{two-column \code{data.frame} with col \emph{"doc_id"}
 and a second column that defines groups of labels to stratify results by.
@@ -73,8 +73,8 @@ pred <- tibble::tribble(
 )
 
 results <- compute_ranked_retrieval_scores(
-  gold,
-  pred
+  pred,
+  gold
 )
 
 }

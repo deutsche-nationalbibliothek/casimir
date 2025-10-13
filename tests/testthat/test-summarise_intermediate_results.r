@@ -227,7 +227,7 @@ test_that("Summarise works with weighted mean", {
     # cause an error
   )
 
-  comp <- create_comparison(gold, pred)
+  comp <- create_comparison(pred, gold)
 
   label_wise_res_no_weight <- compute_intermediate_results(
     gold_vs_pred = comp,
@@ -286,7 +286,7 @@ test_that("summarise can replace na precison", {
     "A", "c"
   )
 
-  comp <- create_comparison(gold, pred)
+  comp <- create_comparison(pred, gold)
 
   interm <- compute_intermediate_results(comp, "label_id")
 

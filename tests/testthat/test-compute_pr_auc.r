@@ -59,7 +59,7 @@ test_that("ci for pr_auc work", {
     )
   )
 
-  pr_auc <- compute_pr_auc(gold, pred,
+  pr_auc <- compute_pr_auc(pred, gold,
     steps = 15,
     compute_bootstrap_ci = TRUE,
     seed = 3426,
@@ -155,7 +155,7 @@ test_that("Zero AUC for singleton-curve in empty label_strata", {
     "i", "location"
   )
 
-  res <- compute_pr_auc(gold, pred, label_groups = label_groups, steps = 10)
+  res <- compute_pr_auc(pred, gold, label_groups = label_groups, steps = 10)
 
   edge_cases_expected <- tibble::tribble(
     ~gnd_entity, ~pr_auc,

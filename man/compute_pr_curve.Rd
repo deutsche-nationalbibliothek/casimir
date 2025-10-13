@@ -5,8 +5,8 @@
 \title{compute precision-recall-curve for a given step size and limit_range}
 \usage{
 compute_pr_curve(
-  gold_standard,
   predicted,
+  gold_standard,
   doc_groups = NULL,
   label_groups = NULL,
   mode = "doc-avg",
@@ -26,11 +26,11 @@ compute_pr_curve(
 )
 }
 \arguments{
-\item{gold_standard}{expects \code{data.frame} with cols
-\emph{"label_id", "doc_id"}}
-
 \item{predicted}{multi-label prediction results. expects \code{data.frame}
 with cols \emph{"label_id", "doc_id", "score"}}
+
+\item{gold_standard}{expects \code{data.frame} with cols
+\emph{"label_id", "doc_id"}}
 
 \item{doc_groups}{two-column \code{data.frame} with col \emph{"doc_id"}
 and a second column that defines groups of labels to stratify results by.
@@ -153,8 +153,8 @@ pred <- tibble::tribble(
 )
 
 pr_curve <- compute_pr_curve(
-  gold,
   pred,
+  gold,
   mode = "doc-avg",
   optimize_cutoff = TRUE
 )

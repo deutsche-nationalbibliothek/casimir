@@ -26,7 +26,7 @@ test_that("threshold application works", {
     "C", "e", 0.2, 2L
   )
 
-  base_compare <- casimir:::create_comparison(gold, pred)
+  base_compare <- casimir:::create_comparison(pred, gold)
   # apply zero as threshold should not change anything
   res_0 <- casimir:::apply_threshold(threshold = 0, base_compare = base_compare)
   expect_equal(res_0, base_compare)
@@ -82,7 +82,7 @@ test_that("threshold application works", {
     "C", "c", 0.2,
     "C", "e", 0.2
   )
-  compare2 <- casimir:::create_comparison(gold, pred2)
+  compare2 <- casimir:::create_comparison(pred2, gold)
 
   expect_error(
     apply_threshold(base_compare = compare2, limit = 0.5),

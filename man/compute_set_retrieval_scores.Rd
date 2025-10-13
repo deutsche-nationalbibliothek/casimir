@@ -6,8 +6,8 @@
 \title{Compute multi label metrics for subject indexing results}
 \usage{
 compute_set_retrieval_scores(
-  gold_standard,
   predicted,
+  gold_standard,
   k = NULL,
   mode = "doc-avg",
   compute_bootstrap_ci = FALSE,
@@ -28,8 +28,8 @@ compute_set_retrieval_scores(
 )
 
 compute_set_retrieval_scores_dplyr(
-  gold_standard,
   predicted,
+  gold_standard,
   k = NULL,
   mode = "doc-avg",
   compute_bootstrap_ci = FALSE,
@@ -48,11 +48,11 @@ compute_set_retrieval_scores_dplyr(
 )
 }
 \arguments{
-\item{gold_standard}{expects \code{data.frame} with cols
-\emph{"label_id", "doc_id"}}
-
 \item{predicted}{multi-label prediction results. expects \code{data.frame}
 with cols \emph{"label_id", "doc_id"}}
+
+\item{gold_standard}{expects \code{data.frame} with cols
+\emph{"label_id", "doc_id"}}
 
 \item{k}{integer limit on number of predictions per document to consider.
 Only works when column \emph{"score"} is present in predicted}
@@ -181,7 +181,7 @@ pred <- tibble::tribble(
 plan(sequential) # or whatever resources you have
 
 a <- compute_set_retrieval_scores(
-  gold, pred,
+  pred, gold,
   mode = "doc-avg",
   compute_bootstrap_ci = TRUE,
   n_bt = 100L
@@ -205,7 +205,7 @@ pred_w_relevance <- tibble::tribble(
 )
 
 b <- compute_set_retrieval_scores(
-  gold, pred_w_relevance,
+  pred_w_relevance, gold,
   mode = "doc-avg",
   graded_relevance = TRUE
 )

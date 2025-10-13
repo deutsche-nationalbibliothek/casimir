@@ -47,11 +47,11 @@ test_that("grouping (doc-strata) of set retrieval computation works", {
 
   # expect no error when adding strata
   expect_silent(
-    casimir:::create_comparison(gold, pred, doc_groups = doc_groups)
+    casimir:::create_comparison(pred, gold, doc_groups = doc_groups)
   )
   # expect NA in hsg-column of compare, when no doc_strata are defined
   compare_wo_explicit_strata <- casimir:::create_comparison(
-    gold, pred,
+    pred, gold,
     doc_groups = NULL
   )
   expect_equal(
@@ -64,20 +64,20 @@ test_that("grouping (doc-strata) of set retrieval computation works", {
   gold_002 <- dplyr::select(gold_002, -hsg)
 
   res <- compute_set_retrieval_scores_dplyr(
-    gold, pred,
+    pred, gold,
     mode = "doc-avg", doc_groups = doc_groups
   )
   res_collapse <- compute_set_retrieval_scores(
-    gold, pred,
+    pred, gold,
     mode = "doc-avg", doc_groups = doc_groups
   )
 
   res_001 <- compute_set_retrieval_scores_dplyr(
-    gold_001, pred_001,
+    pred_001, gold_001,
     mode = "doc-avg"
   )
   res_002 <- compute_set_retrieval_scores_dplyr(
-    gold_002, pred_002,
+    pred_002, gold_002,
     mode = "doc-avg"
   )
 
@@ -97,7 +97,7 @@ test_that("grouping (doc-strata) of set retrieval computation works", {
   # if doc_strata is not a factor, it may loose instances during bootstrap
   expect_warning(
     object = compute_set_retrieval_scores_dplyr(
-      gold, pred,
+      pred, gold,
       mode = "doc-avg",
       doc_groups = doc_groups,
       compute_bootstrap_ci = TRUE,
@@ -108,8 +108,8 @@ test_that("grouping (doc-strata) of set retrieval computation works", {
 
   doc_groups_w_factor <- dplyr::mutate(doc_groups, hsg = as.factor(hsg))
   compare <- create_comparison(
-    gold_standard = gold,
     predicted = pred,
+    gold_standard = gold,
     doc_groups = doc_groups_w_factor
   )
   boot_res <- generate_replicate_results_dplyr(
@@ -136,8 +136,8 @@ test_that("grouping (doc-strata) of set retrieval computation works", {
     configuration$mode, configuration$compute_bootstrap_ci,
     .f = ~ expect_silent(
       object = compute_set_retrieval_scores_dplyr(
-        gold,
         pred,
+        gold,
         mode = .x,
         doc_groups = doc_groups_w_factor,
         compute_bootstrap_ci = .y,
@@ -150,8 +150,8 @@ test_that("grouping (doc-strata) of set retrieval computation works", {
     configuration$mode, configuration$compute_bootstrap_ci,
     .f = ~ expect_silent(
       object = compute_set_retrieval_scores(
-        gold,
         pred,
+        gold,
         mode = .x,
         doc_groups = doc_groups_w_factor,
         seed = 10,
@@ -240,7 +240,7 @@ test_that("grouping (label-groups) of set retrieval computation works", {
   # check intermediate results level
   ####################################################
   comparison_w_label_groups <- casimir:::create_comparison(
-    gold, pred,
+    pred, gold,
     label_groups = label_groups
   )
   interm_res_grpd_act <- dplyr::select(
@@ -326,7 +326,7 @@ test_that("grouping (label-groups) of set retrieval computation works", {
     .x = expected_res,
     .f = ~ expect_equal(
       object = compute_set_retrieval_scores_dplyr(
-        gold, pred,
+        pred, gold,
         mode = .y,
         label_groups = label_groups
       ),
@@ -337,7 +337,7 @@ test_that("grouping (label-groups) of set retrieval computation works", {
     .x = purrr::map(expected_res, .f = dplyr::ungroup),
     .f = ~ expect_equal(
       object = compute_set_retrieval_scores(
-        gold, pred,
+        pred, gold,
         mode = .y,
         label_groups = label_groups
       ),
@@ -356,7 +356,7 @@ test_that("grouping (label-groups) of set retrieval computation works", {
   # if label_strata is not a factor, it may loose instances during bootstrap
   expect_warning(
     object = compute_set_retrieval_scores_dplyr(
-      gold, pred,
+      pred, gold,
       mode = "doc-avg",
       label_groups = label_groups,
       compute_bootstrap_ci = TRUE, n_bt = 10L
@@ -368,7 +368,7 @@ test_that("grouping (label-groups) of set retrieval computation works", {
     label_groups,
     gnd_entity = as.factor(gnd_entity)
   )
-  compare <- create_comparison(gold, pred, label_groups = label_groups_w_factor)
+  compare <- create_comparison(pred, gold, label_groups = label_groups_w_factor)
   boot_res <- generate_replicate_results_dplyr(
     base_compare = compare,
     n_bt = 10L,
@@ -395,8 +395,8 @@ test_that("grouping (label-groups) of set retrieval computation works", {
     .f = function(.mode, .compute_bootstrap_ci, .progress) { # nolint
       expect_silent(
         object = compute_set_retrieval_scores_dplyr(
-          gold,
           pred,
+          gold,
           mode = .mode,
           label_groups = label_groups_w_factor,
           compute_bootstrap_ci = .compute_bootstrap_ci,
@@ -411,8 +411,8 @@ test_that("grouping (label-groups) of set retrieval computation works", {
     .f = function(.mode, .compute_bootstrap_ci, .progress) { # nolint
       expect_silent(
         object = compute_set_retrieval_scores(
-          gold,
           pred,
+          gold,
           mode = .mode,
           label_groups = label_groups_w_factor,
           compute_bootstrap_ci = .compute_bootstrap_ci,

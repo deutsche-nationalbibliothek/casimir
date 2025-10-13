@@ -28,7 +28,7 @@ test_that("pr curve computation works", {
     "C", "e", 0.2
   )
 
-  comp <- create_comparison(gold, pred)
+  comp <- create_comparison(pred, gold)
 
   thresholds <- unique(quantile(pred$score, probs = seq(0, 1, 0.1), type = 1))
   # Here is code to "manually" compute the pr curves
@@ -59,7 +59,7 @@ test_that("pr curve computation works", {
       .f = ~ dplyr::arrange(
         expect_silent(
           compute_pr_curve(
-            gold, pred,
+            pred, gold,
             mode = .x, thresholds = thresholds
           )$plot_data
         ),
@@ -132,8 +132,8 @@ test_that("pr curve computation works", {
     .f = function(.mode, .steps, .optimize) {
       expect_silent(
         object = compute_pr_curve(
-          gold_standard = gold,
           predicted = pred,
+          gold_standard = gold,
           mode = .mode,
           steps = .steps,
           optimize_cutoff = .optimize
@@ -187,7 +187,7 @@ test_that("grouped pr-auc computation works with doc_groups", {
   ))
   # test whether parallel computation yields the same as sequential computation
   pr_curve_by_hsg_parallel <- compute_pr_curve(
-    gold, pred,
+    pred, gold,
     doc_groups = doc_groups,
     thresholds = thresholds
   )$plot_data |>
@@ -204,8 +204,8 @@ test_that("grouped pr-auc computation works with doc_groups", {
         )
 
         compute_pr_curve(
-          gold_standard = gold_1hsg,
           predicted = pred_1hsg,
+          gold_standard = gold_1hsg,
           thresholds = thresholds
         )$plot_data
       },
@@ -275,7 +275,7 @@ test_that("grouped pr-auc computation works with label_strata", {
     pred$score,
     probs = seq(0, 1, 1 / steps), type = 1
   ))
-  pr_curve_by_lbl_grp <- compute_pr_curve(gold, pred,
+  pr_curve_by_lbl_grp <- compute_pr_curve(pred, gold,
     label_groups = label_dict,
     thresholds = seq(0, 1, 1 / steps)
   )
@@ -310,8 +310,8 @@ test_that("optimal cutoff works", {
   # purrr would cause an attach massage otherwise
 
   pr_curve <- expect_silent(compute_pr_curve(
-    gold_standard = dnb_gold_standard,
     predicted = dnb_test_predictions,
+    gold_standard = dnb_gold_standard,
     limit_range = 1:5,
     steps = 15,
     optimize_cutoff = TRUE
@@ -340,8 +340,8 @@ test_that("grouped cutoff works", {
   hsg_mapping <- readRDS(test_path("testdata/random_hsg_mapping.rds"))
 
   res <- compute_pr_curve(
-    gold_standard = dnb_gold_standard,
     predicted = dnb_test_predictions,
+    gold_standard = dnb_gold_standard,
     doc_groups = hsg_mapping,
     limit_range = c(1:5),
     steps = 10,
@@ -420,7 +420,7 @@ test_that("Empty Recall in label strata gives singleton-curve", {
   )
 
   res <- compute_pr_curve(
-    gold, pred,
+    pred, gold,
     label_groups = label_groups, steps = 10, mode = "micro"
   )
 

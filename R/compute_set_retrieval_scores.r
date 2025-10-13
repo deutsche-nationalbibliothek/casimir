@@ -1,9 +1,9 @@
 #' Compute multi label metrics for subject indexing results
 #'
-#' @param gold_standard expects \code{data.frame} with cols
-#'   \emph{"label_id", "doc_id"}
 #' @param predicted multi-label prediction results. expects \code{data.frame}
 #'   with cols \emph{"label_id", "doc_id"}
+#' @param gold_standard expects \code{data.frame} with cols
+#'   \emph{"label_id", "doc_id"}
 #' @param k integer limit on number of predictions per document to consider.
 #'   Only works when column \emph{"score"} is present in predicted
 #' @param mode aggregation mode: \emph{"doc-avg", "subj-avg", "micro"}
@@ -95,7 +95,7 @@
 #' plan(sequential) # or whatever resources you have
 #'
 #' a <- compute_set_retrieval_scores(
-#'   gold, pred,
+#'   pred, gold,
 #'   mode = "doc-avg",
 #'   compute_bootstrap_ci = TRUE,
 #'   n_bt = 100L
@@ -119,14 +119,14 @@
 #' )
 #'
 #' b <- compute_set_retrieval_scores(
-#'   gold, pred_w_relevance,
+#'   pred_w_relevance, gold,
 #'   mode = "doc-avg",
 #'   graded_relevance = TRUE
 #' )
 #'
 compute_set_retrieval_scores <- function(
-    gold_standard,
     predicted,
+    gold_standard,
     k = NULL,
     mode = "doc-avg",
     compute_bootstrap_ci = FALSE,
@@ -157,7 +157,8 @@ compute_set_retrieval_scores <- function(
   }
 
   compare <- create_comparison(
-    gold_standard, predicted,
+    predicted = predicted,
+    gold_standard = gold_standard,
     doc_groups = doc_groups,
     label_groups = label_groups,
     graded_relevance = graded_relevance,
@@ -326,8 +327,8 @@ compute_set_retrieval_scores <- function(
 #' @describeIn compute_set_retrieval_scores variant with internal usage of
 #'  dplyr rather than collapse library. Tends to be slower, but more stable
 compute_set_retrieval_scores_dplyr <- function( # nolint styler: off
-    gold_standard,
     predicted,
+    gold_standard,
     k = NULL,
     mode = "doc-avg",
     compute_bootstrap_ci = FALSE,
@@ -360,7 +361,8 @@ compute_set_retrieval_scores_dplyr <- function( # nolint styler: off
   }
 
   compare <- create_comparison(
-    gold_standard, predicted,
+    predicted = predicted,
+    gold_standard = gold_standard,
     doc_groups = doc_groups,
     label_groups = label_groups,
     graded_relevance = graded_relevance,

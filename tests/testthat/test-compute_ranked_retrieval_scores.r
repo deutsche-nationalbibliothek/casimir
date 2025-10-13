@@ -24,7 +24,7 @@ test_that("compute_ranked_retrieval_scores works", {
   )
 
   expect_silent(
-    observed <- compute_ranked_retrieval_scores(gold, pred)
+    observed <- compute_ranked_retrieval_scores(pred, gold)
   )
 
   expected <- tibble::tribble(
@@ -82,8 +82,8 @@ test_that("grouped ranked retrieval works", {
     dplyr::mutate(score = runif(dplyr::n()))
 
   observed <- compute_ranked_retrieval_scores(
-    gold,
     pred,
+    gold,
     doc_groups = doc_groups,
     drop_empty_groups = FALSE
   )
@@ -93,7 +93,7 @@ test_that("grouped ranked retrieval works", {
     nrow(dplyr::filter(observed, hsg == "006")), 3L
   )
 
-  doc_wise_results <- create_comparison(gold, pred, doc_groups = doc_groups) |>
+  doc_wise_results <- create_comparison(pred, gold, doc_groups = doc_groups) |>
     dplyr::group_by(doc_id, hsg) |>
     dplyr::do(
       ndcg = ndcg_score(.), # according to Reference implementation
