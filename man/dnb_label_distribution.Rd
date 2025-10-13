@@ -5,9 +5,9 @@
 \alias{dnb_label_distribution}
 \title{DNB label distribution for computing propensity scored metrics}
 \format{
-\subsection{\code{dnb_test_predictions}}{
+\subsection{\code{dnb_label_distribution}}{
 
-A data frame with 100,000 rows and 4 columns:
+A data frame with 7,772 rows and 3 columns:
 \describe{
 \item{label_id}{DNB identifier of a concept in the GND subject vocabulary}
 \item{label_freq}{Number of occurences of the specified label in the overall catalogue} # nolint
@@ -19,8 +19,8 @@ A data frame with 100,000 rows and 4 columns:
 dnb_label_distribution
 }
 \description{
-A subset of labels used in the catalogue of the dnb along with their
-frequencies of occurence. The label_ids match those in the
-\code{dnb_gold_standard} and \code{dnb_test_predictions} datasets.
+A subset of labels used in the catalogue of the DNB along with their
+frequencies of occurrence. The label_ids match those in the
+\code{dnb_gold_standard} and \code{dnb_test_predictions} data-sets.
 }
 \keyword{datasets}

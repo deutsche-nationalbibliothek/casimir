@@ -8,8 +8,10 @@ create_rank_col <- function(df) {
   stopifnot(all(c("doc_id", "score") %in% colnames(df)))
 
   collapse::settransform(df, rank = 1)
-  collapse::settransform(df, rank = fcumsum(rank, g = doc_id, o = -score))
-
+  collapse::settransform(
+    df,
+    rank = collapse::fcumsum(rank, g = doc_id, o = -score)
+  )
 }
 
 #' @describeIn create_rank_col variant with internal usage of

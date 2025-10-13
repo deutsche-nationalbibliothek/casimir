@@ -1,5 +1,4 @@
 test_that("rank column is created correctly", {
-
   df <- tibble::tribble(
     ~doc_id, ~score, ~exp_rank,
     "a", 0.9, 1,
@@ -19,11 +18,9 @@ test_that("rank column is created correctly", {
 })
 
 test_that("dplyr and collapse version agree", {
-
   df_a <- create_rank_col(dnb_test_predictions)
 
   df_b <- casimir:::create_rank_col_dplyr(dnb_test_predictions)
 
   expect_equal(df_a$rank, df_b$rank)
-
 })

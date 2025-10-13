@@ -18,7 +18,7 @@ A data frame with 337 rows and 2 columns:
 dnb_gold_standard
 }
 \description{
-A subset of documents found in the catalogue of the DNB with intelectually
+A subset of documents found in the catalogue of the DNB with intellectually
 assigned subject labels from the GND subject vocabulary.
 The document ids match those in the \code{dnb_test_predictions} dataset.
 }
