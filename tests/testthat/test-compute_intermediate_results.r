@@ -23,7 +23,7 @@ test_that("compute_intermediate_results checks out", {
     "C", "f"
   )
 
-  compare_gold_vs_pred <- casimir:::create_comparison(gold, pred_scenario1)
+  compare_gold_vs_pred <- casimir:::create_comparison(pred_scenario1, gold)
   res_per_doc_dplyr <- casimir:::compute_intermediate_results_dplyr(
     compare_gold_vs_pred,
     grouping_var = rlang::syms(c("doc_id"))
@@ -134,8 +134,8 @@ test_that("grouping vars with dots are rejected", {
     "C", "f"
   )
 
-  cmp_w_dots <- create_comparison(gold, pred, doc_groups = doc_groups_w_dots)
-  cmp_no_dots <- create_comparison(gold, pred, doc_groups = doc_groups_no_dots)
+  cmp_w_dots <- create_comparison(pred, gold, doc_groups = doc_groups_w_dots)
+  cmp_no_dots <- create_comparison(pred, gold, doc_groups = doc_groups_no_dots)
   res_w_dots <- compute_intermediate_results(
     cmp_w_dots,
     grouping_var = c("doc_id", "hsg")
@@ -218,7 +218,7 @@ test_that("f1-score handles missings expectedly in intermediate stage", {
     "A", "c"
   )
 
-  comp <- create_comparison(gold, pred)
+  comp <- create_comparison(pred, gold)
 
   expected_res <- tibble::tribble(
     ~label_id, ~n_gold, ~n_suggested, ~tp, ~fp, ~fn, ~delta_relevance, ~rprec_deno, ~prec, ~rprec, ~rec, ~f1, # nolint
@@ -283,8 +283,8 @@ test_that("propensity scored rprecision is correct on intermediate level", {
   )
 
   comp <- create_comparison(
-    gold = gold,
-    pred = pred
+    pred = pred,
+    gold = gold
   )
 
   ps_scores <- compute_propensity_scores(label_distribution)
@@ -411,7 +411,7 @@ test_that(
     )
 
     comp <- create_comparison(
-      gold, pred_w_relevance,
+      pred_w_relevance, gold,
       graded_relevance = TRUE
     )
 

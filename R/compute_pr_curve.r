@@ -61,8 +61,8 @@
 #' )
 #'
 #' pr_curve <- compute_pr_curve(
-#'   gold,
 #'   pred,
+#'   gold,
 #'   mode = "doc-avg",
 #'   optimize_cutoff = TRUE
 #' )
@@ -89,7 +89,7 @@
 #'   geom_path() +
 #'   coord_cartesian(xlim = c(0, 1), ylim = c(0, 1))
 compute_pr_curve <- function(
-    gold_standard, predicted,
+    predicted, gold_standard,
     doc_groups = NULL,
     label_groups = NULL,
     mode = "doc-avg",
@@ -118,7 +118,8 @@ compute_pr_curve <- function(
   }
 
   base_compare <- create_comparison(
-    gold_standard, predicted,
+    predicted = predicted,
+    gold_standard = gold_standard,
     doc_groups = doc_groups,
     label_groups = label_groups,
     graded_relevance = graded_relevance,

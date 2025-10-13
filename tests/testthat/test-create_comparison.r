@@ -24,7 +24,7 @@ test_that("create_comparison produces no nonesens", {
   )
 
   # scenario runs throughs undisturbed
-  expect_silent(casimir:::create_comparison(gold, pred_scenario1))
+  expect_silent(casimir:::create_comparison(pred_scenario1, gold))
 
 
   pred_scenario2 <- tibble::tribble(
@@ -37,7 +37,7 @@ test_that("create_comparison produces no nonesens", {
     "D", "f"
   )
 
-  expect_error(casimir:::create_comparison(gold, pred_scenario2),
+  expect_error(casimir:::create_comparison(pred_scenario2, gold),
     regexp = "nrow\\(predicted_wo_gold\\) == 0 is not TRUE"
   )
 
@@ -51,7 +51,7 @@ test_that("create_comparison produces no nonesens", {
   )
 
   expect_warning(
-    create_comparison(gold, pred_scenario3),
+    create_comparison(pred_scenario3, gold),
     regexp = "gold standard data contains documents that are not in predicted set" # nolint
   )
 
@@ -59,7 +59,7 @@ test_that("create_comparison produces no nonesens", {
   withr::with_options(
     list(casimir.ignore_inconsistencies = TRUE),
     {
-      expect_silent(create_comparison(gold, pred_scenario3))
+      expect_silent(create_comparison(pred_scenario3, gold))
     }
   )
 })

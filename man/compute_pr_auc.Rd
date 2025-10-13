@@ -11,8 +11,8 @@ compute_pr_auc performs a two dimensional optimisation over thresholds and
 limits applying both threshold-based cutoff as well as rank-based cutoff.}
 \usage{
 compute_pr_auc(
-  gold_standard,
   predicted,
+  gold_standard,
   doc_groups = NULL,
   label_groups = NULL,
   mode = "doc-avg",
@@ -35,11 +35,11 @@ compute_pr_auc(
 )
 }
 \arguments{
-\item{gold_standard}{expects \code{data.frame} with cols
-\emph{"label_id", "doc_id"}}
-
 \item{predicted}{multi-label prediction results. expects \code{data.frame}
 with cols \emph{"label_id", "doc_id", "score"}}
+
+\item{gold_standard}{expects \code{data.frame} with cols
+\emph{"label_id", "doc_id"}}
 
 \item{doc_groups}{two-column \code{data.frame} with col \emph{"doc_id"}
 and a second column that defines groups of labels to stratify results by.
@@ -163,7 +163,7 @@ pred <- tibble::tribble(
   "C", "e", 0.2, 1
 )
 
-auc <- compute_pr_auc(gold, pred, mode = "doc-avg")
+auc <- compute_pr_auc(pred, gold, mode = "doc-avg")
 }
 \seealso{
 compute_set_retrieval_scores compute_pr_auc_from_curve

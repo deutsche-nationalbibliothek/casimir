@@ -42,7 +42,7 @@ test_that("empty factor levels can be handled", {
   ) |>
     dplyr::mutate(gnd_entity = as.factor(gnd_entity))
   withr::local_options(list(casimir.drop_empty_groups = FALSE))
-  comp <- create_comparison(gold, pred, label_groups = label_groups)
+  comp <- create_comparison(pred, gold, label_groups = label_groups)
   intermed <- compute_intermediate_results(comp, c("label_id", "gnd_entity"))
 
   n <- nrow(dplyr::filter(intermed$results_table, gnd_entity == "empty_group"))
@@ -57,7 +57,7 @@ test_that("empty factor levels can be handled", {
     4L
   )
   withr::local_options(list(casimir.drop_empty_groups = TRUE))
-  comp <- create_comparison(gold, pred, label_groups = label_groups)
+  comp <- create_comparison(pred, gold, label_groups = label_groups)
   intermed <- compute_intermediate_results(comp, c("label_id", "gnd_entity"))
 
   n <- nrow(dplyr::filter(intermed$results_table, gnd_entity == "empty_group"))

@@ -67,7 +67,7 @@ test_that("compute_set_retrieval_scores works", {
     .x = expected_results,
     .f = ~ expect_equal(
       object = compute_set_retrieval_scores_dplyr(
-        gold, pred,
+        pred, gold,
         mode = .y,
         ignore_inconsistencies = TRUE
       ),
@@ -79,7 +79,7 @@ test_that("compute_set_retrieval_scores works", {
     .x = expected_results,
     .f = ~ expect_equal(
       object = compute_set_retrieval_scores(
-        gold, pred,
+        pred, gold,
         mode = .y,
         ignore_inconsistencies = TRUE
       ),
@@ -111,8 +111,8 @@ test_that("compute_set_retrieval_scores works", {
                   .cost_fp_constant) {
       expect_silent(
         object = compute_set_retrieval_scores_dplyr(
-          gold,
           pred,
+          gold,
           mode = .mode,
           seed = 10,
           graded_relevance = .graded_relevance,
@@ -134,8 +134,8 @@ test_that("compute_set_retrieval_scores works", {
                   .propensity_scored, .cost_fp_constant) {
       expect_silent(
         object = compute_set_retrieval_scores(
-          gold,
           pred,
+          gold,
           mode = .mode,
           seed = 10,
           graded_relevance = .graded_relevance,
@@ -181,11 +181,11 @@ test_that("f1 scores handles missings expectedly for micro-avg", {
   )
 
   expect_warning(
-    res_collapse <- compute_set_retrieval_scores(gold, pred, mode = "micro"),
+    res_collapse <- compute_set_retrieval_scores(pred, gold, mode = "micro"),
     "gold standard data contains documents that are not in predicted set"
   )
   expect_warning(
-    res_dplyr <- compute_set_retrieval_scores_dplyr(gold, pred, mode = "micro"),
+    res_dplyr <- compute_set_retrieval_scores_dplyr(pred, gold, mode = "micro"),
     "gold standard data contains documents that are not in predicted set"
   )
 
@@ -202,8 +202,8 @@ test_that("graded relevance metrics are computed correctly", {
   # reference implementation adapted from markus' code
   reference_graded_relevance <- function(gold_standard, predicted) {
     comp <- create_comparison(
-      gold_standard,
       dplyr::filter(predicted, !is.na(relevance)),
+      gold_standard,
       ignore_inconsistencies = TRUE
     ) |>
       # remove artificially generated relevance = 0 column
@@ -272,8 +272,8 @@ test_that("graded relevance metrics are computed correctly", {
 
   # GP and GR should be larger then binary precision and recall
   binary_relevance <- compute_set_retrieval_scores(
-    gold,
     pred_no_relevance,
+    gold,
     graded_relevance = FALSE,
     mode = "doc-avg"
   ) |>
@@ -281,8 +281,8 @@ test_that("graded relevance metrics are computed correctly", {
     dplyr::rename_with(~ paste0("binary_", .x))
 
   graded_relevance <- compute_set_retrieval_scores(
-    gold,
     pred_w_relevance,
+    gold,
     graded_relevance = TRUE,
     mode = "doc-avg"
   ) |>
@@ -304,8 +304,8 @@ test_that("graded relevance metrics are computed correctly", {
   reference_res <- reference_graded_relevance(gold, pred_w_relevance)
 
   casimir_res <- compute_set_retrieval_scores(
-    gold,
     pred_w_relevance,
+    gold,
     graded_relevance = TRUE,
     rename_graded_metrics = TRUE,
     mode = "doc-avg"
@@ -340,8 +340,8 @@ test_that("graded relevance metrics are computed correctly", {
 
   expect_warning(
     compute_set_retrieval_scores(
-      gold,
       inconsistent_pred_w_relevance,
+      gold,
       graded_relevance = TRUE,
       mode = "doc-avg"
     ),
@@ -365,8 +365,8 @@ test_that("graded relevance metrics are computed correctly", {
 
   expect_warning(
     compute_set_retrieval_scores(
-      gold,
       pred_w_missing_relevance,
+      gold,
       graded_relevance = TRUE,
       mode = "doc-avg"
     ),
@@ -387,8 +387,8 @@ test_that("graded relevance metrics are computed correctly", {
 
   expect_warning(
     compute_set_retrieval_scores(
-      gold,
       pred_w_false_gold,
+      gold,
       graded_relevance = TRUE,
       mode = "doc-avg"
     ),
@@ -440,8 +440,8 @@ test_that("propensity scores works", {
 
   expect_silent(
     compute_set_retrieval_scores(
-      gold = gold,
       pred = pred,
+      gold = gold,
       mode = "doc-avg",
       propensity_scored = TRUE,
       label_distribution = label_distribution,
@@ -453,8 +453,8 @@ test_that("propensity scores works", {
   # check that errors occur if a label has no match in label_distribution
   expect_error(
     compute_set_retrieval_scores(
-      gold = gold,
       pred = pred,
+      gold = gold,
       mode = "doc-avg",
       propensity_scored = TRUE,
       label_distribution = dplyr::filter(label_distribution, label_id != "a"),
@@ -477,8 +477,8 @@ test_that("propensity scores works", {
 
   expect_error(
     compute_set_retrieval_scores(
-      gold = gold,
       pred = pred,
+      gold = gold,
       mode = "doc-avg",
       propensity_scored = TRUE,
       label_distribution = faulty_label_distribution,
@@ -518,7 +518,7 @@ test_that("propensity scores works", {
     .x = expected_results,
     .f = ~ expect_equal(
       object = compute_set_retrieval_scores(
-        gold, pred,
+        pred, gold,
         mode = .y, propensity_scored = TRUE,
         label_distribution = label_distribution,
         cost_fp_constant = "mean"
@@ -532,7 +532,7 @@ test_that("propensity scores works", {
     .x = expected_results,
     .f = ~ expect_equal(
       object = compute_set_retrieval_scores_dplyr(
-        gold, pred,
+        pred, gold,
         mode = .y, propensity_scored = TRUE,
         label_distribution = label_distribution,
         cost_fp_constant = "mean"
@@ -594,8 +594,8 @@ test_that(paste(
   )
 
   compare <- create_comparison(
-    gold_standard = dnb_gold_standard,
     predicted = dnb_test_predictions,
+    gold_standard = dnb_gold_standard,
     propensity_scored = TRUE,
     label_distribution = dnb_label_distribution
   )
@@ -643,15 +643,15 @@ test_that(paste(
   )
 
   res_wrapped <- compute_set_retrieval_scores(
-    gold,
     pred_w_relevance,
+    gold,
     graded_relevance = TRUE,
     mode = "doc-avg"
   )
 
   comp <- create_comparison(
-    gold_standard = gold,
     predicted = pred_w_relevance,
+    gold_standard = gold,
     graded_relevance = TRUE
   )
 
@@ -673,11 +673,11 @@ test_that("Limit k is set correctly", {
   pred_at_5 <-  dplyr::filter(df, rank <= 5)
 
   expected_res <- compute_set_retrieval_scores(
-    dnb_gold_standard, pred_at_5
+    pred_at_5, dnb_gold_standard
   )
 
   observed_res <- compute_set_retrieval_scores(
-    dnb_gold_standard, df, k = 5
+    df, dnb_gold_standard, k = 5
   )
 
   expect_equal(
@@ -686,7 +686,7 @@ test_that("Limit k is set correctly", {
   )
 
   observed_res_dplyr <- compute_set_retrieval_scores_dplyr(
-    dnb_gold_standard, df, k = 5
+    df, dnb_gold_standard, k = 5
   )
 
   expect_equal(observed_res_dplyr, observed_res)

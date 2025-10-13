@@ -45,20 +45,22 @@
 #' )
 #'
 #' results <- compute_ranked_retrieval_scores(
-#'   gold,
-#'   pred
+#'   pred,
+#'   gold
 #' )
 #'
 compute_ranked_retrieval_scores <- function( # nolint styler: off
-    gold_standard,
     predicted,
+    gold_standard,
     doc_groups = NULL,
     drop_empty_groups = options::opt("drop_empty_groups"),
     progress = options::opt("progress")) {
   stopifnot(all(c("label_id", "doc_id") %in% colnames(gold_standard)))
   stopifnot(all(c("label_id", "doc_id", "score") %in% colnames(predicted)))
 
-  gold_vs_pred <- create_comparison(gold_standard, predicted,
+  gold_vs_pred <- create_comparison(
+    predicted = predicted,
+    gold_standard = gold_standard,
     doc_groups = doc_groups
   )
 

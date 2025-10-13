@@ -5,8 +5,8 @@
 \title{Join gold standard and predicted results in one table}
 \usage{
 create_comparison(
-  gold_standard,
   predicted,
+  gold_standard,
   doc_groups = NULL,
   label_groups = NULL,
   graded_relevance = FALSE,
@@ -16,11 +16,11 @@ create_comparison(
 )
 }
 \arguments{
-\item{gold_standard}{expects \code{data.frame} with cols
-\emph{"label_id", "doc_id"}}
-
 \item{predicted}{multi-label prediction results. expects \code{data.frame}
 with cols \emph{"label_id", "doc_id"}}
+
+\item{gold_standard}{expects \code{data.frame} with cols
+\emph{"label_id", "doc_id"}}
 
 \item{doc_groups}{two-column \code{data.frame} with col \emph{"doc_id"}
 and a second column that defines groups of labels to stratify results by.
@@ -87,5 +87,5 @@ pred <- tibble::tribble(
   "C", "f"
 )
 
-casimir::create_comparison(gold, pred)
+casimir::create_comparison(pred, gold)
 }

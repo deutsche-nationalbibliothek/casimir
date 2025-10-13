@@ -49,9 +49,9 @@
 #'   "C", "e", 0.2, 1
 #' )
 #'
-#' auc <- compute_pr_auc(gold, pred, mode = "doc-avg")
+#' auc <- compute_pr_auc(pred, gold, mode = "doc-avg")
 compute_pr_auc <- function(
-    gold_standard, predicted,
+    predicted, gold_standard,
     doc_groups = NULL,
     label_groups = NULL,
     mode = "doc-avg",
@@ -99,8 +99,8 @@ compute_pr_auc <- function(
     }
 
     pr_curve <- compute_pr_curve(
-      gold_standard = gold_standard,
       predicted = predicted,
+      gold_standard = gold_standard,
       doc_groups = doc_groups,
       label_groups = label_groups,
       mode = mode,
@@ -133,7 +133,8 @@ compute_pr_auc <- function(
     grouping_var <- set_grouping_var(mode, doc_groups, label_groups)
 
     base_compare <- create_comparison(
-      gold_standard, predicted,
+      predicted = predicted,
+      gold_standard = gold_standard,
       doc_groups = doc_groups,
       label_groups = label_groups,
       graded_relevance = graded_relevance,
