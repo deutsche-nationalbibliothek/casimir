@@ -23,7 +23,7 @@ compute_pr_auc(
   n_bt = 10L,
   seed = NULL,
   graded_relevance = FALSE,
-  rename_graded_metrics = FALSE,
+  rename_metrics = FALSE,
   propensity_scored = FALSE,
   label_distribution = NULL,
   cost_fp_constant = NULL,
@@ -83,9 +83,16 @@ Defaults to NA, applying no cutoff on label-rank of predictions.}
 \code{predicted} data.frame should contain a numeric column
 \emph{"relevance"} with values in the range of \code{c(0, 1)}.}
 
-\item{rename_graded_metrics}{if set to \code{TRUE}, the metric names in
-the output will be prefixed with \emph{"g-"} to indicate that metrics
-are computed with graded relevance.}
+\item{rename_metrics}{if set to \code{TRUE}, the metric names in
+the output will renamed if:
+\describe{
+\item{\code{graded_relevance = TRUE}}{prefixed with \emph{"g-"} to
+indicate that metrics are computed with graded relevance.}
+\item{\code{propensity_scored = TRUE}}{prefixed with \emph{"ps-"} to
+indicate that metrics are computed with propensity scores}
+\item{\code{!is.null(k)}}{suffixed with \emph{"@k"} to indicate
+that metrics are limited to top-k predictions}
+}}
 
 \item{propensity_scored}{logical, whether to use propensity scores as weights}
 

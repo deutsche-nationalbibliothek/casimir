@@ -307,7 +307,7 @@ test_that("graded relevance metrics are computed correctly", {
     pred_w_relevance,
     gold,
     graded_relevance = TRUE,
-    rename_graded_metrics = TRUE,
+    rename_metrics = TRUE,
     mode = "doc-avg"
   )
 

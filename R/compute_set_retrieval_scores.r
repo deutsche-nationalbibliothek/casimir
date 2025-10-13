@@ -30,9 +30,17 @@
 #'  \code{FALSE} for binary relevance. If set to \code{TRUE}, the
 #'  \code{predicted} data.frame should contain a numeric column
 #'  \emph{"relevance"} with values in the range of \code{c(0, 1)}.
-#' @param rename_graded_metrics if set to \code{TRUE}, the metric names in
-#'   the output will be prefixed with \emph{"g-"} to indicate that metrics
-#'   are computed with graded relevance.
+#' @param rename_metrics if set to \code{TRUE}, the metric names in
+#'   the output will renamed if:
+#'   \describe{
+#'     \item{\code{graded_relevance = TRUE}}{prefixed with \emph{"g-"} to
+#'     indicate that metrics are computed with graded relevance.}
+#'     \item{\code{propensity_scored = TRUE}}{prefixed with \emph{"ps-"} to
+#'     indicate that metrics are computed with propensity scores}
+#'     \item{\code{!is.null(k)}}{suffixed with \emph{"@@k"} to indicate
+#'     that metrics are limited to top-k predictions}
+#'    }
+#'
 #' @param seed pass seed to make bootstrap replication reproducible
 #' @param propensity_scored logical, whether to use propensity scores as weights
 #' @param label_distribution expects \code{data.frame} with cols
@@ -134,7 +142,7 @@ compute_set_retrieval_scores <- function(
     doc_groups = NULL,
     label_groups = NULL,
     graded_relevance = FALSE,
-    rename_graded_metrics = FALSE,
+    rename_metrics = FALSE,
     seed = NULL,
     propensity_scored = FALSE,
     label_distribution = NULL,
@@ -316,8 +324,12 @@ compute_set_retrieval_scores <- function(
   # add column that indicates the aggregation mode
   results <- dplyr::mutate(results, mode = mode, .after = "metric")
 
-  if (graded_relevance && rename_graded_metrics) {
-    results <- rename_metrics(results)
+  if (rename_metrics) {
+    results <- rename_metrics(
+      results,
+      graded_relevance = graded_relevance,
+      propensity_scored = propensity_scored,
+      k = k)
   }
 
   results
@@ -336,7 +348,7 @@ compute_set_retrieval_scores_dplyr <- function( # nolint styler: off
     doc_groups = NULL,
     label_groups = NULL,
     graded_relevance = FALSE,
-    rename_graded_metrics = FALSE,
+    rename_metrics = FALSE,
     seed = NULL,
     propensity_scored = FALSE,
     label_distribution = NULL,
@@ -491,8 +503,12 @@ compute_set_retrieval_scores_dplyr <- function( # nolint styler: off
   # add column that indicates the aggregation mode
   results <- dplyr::mutate(results, mode = mode, .after = "metric")
 
-  if (graded_relevance && rename_graded_metrics) {
-    results <- rename_metrics(results)
+  if (rename_metrics) {
+    results <- rename_metrics(
+      results,
+      graded_relevance = graded_relevance,
+      propensity_scored = propensity_scored,
+      k = k)
   }
 
   results
