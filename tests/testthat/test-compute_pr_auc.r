@@ -100,7 +100,7 @@ test_that("applying limit_range works", {
 
   expect_equal(
     pr_auc$pr_auc,
-    0.3194,
+    0.3127,
     tolerance = 1e-4
   )
   detach("package:purrr")

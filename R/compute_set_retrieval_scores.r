@@ -4,6 +4,8 @@
 #'   \emph{"label_id", "doc_id"}
 #' @param predicted multi-label prediction results. expects \code{data.frame}
 #'   with cols \emph{"label_id", "doc_id"}
+#' @param k integer limit on number of predictions per document to consider.
+#'   Only works when column \emph{"score"} is present in predicted
 #' @param mode aggregation mode: \emph{"doc-avg", "subj-avg", "micro"}
 #' @param compute_bootstrap_ci logical indicator for computing bootstrap CIs
 #' @param n_bt an integer number of resamples to undergo in bootstrapping
@@ -125,6 +127,7 @@
 compute_set_retrieval_scores <- function(
     gold_standard,
     predicted,
+    k = NULL,
     mode = "doc-avg",
     compute_bootstrap_ci = FALSE,
     n_bt = 10L,
@@ -145,6 +148,13 @@ compute_set_retrieval_scores <- function(
   stopifnot(all(c("label_id", "doc_id") %in% colnames(gold_standard)))
   stopifnot(all(c("label_id", "doc_id") %in% colnames(predicted)))
   stopifnot(is.logical(compute_bootstrap_ci))
+
+  if (!is.null(k)) {
+    if (!("rank" %in% colnames(predicted))) {
+      predicted <- create_rank_col(predicted)
+    }
+    predicted <- collapse::fsubset(predicted, rank <= k)
+  }
 
   compare <- create_comparison(
     gold_standard, predicted,
@@ -318,6 +328,7 @@ compute_set_retrieval_scores <- function(
 compute_set_retrieval_scores_dplyr <- function( # nolint styler: off
     gold_standard,
     predicted,
+    k = NULL,
     mode = "doc-avg",
     compute_bootstrap_ci = FALSE,
     n_bt = 10L,
@@ -333,6 +344,13 @@ compute_set_retrieval_scores_dplyr <- function( # nolint styler: off
     verbose = FALSE,
     progress = FALSE) {
   stopifnot(is.logical(compute_bootstrap_ci))
+
+  if (!is.null(k)) {
+    if (!("rank" %in% colnames(predicted))) {
+      predicted <- create_rank_col_dplyr(predicted)
+    }
+    predicted <- dplyr::filter(predicted, .data$rank <= k)
+  }
 
   if (propensity_scored) {
     stopifnot(!is.null(label_distribution))

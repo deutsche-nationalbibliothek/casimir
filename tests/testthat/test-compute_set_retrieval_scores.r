@@ -181,11 +181,11 @@ test_that("f1 scores handles missings expectedly for micro-avg", {
   )
 
   expect_warning(
-    res_collapse <- compute_set_retrieval_scores(gold, pred, "micro"),
+    res_collapse <- compute_set_retrieval_scores(gold, pred, mode = "micro"),
     "gold standard data contains documents that are not in predicted set"
   )
   expect_warning(
-    res_dplyr <- compute_set_retrieval_scores_dplyr(gold, pred, "micro"),
+    res_dplyr <- compute_set_retrieval_scores_dplyr(gold, pred, mode = "micro"),
     "gold standard data contains documents that are not in predicted set"
   )
 
@@ -662,4 +662,33 @@ test_that(paste(
     res,
     dplyr::select(res_wrapped, -"mode")
   )
+})
+
+test_that("Limit k is set correctly", {
+  df <- dnb_test_predictions |>
+    dplyr::group_by(doc_id) |>
+    dplyr::mutate(rank = dplyr::row_number(-score)) |>
+    dplyr::ungroup()
+
+  pred_at_5 <-  dplyr::filter(df, rank <= 5)
+
+  expected_res <- compute_set_retrieval_scores(
+    dnb_gold_standard, pred_at_5
+  )
+
+  observed_res <- compute_set_retrieval_scores(
+    dnb_gold_standard, df, k = 5
+  )
+
+  expect_equal(
+    observed_res,
+    expected_res
+  )
+
+  observed_res_dplyr <- compute_set_retrieval_scores_dplyr(
+    dnb_gold_standard, df, k = 5
+  )
+
+  expect_equal(observed_res_dplyr, observed_res)
+
 })

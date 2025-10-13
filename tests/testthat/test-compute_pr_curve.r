@@ -319,7 +319,7 @@ test_that("optimal cutoff works", {
 
   expect_equal(
     pr_curve$opt_cutoff$f1_max,
-    0.381083,
+    0.3792648,
     tolerance = 1e-6
   )
   detach("package:purrr")
@@ -352,7 +352,7 @@ test_that("grouped cutoff works", {
     dplyr::arrange(
       res$opt_cutoff, hsg
     )$f1_max,
-    c(0.3710678, 0.3453102, 0.4409370),
+    c(0.3710678, 0.3402597, 0.4409370),
     tolerance = 1e-5
   )
 
@@ -363,7 +363,7 @@ test_that("grouped cutoff works", {
 
   expect_equal(
     auc$pr_auc,
-    c(0.2792714, 0.2880313, 0.4115362),
+    c(0.2794000, 0.2747356, 0.4115362),
     tolerance = 1e-5
   )
 

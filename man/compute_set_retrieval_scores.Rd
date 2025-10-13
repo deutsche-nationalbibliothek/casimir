@@ -8,6 +8,7 @@
 compute_set_retrieval_scores(
   gold_standard,
   predicted,
+  k = NULL,
   mode = "doc-avg",
   compute_bootstrap_ci = FALSE,
   n_bt = 10L,
@@ -29,6 +30,7 @@ compute_set_retrieval_scores(
 compute_set_retrieval_scores_dplyr(
   gold_standard,
   predicted,
+  k = NULL,
   mode = "doc-avg",
   compute_bootstrap_ci = FALSE,
   n_bt = 10L,
@@ -51,6 +53,9 @@ compute_set_retrieval_scores_dplyr(
 
 \item{predicted}{multi-label prediction results. expects \code{data.frame}
 with cols \emph{"label_id", "doc_id"}}
+
+\item{k}{integer limit on number of predictions per document to consider.
+Only works when column \emph{"score"} is present in predicted}
 
 \item{mode}{aggregation mode: \emph{"doc-avg", "subj-avg", "micro"}}
 

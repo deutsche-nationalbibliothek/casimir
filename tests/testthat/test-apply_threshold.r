@@ -93,7 +93,7 @@ test_that("threshold application works", {
 
 test_that("limits are applied correctly", {
   base_compare <- casimir:::create_comparison(
-    dnb_gold_standard, dnb_test_predictions
+    dnb_gold_standard, create_rank_col(dnb_test_predictions)
   )
 
   res <- apply_threshold(
@@ -120,7 +120,7 @@ test_that("limits are applied correctly", {
 
 test_that("Handling of NULL and inf-limits works", {
   base_compare <- casimir:::create_comparison(
-    dnb_gold_standard, dnb_test_predictions
+    dnb_gold_standard, create_rank_col(dnb_test_predictions)
   )
 
   # null is not an appropriate input to limit

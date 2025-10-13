@@ -114,12 +114,7 @@ compute_pr_curve <- function(
   grouping_var <- set_grouping_var(mode, doc_groups, label_groups)
 
   if (!all(is.na(limit_range)) && !"rank" %in% colnames(predicted)) {
-    predicted <- dplyr::ungroup(
-      dplyr::mutate(
-        dplyr::group_by(predicted, .data$doc_id),
-        rank = dplyr::min_rank(-.data$score)
-      )
-    )
+    predicted <- create_rank_col(predicted)
   }
 
   base_compare <- create_comparison(
