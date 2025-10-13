@@ -1,10 +1,10 @@
 name: R-CMD-check
 
 on:
-  # push:
-  #   branches: [main, master]
-  # pull_request:
-  #   branches: [main, master]
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
   workflow_dispatch:
 
 jobs:
@@ -17,9 +17,9 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          # - {os: macos-latest,   r: 'release'}
+          - {os: macos-latest,   r: 'release'}
 
-          # - {os: windows-latest, r: 'release'}
+          - {os: windows-latest, r: 'release'}
           # # use 4.0 or 4.1 to check with rtools40's older compiler
           # - {os: windows-latest, r: 'oldrel-4'}
 
