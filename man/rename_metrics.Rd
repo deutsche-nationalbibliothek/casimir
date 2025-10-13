@@ -2,13 +2,37 @@
 % Please edit documentation in R/rename_metrics.r
 \name{rename_metrics}
 \alias{rename_metrics}
-\title{Rename metric names for generalized precision etc.}
+\title{Rename metric names for generalized precision etc.
+The output will renamed if:
+\describe{
+\item{\code{graded_relevance = TRUE}}{prefixed with \emph{"g-"} to
+indicate that metrics are computed with graded relevance.}
+\item{\code{propensity_scored = TRUE}}{prefixed with \emph{"ps-"} to
+indicate that metrics are computed with propensity scores}
+\item{\code{!is.null(k)}}{suffixed with \emph{"@k"} to indicate
+that metrics are limited to top-k predictions}
+}}
 \usage{
-rename_metrics(res_df)
+rename_metrics(
+  res_df,
+  k = NULL,
+  propensity_scored = FALSE,
+  graded_relevance = FALSE
+)
 }
 \arguments{
 \item{res_df}{data.frame with column \emph{"metric"} containing metric names
 prec, rec, f1, rprec}
+
+\item{k}{integer limit on number of predictions per document to consider.
+Only works when column \emph{"score"} is present in predicted}
+
+\item{propensity_scored}{logical, whether to use propensity scores as weights}
+
+\item{graded_relevance}{logical indicator for graded relevance. Defaults to
+\code{FALSE} for binary relevance. If set to \code{TRUE}, the
+\code{predicted} data.frame should contain a numeric column
+\emph{"relevance"} with values in the range of \code{c(0, 1)}.}
 }
 \value{
 results data.frame with renamed metrics for
@@ -16,4 +40,13 @@ generalized precision etc.
 }
 \description{
 Rename metric names for generalized precision etc.
+The output will renamed if:
+\describe{
+\item{\code{graded_relevance = TRUE}}{prefixed with \emph{"g-"} to
+indicate that metrics are computed with graded relevance.}
+\item{\code{propensity_scored = TRUE}}{prefixed with \emph{"ps-"} to
+indicate that metrics are computed with propensity scores}
+\item{\code{!is.null(k)}}{suffixed with \emph{"@k"} to indicate
+that metrics are limited to top-k predictions}
+}
 }

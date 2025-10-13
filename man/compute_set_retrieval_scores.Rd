@@ -15,7 +15,7 @@ compute_set_retrieval_scores(
   doc_groups = NULL,
   label_groups = NULL,
   graded_relevance = FALSE,
-  rename_graded_metrics = FALSE,
+  rename_metrics = FALSE,
   seed = NULL,
   propensity_scored = FALSE,
   label_distribution = NULL,
@@ -37,7 +37,7 @@ compute_set_retrieval_scores_dplyr(
   doc_groups = NULL,
   label_groups = NULL,
   graded_relevance = FALSE,
-  rename_graded_metrics = FALSE,
+  rename_metrics = FALSE,
   seed = NULL,
   propensity_scored = FALSE,
   label_distribution = NULL,
@@ -87,9 +87,16 @@ in these circumstances.}
 \code{predicted} data.frame should contain a numeric column
 \emph{"relevance"} with values in the range of \code{c(0, 1)}.}
 
-\item{rename_graded_metrics}{if set to \code{TRUE}, the metric names in
-the output will be prefixed with \emph{"g-"} to indicate that metrics
-are computed with graded relevance.}
+\item{rename_metrics}{if set to \code{TRUE}, the metric names in
+the output will renamed if:
+\describe{
+\item{\code{graded_relevance = TRUE}}{prefixed with \emph{"g-"} to
+indicate that metrics are computed with graded relevance.}
+\item{\code{propensity_scored = TRUE}}{prefixed with \emph{"ps-"} to
+indicate that metrics are computed with propensity scores}
+\item{\code{!is.null(k)}}{suffixed with \emph{"@k"} to indicate
+that metrics are limited to top-k predictions}
+}}
 
 \item{seed}{pass seed to make bootstrap replication reproducible}
 

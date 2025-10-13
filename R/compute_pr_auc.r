@@ -62,7 +62,7 @@ compute_pr_auc <- function(
     n_bt = 10L,
     seed = NULL,
     graded_relevance = FALSE,
-    rename_graded_metrics = FALSE,
+    rename_metrics = FALSE,
     propensity_scored = FALSE,
     label_distribution = NULL,
     cost_fp_constant = NULL,
@@ -257,10 +257,11 @@ compute_pr_auc <- function(
     }
   }
 
-  if (graded_relevance && rename_graded_metrics) {
-    pr_auc <- dplyr::rename(
+  if (rename_metrics) {
+    pr_auc <- rename_metrics(
       pr_auc,
-      g_pr_auc = .data$pr_auc
+      graded_relevance = graded_relevance,
+      propensity_scored = propensity_scored
     )
   }
 

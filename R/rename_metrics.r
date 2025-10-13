@@ -1,22 +1,53 @@
 #' Rename metric names for generalized precision etc.
+#' The output will renamed if:
+#'   \describe{
+#'     \item{\code{graded_relevance = TRUE}}{prefixed with \emph{"g-"} to
+#'     indicate that metrics are computed with graded relevance.}
+#'     \item{\code{propensity_scored = TRUE}}{prefixed with \emph{"ps-"} to
+#'     indicate that metrics are computed with propensity scores}
+#'     \item{\code{!is.null(k)}}{suffixed with \emph{"@@k"} to indicate
+#'     that metrics are limited to top-k predictions}
+#'    }
 #'
 #' @param res_df data.frame with column \emph{"metric"} containing metric names
 #'   prec, rec, f1, rprec
+#' @inheritParams compute_set_retrieval_scores
 #'
 #' @return results data.frame with renamed metrics for
 #'   generalized precision etc.
-rename_metrics <- function(res_df) {
-  stopifnot("metric" %in% colnames(res_df))
-
-  res_df <- dplyr::mutate(res_df,
-    metric = dplyr::case_when(
-      .data$metric == "rec" ~ "g-rec",
-      .data$metric == "prec" ~ "g-prec",
-      .data$metric == "f1" ~ "g-f1",
-      .data$metric == "rprec" ~ "g-rprec",
-      TRUE ~ .data$metric
-    )
-  )
+rename_metrics <- function(
+    res_df,
+    k = NULL,
+    propensity_scored = FALSE,
+    graded_relevance = FALSE) {
+  if ("metric" %in% colnames(res_df)) {
+    # renames the content of the column `metric``
+    var <- "metric"
+    if (graded_relevance) {
+      res_df[[var]] <- paste0("g-", res_df[[var]])
+    }
+    if (!is.null(k)) {
+      res_df[[var]] <- paste0(res_df[[var]], "@", k)
+    }
+    if (propensity_scored) {
+      res_df[[var]] <- paste0("ps-", res_df[[var]])
+    }
+  } else if ("pr_auc" %in% colnames(res_df)) {
+    # renames the column name `pr_auc`
+    new_name <- "pr_auc"
+    if (graded_relevance) {
+      new_name <- paste0("g-", new_name)
+    }
+    if (!is.null(k)) {
+      new_name <- paste0(new_name, "@", k)
+    }
+    if (propensity_scored) {
+      new_name <- paste0("ps-", new_name)
+    }
+    colnames(res_df)[colnames(res_df) == "pr_auc"] <- new_name
+  } else {
+    stop("res_df must contain either 'metric' or 'pr_auc' column")
+  }
 
   res_df
 }
