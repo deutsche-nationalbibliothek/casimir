@@ -42,7 +42,7 @@ test_that("ci for pr_auc work", {
 
   expect_error(
     compute_pr_auc(
-      gold, pred,
+      pred, gold,
       steps = steps, mode = "subj-avg",
       compute_bootstrap_ci = TRUE,
       n_bt = 20L
@@ -52,7 +52,7 @@ test_that("ci for pr_auc work", {
 
   expect_silent(
     compute_pr_auc(
-      gold, pred,
+      pred, gold,
       doc_groups = doc_groups, steps = steps,
       compute_bootstrap_ci = TRUE,
       n_bt = 20L
