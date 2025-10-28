@@ -1,10 +1,12 @@
-#' Compute the denominator for rprecision, based on propensity scored
-#' ranking of gold_standrad labels
+#' Compute the denominator for R-precision
+#'
+#' Compute the denominator for R-precision based on propensity scored ranking of
+#' gold standard labels.
 #'
 #' @inheritParams compute_intermediate_results
 #'
-#' @return data.frame with cols "n_gold", "n_suggested", "tp", "fp",
-#'   "fn", "rprec_deno"
+#' @return A data.frame with columns \code{"n_gold", "n_suggested", "tp", "fp",
+#'   "fn", "delta_relevance", "rprec_deno"}.
 find_ps_rprec_deno <- function(gold_vs_pred, grouping_var, cost_fp) {
   stopifnot(
     all(c("label_weight") %in% colnames(gold_vs_pred))
@@ -14,7 +16,7 @@ find_ps_rprec_deno <- function(gold_vs_pred, grouping_var, cost_fp) {
 
   # apply custom costs to tp, fp, fn
   if (!is.null(cost_fp)) {
-    # note in this cost scheme fp gets a constant weight
+    # note: in this cost scheme fp gets a constant weight
     rowwise_trans <- collapse::fcompute(
       .data = gold_vs_pred,
       n_gold = gold,
@@ -22,7 +24,7 @@ find_ps_rprec_deno <- function(gold_vs_pred, grouping_var, cost_fp) {
       tp = (gold & suggested) * label_weight,
       fp = (!gold & suggested) * cost_fp,
       fn = (gold & !suggested) * label_weight,
-      # graded results are weighted by cost_fp, as they are false positives too
+      # graded results are weighted by cost_fp as they are false positives, too
       # but this is something to think about in the future
       delta_relevance = (!gold & suggested) * relevance * cost_fp
     )
@@ -37,7 +39,6 @@ find_ps_rprec_deno <- function(gold_vs_pred, grouping_var, cost_fp) {
       delta_relevance = (!gold & suggested) * relevance * label_weight
     )
   }
-
 
   gold_vs_pred_smry <- collapse::fsum(rowwise_trans, g, use.g.names = TRUE)
 
@@ -106,9 +107,8 @@ find_ps_rprec_deno <- function(gold_vs_pred, grouping_var, cost_fp) {
   )
 }
 
-
-#' @describeIn find_ps_rprec_deno variant with dplyr based
-#' internals rather then collapse internals
+#' @describeIn find_ps_rprec_deno Variant with dplyr based
+#' internals rather than collapse internals.
 find_ps_rprec_deno_dplyr <- function(gold_vs_pred, grouping_var, cost_fp) {
   stopifnot(
     all(c("label_weight") %in% colnames(gold_vs_pred))
@@ -126,11 +126,11 @@ find_ps_rprec_deno_dplyr <- function(gold_vs_pred, grouping_var, cost_fp) {
       n_gold = sum(.data$gold),
       n_suggested = sum(.data$suggested),
       # apply custom costs to tp, fp, fn
-      # note in this cost scheme fp gets no extra weight
+      # note: in this cost scheme fp gets no extra weight
       tp = sum((.data$gold & .data$suggested) * .data$label_weight),
       fp = sum((!.data$gold & .data$suggested) * cost_fp),
       fn = sum((.data$gold & !.data$suggested) * .data$label_weight),
-      # graded results are weighted by cost_fp, as they are false positives too
+      # graded results are weighted by cost_fp as they are false positives, too
       # but this is something to think about in the future
       delta_relevance = sum(
         .data$relevance * cost_fp * (!.data$gold & .data$suggested)

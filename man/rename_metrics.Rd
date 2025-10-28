@@ -2,16 +2,7 @@
 % Please edit documentation in R/rename_metrics.r
 \name{rename_metrics}
 \alias{rename_metrics}
-\title{Rename metric names for generalized precision etc.
-The output will renamed if:
-\describe{
-\item{\code{graded_relevance = TRUE}}{prefixed with \emph{"g-"} to
-indicate that metrics are computed with graded relevance.}
-\item{\code{propensity_scored = TRUE}}{prefixed with \emph{"ps-"} to
-indicate that metrics are computed with propensity scores}
-\item{\code{!is.null(k)}}{suffixed with \emph{"@k"} to indicate
-that metrics are limited to top-k predictions}
-}}
+\title{Rename metrics}
 \usage{
 rename_metrics(
   res_df,
@@ -21,32 +12,33 @@ rename_metrics(
 )
 }
 \arguments{
-\item{res_df}{data.frame with column \emph{"metric"} containing metric names
-prec, rec, f1, rprec}
+\item{res_df}{A data.frame with a column \code{"metric"} containing metric
+names \code{"f1", "prec", "rec", "rprec"}.}
 
-\item{k}{integer limit on number of predictions per document to consider.
-Only works when column \emph{"score"} is present in predicted}
+\item{k}{An integer limit on the number of predictions per document to
+consider. Requires a column \code{"score"} in input \code{predicted}.}
 
-\item{propensity_scored}{logical, whether to use propensity scores as weights}
+\item{propensity_scored}{Logical, whether to use propensity scores as
+weights.}
 
-\item{graded_relevance}{logical indicator for graded relevance. Defaults to
+\item{graded_relevance}{A logical indicator for graded relevance. Defaults to
 \code{FALSE} for binary relevance. If set to \code{TRUE}, the
 \code{predicted} data.frame should contain a numeric column
-\emph{"relevance"} with values in the range of \code{c(0, 1)}.}
+\code{"relevance"} with values in the range of \eqn{[0, 1]}.}
 }
 \value{
-results data.frame with renamed metrics for
+The input data.frame \code{res_df} with renamed metrics for
 generalized precision etc.
 }
 \description{
-Rename metric names for generalized precision etc.
-The output will renamed if:
+Rename metric names for generalized precision etc. The output will be renamed
+if:
 \describe{
-\item{\code{graded_relevance = TRUE}}{prefixed with \emph{"g-"} to
+\item{\code{graded_relevance == TRUE}}{prefixed with \emph{"g-"} to
 indicate that metrics are computed with graded relevance.}
-\item{\code{propensity_scored = TRUE}}{prefixed with \emph{"ps-"} to
-indicate that metrics are computed with propensity scores}
+\item{\code{propensity_scored == TRUE}}{prefixed with \emph{"ps-"} to
+indicate that metrics are computed with propensity scores.}
 \item{\code{!is.null(k)}}{suffixed with \emph{"@k"} to indicate
-that metrics are limited to top-k predictions}
+that metrics are limited to top k predictions.}
 }
 }

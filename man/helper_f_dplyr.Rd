@@ -2,33 +2,40 @@
 % Please edit documentation in R/bootstrap_helpers.r
 \name{helper_f_dplyr}
 \alias{helper_f_dplyr}
-\title{Internal wrapper for compute_intermediat and summarise on one bt_sample}
+\title{Calculate bootstrapping results for one sample}
 \usage{
 helper_f_dplyr(
   sampled_id_list,
   compare_cpy,
   grouping_var,
-  label_distribution = NULL,
   ps_flags = list(intermed = FALSE, summarise = FALSE),
+  label_distribution = NULL,
   cost_fp = NULL
 )
 }
 \arguments{
-\item{sampled_id_list}{doc_ids of this bootstrap}
+\item{sampled_id_list}{A list of all doc_ids of this bootstrap.}
 
-\item{compare_cpy}{as created by \code{create_comparison}}
+\item{compare_cpy}{As created by \code{create_comparison}.}
 
-\item{grouping_var}{variables for aggreation}
+\item{grouping_var}{A vector of variables to be used for aggregation.}
 
-\item{label_distribution}{as in compute_set_retrieval_scores}
+\item{ps_flags}{A list with logicals \code{"intermed"} and
+\code{"summarise"}.}
 
-\item{ps_flags}{list with logicals "intermed" and "summarise"}
+\item{label_distribution}{Expects a data.frame with columns \code{"label_id",
+  "label_freq", "n_docs"}. \code{label_freq} corresponds to the number of
+occurences a label has in the gold standard. \code{n_docs} corresponds to
+the total number of documents in the gold standard.}
 
-\item{cost_fp}{numeric > 0}
+\item{cost_fp}{A numeric value > 0, defaults to NULL.}
 }
 \value{
-as \code{summarise_intermediate_results_dplyr}
+A data.frame as returned by
+\code{summarise_intermediate_results_dplyr}.
 }
 \description{
-Internal wrapper for compute_intermediat and summarise on one bt_sample
+Internal wrapper for computing bootstrapping results on one sample, combining
+the functionality of \code{compute_intermediate_results} and
+\code{summarise_intermediate_results}.
 }

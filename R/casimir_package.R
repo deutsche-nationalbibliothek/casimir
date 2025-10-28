@@ -12,7 +12,7 @@ NULL
 #' @eval options::as_roxygen_docs()
 NULL
 
-#' Declaration of Options to be used as identical function arguments
+#' Declaration of options to be used as identical function arguments
 #' @eval options::as_params()
 #' @name option_params
 #'

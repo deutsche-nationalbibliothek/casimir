@@ -3,31 +3,31 @@
 \name{join_propensity_scores}
 \alias{join_propensity_scores}
 \alias{join_propensity_scores_dplyr}
-\title{Helper function to perform a secure join of comparision matrix with
-propensity scores}
+\title{Join propensity scores}
 \usage{
 join_propensity_scores(input_data, label_weights)
 
 join_propensity_scores_dplyr(input_data, label_weights)
 }
 \arguments{
-\item{input_data}{\code{data.frame} containing at least the column \code{label_id}}
+\item{input_data}{A data.frame containing at least the column
+\code{"label_id"}.}
 
-\item{label_weights}{expects \code{data.frame} with cols
-\emph{"label_id", "label_weight"}.}
+\item{label_weights}{Expects a data.frame with columns \code{"label_id",
+"label_weight"}.}
 }
 \value{
-the input \code{data.frame} \code{gold_vs_pred} with additional cols
-\emph{"label_weight"}
+The input data.frame \code{input_data} with an additional column
+\code{"label_weight"}.
 }
 \description{
-Helper function to perform a secure join of comparision matrix with
-propensity scores
+Helper function to perform a secure join of a comparison matrix with
+propensity scores.
 }
 \section{Functions}{
 \itemize{
-\item \code{join_propensity_scores_dplyr()}: variant with dplyr based
-internals rather then collapse internals
+\item \code{join_propensity_scores_dplyr()}: Variant with dplyr based
+internals rather than collapse internals.
 
 }}
 \examples{

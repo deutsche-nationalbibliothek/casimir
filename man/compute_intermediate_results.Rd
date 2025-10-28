@@ -3,7 +3,7 @@
 \name{compute_intermediate_results}
 \alias{compute_intermediate_results}
 \alias{compute_intermediate_results_dplyr}
-\title{Compute true positives, false positives on aggregation level specified}
+\title{Compute intermediate set retrieval results per group}
 \usage{
 compute_intermediate_results(
   gold_vs_pred,
@@ -22,34 +22,42 @@ compute_intermediate_results_dplyr(
 )
 }
 \arguments{
-\item{gold_vs_pred}{\code{data.frame} with logical columns
-\emph{"suggested", "gold"} as produced by \code{create_comparison}}
+\item{gold_vs_pred}{A data.frame with logical columns \code{"suggested",
+"gold"} as produced by \code{create_comparison}.}
 
-\item{grouping_var}{a character vector of variables that must be present in
-gold_vs_pred (dplyr version requires rlang symbols)}
+\item{grouping_var}{A character vector of grouping variables that must be
+present in \code{gold_vs_pred} (dplyr version requires rlang symbols).}
 
-\item{propensity_scored}{logical, whether to use propensity scores as weights}
+\item{propensity_scored}{Logical, whether to use propensity scores as
+weights.}
 
-\item{cost_fp}{numeric > 0, default is NULL}
+\item{cost_fp}{A numeric value > 0, defaults to NULL.}
 
-\item{drop_empty_groups}{Should empty levels of factor variables be droped in grouped set retrieval
+\item{drop_empty_groups}{Should empty levels of factor variables be dropped in grouped set retrieval
 computation? (Defaults to \code{TRUE}, overwritable using option 'casimir.drop_empty_groups' or environment variable 'R_CASIMIR_DROP_EMPTY_GROUPS')}
 
 \item{check_group_names}{Perform replacement of dots in grouping columns. Disable for faster
-computation, if you can make sure that all columns used for grouping
-(doc_id, label_id, doc_groups, label_groups) do not contain dots (Defaults to \code{TRUE}, overwritable using option 'casimir.check_group_names' or environment variable 'R_CASIMIR_CHECK_GROUP_NAMES')}
+computation if you can make sure that all columns used for grouping
+("doc_id", "label_id", "doc_groups", "label_groups") do not contain
+dots. (Defaults to \code{TRUE}, overwritable using option 'casimir.check_group_names' or environment variable 'R_CASIMIR_CHECK_GROUP_NAMES')}
 }
 \value{
-data.frame with cols "n_gold", "n_suggested", "tp", "fp", "fn",
-"prec", "rec", "f1"
+A list of two elements:
+\itemize{
+\item \code{results_table} A data.frame with columns \code{"n_gold",
+      "n_suggested", "tp", "fp", "fn", "prec", "rprec", "rec", "f1"}.
+\item \code{grouping_var} The input vector \code{grouping_var}.
+}
 }
 \description{
-Compute true positives, false positives on aggregation level specified
+Compute intermediate set retrieval results per group such as number of gold
+standard and predicted labels, number of true positives, false positives and
+false negatives, precision, R-precision, recall and F1 score.
 }
 \section{Functions}{
 \itemize{
-\item \code{compute_intermediate_results_dplyr()}: variant with dplyr based
-internals rather then collapse internals
+\item \code{compute_intermediate_results_dplyr()}: Variant with dplyr based
+internals rather than collapse internals.
 
 }}
 \examples{

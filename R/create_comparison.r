@@ -1,8 +1,12 @@
-#' Join gold standard and predicted results in one table
+#' Join gold standard and predicted results
+#'
+#' Join the gold standard and the predicted results in one table based on the
+#' document id and the label id.
 #'
 #' @inheritParams compute_set_retrieval_scores
 #'
-#' @return data.frame with cols "label_id", "doc_id", "suggested", "gold"
+#' @return A data.frame with columns \code{"label_id", "doc_id", "suggested",
+#'   "gold"}.
 #'
 #' @export
 #'
@@ -52,8 +56,6 @@ create_comparison <- function(
     label_groups <- check_id_vars(label_groups)
   }
 
-
-
   if (graded_relevance) {
     predicted <- check_repair_relevance_pred(predicted)
   }
@@ -61,7 +63,7 @@ create_comparison <- function(
   if (graded_relevance && propensity_scored) {
     warning(
       "Mixing graded relevance and propensity_scores is not tested. ",
-      "You sure this is what you want?"
+      "Are you sure this is what you want?"
     )
   }
 
@@ -124,7 +126,6 @@ create_comparison <- function(
     )
   }
 
-
   if (!is.null(label_groups)) {
     compare <- collapse::join(
       x = compare,
@@ -149,11 +150,10 @@ create_comparison <- function(
     )
   )
 
-
   if (graded_relevance) {
     result <- check_repair_relevance_compare(result)
   } else {
-    # test if column relevane exists
+    # test if relevance column exists
     if ("relevance" %in% colnames(result) && !ignore_inconsistencies) {
       warning("column 'relevance' in predicted is ignored, as
               graded_relevance = FALSE. Overwriting with relevance = 0.

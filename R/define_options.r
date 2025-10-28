@@ -18,7 +18,7 @@ options::define_options(
    instances have no predictions or no gold standard. In these cases,
    calculating precision and recall may lead to division by zero. CASIMiR
    standardly removes these missing values from macro averages, leading to a
-   smaller `support` (count of instances that were averaged). Other
+   smaller support (count of instances that were averaged). Other
    implementations of macro averaged precision and recall default to 0 in these
    cases. This option allows to control the default. Set any value between 0
    and 1.",

@@ -2,18 +2,17 @@
 % Please edit documentation in R/pr_curve_post_processing.r
 \name{pr_curve_post_processing}
 \alias{pr_curve_post_processing}
-\title{Reshape pr_curve_data to a format that is easier for plotting}
+\title{Postprocessing of pr curve data}
 \usage{
 pr_curve_post_processing(results_summary)
 }
 \arguments{
-\item{results_summary}{as produced by summarise_intermediate_results}
+\item{results_summary}{As produced by \code{summarise_intermediate_results}.}
 }
 \value{
-a \code{data.frame} with cols
-\code{c("searchspace_id", "prec", "rec", "prec_cummax")}
-and possibly additional stratification variables
+A data.frame with columns \code{"searchspace_id", "prec", "rec",
+  "prec_cummax"} and possible additional stratification variables.
 }
 \description{
-Reshape pr_curve_data to a format that is easier for plotting
+Reshape pr curve data to a format that is easier for plotting.
 }

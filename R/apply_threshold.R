@@ -1,19 +1,20 @@
-#' Helper function for filtering preditions with score above a certain threshold
-#'   or rank below some limit rank.
+#' Filter predictions based on score and rank
 #'
-#' @param threshold numeric threshold between 0 and 1
-#' @param limit integer cutoff >= 1 for rankbased thresholding. Requires column
-#'   \code{"gold"} in input \code{base_compare}
-#' @param base_compare \code{data.frame} as created by \code{create_comparison},
-#'   containing cols \code{c("gold", "score")}
+#' Helper function for filtering predictions with score above a certain
+#' threshold or rank below some limit rank.
 #'
-#' @return \code{data.frame} with observations that satisfy
-#'   (\code{score > threshold} AND (if appliccable) \code{rank <= limit})
-#'   OR \code{gold == TRUE}
-#'   A new logical column \code{suggested} indicates true, if
-#'   score > threshold AND (if appliccable) rank <= limit
-#'   Otherwise false for false negative observations (that may have no score,
-#'   a score below the threshold or rank above limit)
+#' @param threshold A numeric threshold between 0 and 1.
+#' @param limit An integer cutoff >= 1 for rank-based thresholding. Requires a
+#'   column \code{"rank"} in input \code{base_compare}.
+#' @param base_compare A data.frame as created by \code{create_comparison},
+#'   containing columns \code{"gold", "score"}.
+#'
+#' @return A data.frame with observations that satisfy (\code{score >=
+#'   threshold} AND (if applicable) \code{rank <= limit}) OR \code{gold ==
+#'   TRUE}. A new logical column \code{suggested} indicates true if \code{score
+#'   >= threshold} AND (if applicable) \code{rank <= limit}, and false for
+#'   false negative observations (that may have no score, a score below the
+#'   threshold or rank above the limit).
 #' @export
 #'
 #' @examples
@@ -46,7 +47,7 @@
 #' )
 #'
 #' base_compare <- casimir:::create_comparison(gold, pred)
-#' # apply zero as threshold should not change anything
+#' # applying zero as threshold should not change anything
 #' res_0 <- casimir:::apply_threshold(
 #'   threshold = 0.3,
 #'   base_compare = base_compare
@@ -63,7 +64,7 @@ apply_threshold <- function(threshold, limit = NA_real_, base_compare) {
   compare_w_limit <- base_compare
   if (!is.na(limit)) {
     stopifnot(limit >= 1)
-    # only require rank-column, if limit is set
+    # rank column required only if limit is set
     stopifnot("rank" %in% colnames(base_compare))
 
     compare_w_limit <- dplyr::filter(

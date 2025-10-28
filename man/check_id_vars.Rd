@@ -2,20 +2,19 @@
 % Please edit documentation in R/io_helpers.R
 \name{check_id_vars}
 \alias{check_id_vars}
-\title{Internal helper function designed to ensure that id columns are not
-passed as factor variables. Factor variables in id columns may
-cause undesired behaviour with the drop_emtpy_group argument}
+\title{Coerce id columns to character}
 \usage{
 check_id_vars(df)
 }
 \arguments{
-\item{df}{data.frame to check id columns}
+\item{df}{An input data.frame.}
 }
 \value{
-\code{df}, without factor column on id vars
+The input data.frame \code{df} with the id columns being no
+longer factor variables.
 }
 \description{
-Internal helper function designed to ensure that id columns are not
-passed as factor variables. Factor variables in id columns may
-cause undesired behaviour with the drop_emtpy_group argument
+Internal helper function designed to ensure that id columns are not passed as
+factor variables. Factor variables in id columns may cause undesired
+behaviour with the \code{drop_empty_group} argument.
 }

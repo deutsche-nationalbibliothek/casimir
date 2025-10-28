@@ -3,33 +3,32 @@
 \name{find_ps_rprec_deno}
 \alias{find_ps_rprec_deno}
 \alias{find_ps_rprec_deno_dplyr}
-\title{Compute the denominator for rprecision, based on propensity scored
-ranking of gold_standrad labels}
+\title{Compute the denominator for R-precision}
 \usage{
 find_ps_rprec_deno(gold_vs_pred, grouping_var, cost_fp)
 
 find_ps_rprec_deno_dplyr(gold_vs_pred, grouping_var, cost_fp)
 }
 \arguments{
-\item{gold_vs_pred}{\code{data.frame} with logical columns
-\emph{"suggested", "gold"} as produced by \code{create_comparison}}
+\item{gold_vs_pred}{A data.frame with logical columns \code{"suggested",
+"gold"} as produced by \code{create_comparison}.}
 
-\item{grouping_var}{a character vector of variables that must be present in
-gold_vs_pred (dplyr version requires rlang symbols)}
+\item{grouping_var}{A character vector of grouping variables that must be
+present in \code{gold_vs_pred} (dplyr version requires rlang symbols).}
 
-\item{cost_fp}{numeric > 0, default is NULL}
+\item{cost_fp}{A numeric value > 0, defaults to NULL.}
 }
 \value{
-data.frame with cols "n_gold", "n_suggested", "tp", "fp",
-"fn", "rprec_deno"
+A data.frame with columns \code{"n_gold", "n_suggested", "tp", "fp",
+  "fn", "delta_relevance", "rprec_deno"}.
 }
 \description{
-Compute the denominator for rprecision, based on propensity scored
-ranking of gold_standrad labels
+Compute the denominator for R-precision based on propensity scored ranking of
+gold standard labels.
 }
 \section{Functions}{
 \itemize{
-\item \code{find_ps_rprec_deno_dplyr()}: variant with dplyr based
-internals rather then collapse internals
+\item \code{find_ps_rprec_deno_dplyr()}: Variant with dplyr based
+internals rather than collapse internals.
 
 }}

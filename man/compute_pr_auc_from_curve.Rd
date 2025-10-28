@@ -2,7 +2,7 @@
 % Please edit documentation in R/compute_pr_auc_from_curve.r
 \name{compute_pr_auc_from_curve}
 \alias{compute_pr_auc_from_curve}
-\title{Compute area under precision-recall curve given pr-curve data}
+\title{Compute area under precision-recall curve}
 \usage{
 compute_pr_auc_from_curve(
   pr_curve_data,
@@ -11,21 +11,23 @@ compute_pr_auc_from_curve(
 )
 }
 \arguments{
-\item{pr_curve_data}{a \code{data.frame} as produced by
-\code{compute_pr_curve}, containing cols "searchspace_id",
-"prec", "rec", "prec_cummax", "mode"}
+\item{pr_curve_data}{A data.frame as produced by
+\code{compute_pr_curve}, containing columns \code{"searchspace_id",
+  "prec", "rec", "prec_cummax", "mode"}.}
 
-\item{grouping_vars}{additional columns of the input data to group by}
+\item{grouping_vars}{Additional columns of the input data to group by.}
 
-\item{drop_empty_groups}{Should empty levels of factor variables be droped in grouped set retrieval
+\item{drop_empty_groups}{Should empty levels of factor variables be dropped in grouped set retrieval
 computation? (Defaults to \code{TRUE}, overwritable using option 'casimir.drop_empty_groups' or environment variable 'R_CASIMIR_DROP_EMPTY_GROUPS')}
 }
 \value{
-a \code{data.frame} with col pr_auc and potential grouping_vars
+A data.frame with a column \code{"pr_auc"} and optional
+\code{grouping_vars}.
 }
 \description{
-This function is mainly intended for generating plot data. For computation of
-the area under the curve use compute_pr_auc. The function uses a simple
+Compute the area under the precision-recall curve given pr curve data. This
+function is mainly intended for generating plot data. For computation of the
+area under the curve, use \code{compute_pr_auc}. The function uses a simple
 trapezoidal rule approximation along the steps of the generated curve data.
 }
 \examples{
@@ -69,8 +71,7 @@ pr_curve <- compute_pr_curve(
 
 auc <- compute_pr_auc_from_curve(pr_curve)
 
-
-# note that pr-curves take the cummax(prec), not the precision
+# note that pr curves take the cummax(prec), not the precision
 ggplot(pr_curve$plot_data, aes(x = rec, y = prec_cummax)) +
   geom_point(
     data = pr_curve$opt_cutoff,

@@ -1,22 +1,21 @@
 #' Compute ranked retrieval scores
 #'
-#' Rankied retrieval, unlike set retrieval, assumes ordered predictions. This
-#' function computes dcg, ndcg, idcg and lrap
-#'
-#' Unlike set retrieval metrics, ranked retrieval metrics are logically bound to
-#' a document wise evaluation. Thus, there is only the aggregation mode
-#' "doc-avg" for these scores available.
+#' This function computes the ranked retrieval scores Discounted
+#' Cumulative Gain (DCG), Ideal Discounted Cumulative Gain (IDCG), Normalized
+#' Discounted Cumulative Gain (NDCG) and Label Ranking Average Precision (LRAP).
+#' Ranked retrieval, unlike set retrieval, assumes ordered predictions. Unlike
+#' set retrieval metrics, ranked retrieval metrics are logically bound to a
+#' document-wise evaluation. Thus, only the aggregation mode "doc-avg" is
+#' available for these scores.
 #'
 #' @inheritParams compute_set_retrieval_scores
-#' @param predicted multi-label prediction results. expects \code{data.frame}
-#'   with cols \emph{"label_id", "doc_id", "score"}
+#' @param predicted Multi-label prediction results. Expects a data.frame with
+#'   columns \code{"label_id", "doc_id", "score"}.
 #'
-#' @return a \code{data.frame} with cols
-#'    \emph{"metric", "mode", "value", "support"}
-#'    and optionally grouping
-#'    variables supplied in doc_groups. Here, \strong{support}
-#'    is defined as number of documents that contribute to the document average
-#'    in aggregation of the overall result.
+#' @return A data.frame with columns \code{"metric", "mode", "value", "support"}
+#'   and optional grouping variables supplied in \code{doc_groups}. Here,
+#'   \code{support} is defined as number of documents that contribute to the
+#'   document average in aggregation of the overall result.
 #' @export
 #'
 #' @examples
@@ -68,7 +67,7 @@ compute_ranked_retrieval_scores <- function( # nolint styler: off
   doc_strata <- setdiff(colnames(doc_groups), "doc_id")
 
   intermed <- compute_intermediate_results_rr(
-    # note: usually adding drop_empty_groups = TRUE here is false
+    # note: usually adding drop_empty_groups = TRUE here is wrong
     # e.g. this would show empty subject groups for all documents
     gold_vs_pred, grouping_var,
     drop_empty_groups = TRUE

@@ -1,14 +1,17 @@
-#' Internal helper function to check comparison matrix for
-#' inconsistent gold_standard and relevance values
+#' Check for inconsistent relevance values
 #'
-#' @param gold_vs_pred as created by \code{create_comparison}
+#' Internal helper function to check a comparison matrix for inconsistent
+#' relevance values of gold standard and predicted labels.
+#'
+#' @param gold_vs_pred As created by \code{create_comparison}.
 #' @inheritParams option_params
 #'
-#' @return comparison matrix compatible with compute_intermediate_results
+#' @return A valid comparison matrix with possibly corrected relevance values,
+#'   being compatible with \code{compute_intermediate_results}.
 check_repair_relevance_compare <- function(
     gold_vs_pred,
     ignore_inconsistencies = options::opt("ignore_inconsistencies")) {
-  # set relevance to 1 if gold_standard = TRUE and relevance missing
+  # set relevance to 1 if gold == TRUE and relevance missing
   compare <- dplyr::mutate(
     gold_vs_pred,
     relevance = dplyr::if_else(
@@ -61,13 +64,17 @@ check_repair_relevance_compare <- function(
   compare
 }
 
-#' Internal helper to check predicted data frame for valid relevance column
+#' Check for inconsistent relevance values
 #'
-#' @param predicted multi-label prediction results. expects \code{data.frame}
-#'   with cols \emph{"label_id", "doc_id", "relevance"}
+#' Internal helper function to check a data.frame with predicted labels for a
+#' valid relevance column.
+#'
+#' @param predicted Multi-label prediction results. Expects a data.frame with
+#'   columns \code{"label_id", "doc_id", "relevance"}.
 #' @inheritParams option_params
 #'
-#' @return valid predicted data.frame with possibly eliminated missing values
+#' @return A valid \code{predicted} data.frame with possibly eliminated missing
+#'   values.
 check_repair_relevance_pred <- function(
     predicted,
     ignore_inconsistencies = options::opt("ignore_inconsistencies")) {

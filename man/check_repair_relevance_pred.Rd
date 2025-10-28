@@ -2,7 +2,7 @@
 % Please edit documentation in R/check_repair_relevance.r
 \name{check_repair_relevance_pred}
 \alias{check_repair_relevance_pred}
-\title{Internal helper to check predicted data frame for valid relevance column}
+\title{Check for inconsistent relevance values}
 \usage{
 check_repair_relevance_pred(
   predicted,
@@ -10,14 +10,16 @@ check_repair_relevance_pred(
 )
 }
 \arguments{
-\item{predicted}{multi-label prediction results. expects \code{data.frame}
-with cols \emph{"label_id", "doc_id", "relevance"}}
+\item{predicted}{Multi-label prediction results. Expects a data.frame with
+columns \code{"label_id", "doc_id", "relevance"}.}
 
 \item{ignore_inconsistencies}{Warnings about data inconsistencies will be silenced. (Defaults to \code{FALSE}, overwritable using option 'casimir.ignore_inconsistencies' or environment variable 'R_CASIMIR_IGNORE_INCONSISTENCIES')}
 }
 \value{
-valid predicted data.frame with possibly eliminated missing values
+A valid \code{predicted} data.frame with possibly eliminated missing
+values.
 }
 \description{
-Internal helper to check predicted data frame for valid relevance column
+Internal helper function to check a data.frame with predicted labels for a
+valid relevance column.
 }

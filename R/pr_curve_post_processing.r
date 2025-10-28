@@ -1,10 +1,11 @@
-#' Reshape pr_curve_data to a format that is easier for plotting
+#' Postprocessing of pr curve data
 #'
-#' @param results_summary as produced by summarise_intermediate_results
+#' Reshape pr curve data to a format that is easier for plotting.
 #'
-#' @return a \code{data.frame} with cols
-#'   \code{c("searchspace_id", "prec", "rec", "prec_cummax")}
-#'   and possibly additional stratification variables
+#' @param results_summary As produced by \code{summarise_intermediate_results}.
+#'
+#' @return A data.frame with columns \code{"searchspace_id", "prec", "rec",
+#'   "prec_cummax"} and possible additional stratification variables.
 pr_curve_post_processing <- function(results_summary) {
   stopifnot(all(
     c("metric", "value", "searchspace_id", "support") %in% colnames(results_summary) # nolint
@@ -61,7 +62,7 @@ pr_curve_post_processing <- function(results_summary) {
     )
   )
 
-  # add a zero-precision value at the maximum recall for visualization
+  # add a zero precision value at the maximum recall for visualization
   group_max_recall <- dplyr::summarise(
     results_summary,
     rec = max(dplyr::coalesce(.data$rec, 0), na.rm = TRUE)
@@ -75,7 +76,7 @@ pr_curve_post_processing <- function(results_summary) {
     rec = ifelse(is.na(rec), 0.0, rec)
   )
 
-  # add a zero-recall value at the maximum precision for visualization
+  # add a zero recall value at the maximum precision for visualization
   group_max_precision <- dplyr::summarise(
     results_summary,
     searchspace_id = max(.data$searchspace_id) + 1L,
@@ -94,7 +95,7 @@ pr_curve_post_processing <- function(results_summary) {
     row_last
   )
 
-  # sort results cols
+  # sort result columns
   dplyr::select(
     res, "searchspace_id", "prec", "rec", "prec_cummax",
     dplyr::everything()

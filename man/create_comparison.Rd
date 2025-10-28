@@ -2,7 +2,7 @@
 % Please edit documentation in R/create_comparison.r
 \name{create_comparison}
 \alias{create_comparison}
-\title{Join gold standard and predicted results in one table}
+\title{Join gold standard and predicted results}
 \usage{
 create_comparison(
   predicted,
@@ -16,50 +16,51 @@ create_comparison(
 )
 }
 \arguments{
-\item{predicted}{multi-label prediction results. expects \code{data.frame}
-with cols \emph{"label_id", "doc_id"}}
+\item{predicted}{Multi-label prediction results. Expects a data.frame with
+columns \code{"label_id", "doc_id"}.}
 
-\item{gold_standard}{expects \code{data.frame} with cols
-\emph{"label_id", "doc_id"}}
+\item{gold_standard}{Expects a data.frame with columns \code{"label_id",
+"doc_id"}.}
 
-\item{doc_groups}{two-column \code{data.frame} with col \emph{"doc_id"}
-and a second column that defines groups of labels to stratify results by.
-It is recommended that groups are of type factor, so that levels are
-not implicitly dropped during bootstrap replications}
+\item{doc_groups}{A two-column data.frame with a column \code{"doc_id"} and a
+second column defining groups of documents to stratify results by. It is
+recommended that groups are of type factor so that levels are not
+implicitly dropped during bootstrap replications.}
 
-\item{label_groups}{two-column \code{data.frame} with col \emph{"label_id"}
-and a second column that defines groups of labels to stratify results by.
-Results in each stratum
-will restrict gold_standard and predictions to the specified label-groups,
-as if the vocabulary was consisting of the label group only.
-All modes \code{c("doc-avg", "subj-avg", "micro") } are supported within
-label-strata.
-Nevertheless, mixing \code{mode = "doc-avg"} with fine-grained
-label_strata can result in many missing values on document-level results.
-Also rank-based thresholding (e.g. Top-5) will result in inhomogeneous
-number of labels per documents within the defined label-strata.
-\code{mode = "subj-avg"} or \code{mode = "micro"} can be more appropriate
-in these circumstances.}
+\item{label_groups}{A two-column data.frame with a column \code{"label_id"}
+and a second column defining groups of labels to stratify results by.
+Results in each stratum will restrict gold standard and predictions to the
+specified label groups as if the vocabulary was consisting of the label
+group only. All modes \code{"doc-avg", "subj-avg", "micro"} are supported
+within label strata. Nevertheless, mixing \code{mode = "doc-avg"} with
+fine-grained label strata can result in many missing values on
+document-level results. Also rank-based thresholding (e.g. top 5) will
+result in inhomogeneous numbers of labels per document within the defined
+label strata. \code{mode = "subj-avg"} or \code{mode = "micro"} can be more
+appropriate in these circumstances.}
 
-\item{graded_relevance}{logical indicator for graded relevance. Defaults to
+\item{graded_relevance}{A logical indicator for graded relevance. Defaults to
 \code{FALSE} for binary relevance. If set to \code{TRUE}, the
 \code{predicted} data.frame should contain a numeric column
-\emph{"relevance"} with values in the range of \code{c(0, 1)}.}
+\code{"relevance"} with values in the range of \eqn{[0, 1]}.}
 
-\item{propensity_scored}{logical, whether to use propensity scores as weights}
+\item{propensity_scored}{Logical, whether to use propensity scores as
+weights.}
 
-\item{label_distribution}{expects \code{data.frame} with cols
-\emph{"label_id", "label_freq", "n_docs"}. \code{label_freq} corresonds to
-the number of occurences a label has in the gold_standard. \code{n_docs}
-corresponds to the total number of documents in the gold_standard.}
+\item{label_distribution}{Expects a data.frame with columns \code{"label_id",
+  "label_freq", "n_docs"}. \code{label_freq} corresponds to the number of
+occurences a label has in the gold standard. \code{n_docs} corresponds to
+the total number of documents in the gold standard.}
 
 \item{ignore_inconsistencies}{Warnings about data inconsistencies will be silenced. (Defaults to \code{FALSE}, overwritable using option 'casimir.ignore_inconsistencies' or environment variable 'R_CASIMIR_IGNORE_INCONSISTENCIES')}
 }
 \value{
-data.frame with cols "label_id", "doc_id", "suggested", "gold"
+A data.frame with columns \code{"label_id", "doc_id", "suggested",
+  "gold"}.
 }
 \description{
-Join gold standard and predicted results in one table
+Join the gold standard and the predicted results in one table based on the
+document id and the label id.
 }
 \examples{
 library(casimir)

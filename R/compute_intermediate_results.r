@@ -1,15 +1,23 @@
-#' Compute true positives, false positives on aggregation level specified
+#' Compute intermediate set retrieval results per group
 #'
-#' @param gold_vs_pred \code{data.frame} with logical columns
-#'   \emph{"suggested", "gold"} as produced by \code{create_comparison}
-#' @param grouping_var a character vector of variables that must be present in
-#'  gold_vs_pred (dplyr version requires rlang symbols)
+#' Compute intermediate set retrieval results per group such as number of gold
+#' standard and predicted labels, number of true positives, false positives and
+#' false negatives, precision, R-precision, recall and F1 score.
+#'
+#' @param gold_vs_pred A data.frame with logical columns \code{"suggested",
+#'   "gold"} as produced by \code{create_comparison}.
+#' @param grouping_var A character vector of grouping variables that must be
+#'   present in \code{gold_vs_pred} (dplyr version requires rlang symbols).
 #' @inheritParams compute_set_retrieval_scores
-#' @param cost_fp numeric > 0, default is NULL
+#' @param cost_fp A numeric value > 0, defaults to NULL.
 #' @inheritParams option_params
 #'
-#' @return data.frame with cols "n_gold", "n_suggested", "tp", "fp", "fn",
-#'  "prec", "rec", "f1"
+#' @return A list of two elements:
+#'   \itemize{
+#'     \item \code{results_table} A data.frame with columns \code{"n_gold",
+#'       "n_suggested", "tp", "fp", "fn", "prec", "rprec", "rec", "f1"}.
+#'     \item \code{grouping_var} The input vector \code{grouping_var}.
+#' }
 #'
 #' @export
 #'
@@ -100,7 +108,7 @@ compute_intermediate_results <- function(
       NA_real_,
       (tp + delta_relevance) / (tp + fp)
     ),
-    # compute rprecision as in Manning etal.
+    # compute R-precision as in Manning et al.
     rprec = ifelse(pmin(n_gold, n_suggested) == 0,
       NA_real_,
       (tp + delta_relevance) / rprec_deno
@@ -109,7 +117,7 @@ compute_intermediate_results <- function(
       NA_real_,
       (tp + delta_relevance) / (tp + fn + delta_relevance)
     ),
-    # NA-Handling for F1:
+    # NA handling for F1:
     # return NA if both prec and rec are NA
     # return 0 if only one of them is NA
     f1 = ifelse(
@@ -172,8 +180,8 @@ compute_intermediate_results <- function(
   )
 }
 
-#' @describeIn compute_intermediate_results variant with dplyr based
-#' internals rather then collapse internals
+#' @describeIn compute_intermediate_results Variant with dplyr based
+#'   internals rather than collapse internals.
 compute_intermediate_results_dplyr <- function( # nolint styler: off
     gold_vs_pred,
     grouping_var,
@@ -226,7 +234,7 @@ compute_intermediate_results_dplyr <- function( # nolint styler: off
       (.data$tp + .data$delta_relevance) /
         (.data$tp + .data$fn + .data$delta_relevance)
     ),
-    # NA-Handling for F1:
+    # NA handling for F1:
     # return NA if both prec and rec are NA
     # return 0 if only one of them is NA
     f1 = ifelse(
@@ -237,7 +245,7 @@ compute_intermediate_results_dplyr <- function( # nolint styler: off
     )
   )
 
-  # compute rprecision as in Manning etal.
+  # compute R-precision as in Manning et al.
   gold_vs_pred_smry <- dplyr::mutate(
     gold_vs_pred_smry,
     rprec = ifelse(.data$rprec_deno == 0,

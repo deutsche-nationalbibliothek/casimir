@@ -2,7 +2,7 @@
 % Please edit documentation in R/compute_pr_curve.r
 \name{compute_pr_curve}
 \alias{compute_pr_curve}
-\title{compute precision-recall-curve for a given step size and limit_range}
+\title{Compute precision-recall curve}
 \usage{
 compute_pr_curve(
   predicted,
@@ -26,99 +26,105 @@ compute_pr_curve(
 )
 }
 \arguments{
-\item{predicted}{multi-label prediction results. expects \code{data.frame}
-with cols \emph{"label_id", "doc_id", "score"}}
+\item{predicted}{Multi-label prediction results. Expects a data.frame with
+columns \code{"label_id", "doc_id", "score"}.}
 
-\item{gold_standard}{expects \code{data.frame} with cols
-\emph{"label_id", "doc_id"}}
+\item{gold_standard}{Expects a data.frame with columns \code{"label_id",
+"doc_id"}.}
 
-\item{doc_groups}{two-column \code{data.frame} with col \emph{"doc_id"}
-and a second column that defines groups of labels to stratify results by.
-It is recommended that groups are of type factor, so that levels are
-not implicitly dropped during bootstrap replications}
+\item{doc_groups}{A two-column data.frame with a column \code{"doc_id"} and a
+second column defining groups of documents to stratify results by. It is
+recommended that groups are of type factor so that levels are not
+implicitly dropped during bootstrap replications.}
 
-\item{label_groups}{two-column \code{data.frame} with col \emph{"label_id"}
-and a second column that defines groups of labels to stratify results by.
-Results in each stratum
-will restrict gold_standard and predictions to the specified label-groups,
-as if the vocabulary was consisting of the label group only.
-All modes \code{c("doc-avg", "subj-avg", "micro") } are supported within
-label-strata.
-Nevertheless, mixing \code{mode = "doc-avg"} with fine-grained
-label_strata can result in many missing values on document-level results.
-Also rank-based thresholding (e.g. Top-5) will result in inhomogeneous
-number of labels per documents within the defined label-strata.
-\code{mode = "subj-avg"} or \code{mode = "micro"} can be more appropriate
-in these circumstances.}
+\item{label_groups}{A two-column data.frame with a column \code{"label_id"}
+and a second column defining groups of labels to stratify results by.
+Results in each stratum will restrict gold standard and predictions to the
+specified label groups as if the vocabulary was consisting of the label
+group only. All modes \code{"doc-avg", "subj-avg", "micro"} are supported
+within label strata. Nevertheless, mixing \code{mode = "doc-avg"} with
+fine-grained label strata can result in many missing values on
+document-level results. Also rank-based thresholding (e.g. top 5) will
+result in inhomogeneous numbers of labels per document within the defined
+label strata. \code{mode = "subj-avg"} or \code{mode = "micro"} can be more
+appropriate in these circumstances.}
 
-\item{mode}{aggregation mode: \emph{"doc-avg", "subj-avg", "micro"}}
+\item{mode}{One of the following aggregation modes: \code{"doc-avg",
+"subj-avg", "micro"}.}
 
-\item{steps}{how many steps to take between c(0,1) as a grid for computing
-the pr-curve}
+\item{steps}{Number of breaks to divide the interval \eqn{[0, 1]} into. These
+breaks will be used as quantiles to be calculated on the true positive
+suggestions' score distribution and therefore build one axis of the grid
+for computing the pr curve.}
 
-\item{thresholds}{alternatively to steps, one can manually set, which
-thresholds are used to build the pr_curve. Defaults to \code{steps}-percentiles
-of the score distribution of true positives suggestions}
+\item{thresholds}{Alternatively to steps, one can manually set the thresholds
+to be used to build the pr curve. Defaults to the quantiles of the true
+positive suggestions' score distribution to be obtained from \code{steps}.}
 
-\item{limit_range}{a vector of limit values to apply on rank-column.
-Defaults to NA, applying no cutoff on label-rank of predictions.}
+\item{limit_range}{A vector of limit values to apply on the rank column.
+Defaults to NA, applying no cutoff on the predictions' label rank.}
 
-\item{optimize_cutoff}{logical. If \code{TRUE} performs a grid search to
-find optimal limit and threshold  with respect to f1-measure in the
-search space specified by \code{limit_range} and \code{steps}.}
+\item{optimize_cutoff}{Logical. If \code{TRUE}, a grid search in the search
+space specified by \code{limit_range} and \code{steps} or \code{thresholds}
+is performed to find optimal limit and threshold with respect to F1
+measure.}
 
-\item{graded_relevance}{logical indicator for graded relevance. Defaults to
+\item{graded_relevance}{A logical indicator for graded relevance. Defaults to
 \code{FALSE} for binary relevance. If set to \code{TRUE}, the
 \code{predicted} data.frame should contain a numeric column
-\emph{"relevance"} with values in the range of \code{c(0, 1)}.}
+\code{"relevance"} with values in the range of \eqn{[0, 1]}.}
 
-\item{propensity_scored}{logical, whether to use propensity scores as weights}
+\item{propensity_scored}{Logical, whether to use propensity scores as
+weights.}
 
-\item{label_distribution}{expects \code{data.frame} with cols
-\emph{"label_id", "label_freq", "n_docs"}. \code{label_freq} corresonds to
-the number of occurences a label has in the gold_standard. \code{n_docs}
-corresponds to the total number of documents in the gold_standard.}
+\item{label_distribution}{Expects a data.frame with columns \code{"label_id",
+  "label_freq", "n_docs"}. \code{label_freq} corresponds to the number of
+occurences a label has in the gold standard. \code{n_docs} corresponds to
+the total number of documents in the gold standard.}
 
 \item{cost_fp_constant}{Constant cost assigned to false positives.
-cost_fp_constant must be
-a numeric value > 0 or one of 'max', 'min', 'mean' (computed with reference
-to the \code{gold_standard} label distribution). The default is NULL, i.e.
-label weights are applied to false positives as to false negatives and
-true positives.}
+\code{cost_fp_constant} must be a numeric value > 0 or one of 'max', 'min',
+'mean' (computed with reference to the \code{gold_standard} label
+distribution). Defaults to NULL, i.e. label weights are applied to false
+positives in the same way as to false negatives and true positives.}
 
-\item{replace_zero_division_with}{In macro averaged results (doc-avg, subj-avg) it may occur that some
-instances have no predictions or no gold-standard. In these cases calculating
-precision and recall may lead to zero divisions. CASIMiR standardly removes
-these missing values from macro averages, leading to a smaller \code{support}
-(count of instances that were averaged). Other implementations of macro
-averaged precision and recall default to 0 in these cases. This option
-will allow to control the default. Set any value between 0 and 1. (Defaults to \code{NULL}, overwritable using option 'casimir.replace_zero_division_with' or environment variable 'R_CASIMIR_REPLACE_ZERO_DIVISION_WITH')}
+\item{replace_zero_division_with}{In macro averaged results (doc-avg, subj-avg), it may occur that some
+instances have no predictions or no gold standard. In these cases,
+calculating precision and recall may lead to division by zero. CASIMiR
+standardly removes these missing values from macro averages, leading to a
+smaller support (count of instances that were averaged). Other
+implementations of macro averaged precision and recall default to 0 in these
+cases. This option allows to control the default. Set any value between 0
+and 1. (Defaults to \code{NULL}, overwritable using option 'casimir.replace_zero_division_with' or environment variable 'R_CASIMIR_REPLACE_ZERO_DIVISION_WITH')}
 
-\item{drop_empty_groups}{Should empty levels of factor variables be droped in grouped set retrieval
+\item{drop_empty_groups}{Should empty levels of factor variables be dropped in grouped set retrieval
 computation? (Defaults to \code{TRUE}, overwritable using option 'casimir.drop_empty_groups' or environment variable 'R_CASIMIR_DROP_EMPTY_GROUPS')}
 
 \item{ignore_inconsistencies}{Warnings about data inconsistencies will be silenced. (Defaults to \code{FALSE}, overwritable using option 'casimir.ignore_inconsistencies' or environment variable 'R_CASIMIR_IGNORE_INCONSISTENCIES')}
 
-\item{verbose}{Verbose reorting of computation steps for debugging (Defaults to \code{FALSE}, overwritable using option 'casimir.verbose' or environment variable 'R_CASIMIR_VERBOSE')}
+\item{verbose}{Verbose reporting of computation steps for debugging. (Defaults to \code{FALSE}, overwritable using option 'casimir.verbose' or environment variable 'R_CASIMIR_VERBOSE')}
 
 \item{progress}{Display progress bars for iterated computations (like bootstrap CI or
-PR-Curves) (Defaults to \code{FALSE}, overwritable using option 'casimir.progress' or environment variable 'R_CASIMIR_PROGRESS')}
+pr curves). (Defaults to \code{FALSE}, overwritable using option 'casimir.progress' or environment variable 'R_CASIMIR_PROGRESS')}
 }
 \value{
-a \code{list} with of two elemets:
-\enumerate{
-\item \code{plot_data} a \code{data.frame} with cols
-\code{c("searchspace_id", "prec", "rec", "prec_cummax")}
-\item \code{opt_cutoff} a \code{data.frame} with cols
-\code{c("thresholds", "limits", "f1_max",
-      "prec", "rec", "prec_cummax")}
+A list of three elements:
+\itemize{
+\item \code{plot_data} A data.frame with full pr curves and columns
+\code{"searchspace_id", "prec", "rec", "prec_cummax", "mode"}.
+\item \code{opt_cutoff} A data.frame with optimal cutoffs and columns
+\code{"thresholds", "limits", "searchspace_id", "f1_max", "prec",
+      "rec", "prec_cummax", "mode"}.
+\item \code{all_cutoffs} A data.frame with all cutoffs and columns
+\code{"thresholds", "limits", "searchspace_id", "metric", "value",
+      "support", "f1_max", "prec", "rec", "prec_cummax", "mode"}.
 }
-
-and possibly additional stratification variables passed with doc_groups
-and label_groups
+All three data.frames may contain additional stratification variables
+passed with \code{doc_groups} and \code{label_groups}. The latter two
+data.frames are non-empty only if \code{optimize_cutoff == TRUE}.
 }
 \description{
-compute precision-recall-curve for a given step size and limit_range
+Compute the precision-recall curve for a given step size and limit range.
 }
 \examples{
 
@@ -161,8 +167,7 @@ pr_curve <- compute_pr_curve(
 
 auc <- compute_pr_auc_from_curve(pr_curve$plot_data)
 
-
-# note that pr-curves take the cummax(prec), not the precision
+# note that pr curves take the cummax(prec), not the precision
 ggplot(pr_curve$plot_data, aes(x = rec, y = prec_cummax)) +
   geom_point(
     data = pr_curve$opt_cutoff,

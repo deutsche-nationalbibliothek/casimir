@@ -2,7 +2,7 @@
 % Please edit documentation in R/summarise_intermediate_results.r
 \name{summarise_intermediate_results}
 \alias{summarise_intermediate_results}
-\title{Compute mean of intermediate results}
+\title{Compute the mean of intermediate results}
 \usage{
 summarise_intermediate_results(
   intermediate_results,
@@ -13,34 +13,38 @@ summarise_intermediate_results(
 )
 }
 \arguments{
-\item{intermediate_results}{as produced by compute intermediate results.
-This requires a list containing
+\item{intermediate_results}{As produced by
+\code{compute_intermediate_results}. This requires a list containing:
 \itemize{
-\item \code{grouping_var} a  character vector of variables to group by
-\item \code{results_table}  a  with cols "prec", "rprec", "rec", "f1" as
+\item \code{results_table} A data.frame with columns \code{"prec",
+     "rprec", "rec", "f1"}.
+\item \code{grouping_var} A character vector of variables to group by.
 }}
 
-\item{propensity_scored}{logical, whether to use propensity scores as weights}
+\item{propensity_scored}{Logical, whether to use propensity scores as
+weights.}
 
-\item{label_distribution}{expects \code{data.frame} with cols
-\emph{"label_id", "label_freq", "n_docs"}. \code{label_freq} corresonds to
-the number of occurences a label has in the gold_standard. \code{n_docs}
-corresponds to the total number of documents in the gold_standard.}
+\item{label_distribution}{Expects a data.frame with columns \code{"label_id",
+  "label_freq", "n_docs"}. \code{label_freq} corresponds to the number of
+occurences a label has in the gold standard. \code{n_docs} corresponds to
+the total number of documents in the gold standard.}
 
-\item{set}{logical. allow in place modification of intermediate_results
-only recommended for internal package usage}
+\item{set}{Logical. Allow in-place modification of
+\code{intermediate_results}. Only recommended for internal package usage.}
 
-\item{replace_zero_division_with}{In macro averaged results (doc-avg, subj-avg) it may occur that some
-instances have no predictions or no gold-standard. In these cases calculating
-precision and recall may lead to zero divisions. CASIMiR standardly removes
-these missing values from macro averages, leading to a smaller \code{support}
-(count of instances that were averaged). Other implementations of macro
-averaged precision and recall default to 0 in these cases. This option
-will allow to control the default. Set any value between 0 and 1. (Defaults to \code{NULL}, overwritable using option 'casimir.replace_zero_division_with' or environment variable 'R_CASIMIR_REPLACE_ZERO_DIVISION_WITH')}
+\item{replace_zero_division_with}{In macro averaged results (doc-avg, subj-avg), it may occur that some
+instances have no predictions or no gold standard. In these cases,
+calculating precision and recall may lead to division by zero. CASIMiR
+standardly removes these missing values from macro averages, leading to a
+smaller support (count of instances that were averaged). Other
+implementations of macro averaged precision and recall default to 0 in these
+cases. This option allows to control the default. Set any value between 0
+and 1. (Defaults to \code{NULL}, overwritable using option 'casimir.replace_zero_division_with' or environment variable 'R_CASIMIR_REPLACE_ZERO_DIVISION_WITH')}
 }
 \value{
-data.frame with cols metric, value
+A data.frame with columns \code{"metric", "value"}.
 }
 \description{
-Compute mean of intermediate results
+Compute the mean of intermediate results created by
+\code{compute_intermediate_results}.
 }
