@@ -73,7 +73,7 @@ test_that("empty factor levels can be handled", {
   )
 })
 
-test_that("empty factor levels can be dropped in doc_strata", {
+test_that("empty factor levels can be dropped in doc_groups", {
   gold <- tibble::tribble(
     ~doc_id, ~label_id,
     "A", "a",
@@ -127,7 +127,6 @@ test_that("empty factor levels can be dropped in doc_strata", {
       0L
     )
   })
-
 
   withr::with_options(list(casimir.drop_empty_groups = FALSE), {
     res <- compute_set_retrieval_scores(gold, pred, doc_groups = doc_groups)

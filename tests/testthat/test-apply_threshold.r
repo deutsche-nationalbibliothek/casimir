@@ -27,7 +27,7 @@ test_that("threshold application works", {
   )
 
   base_compare <- casimir:::create_comparison(pred, gold)
-  # apply zero as threshold should not change anything
+  # applying zero as threshold should not change anything
   res_0 <- casimir:::apply_threshold(threshold = 0, base_compare = base_compare)
   expect_equal(res_0, base_compare)
 
@@ -40,7 +40,7 @@ test_that("threshold application works", {
     gold
   )
 
-  # expect error when threshold is above 1
+  # expect error if threshold is above 1
   expect_error(
     casimir:::apply_threshold(base_compare = base_compare, threshold = 1.3),
     regexp = "threshold >= 0 & threshold <= 1 is not TRUE"
@@ -107,7 +107,7 @@ test_that("limits are applied correctly", {
     0
   )
 
-  # inputing a limit requries a rank column
+  # inputting a limit requires a rank column
   expect_error(
     apply_threshold(
       threshold = 0.1,
@@ -118,12 +118,12 @@ test_that("limits are applied correctly", {
   )
 })
 
-test_that("Handling of NULL and inf-limits works", {
+test_that("handling of NULL and inf limits works", {
   base_compare <- casimir:::create_comparison(
     dnb_gold_standard, create_rank_col(dnb_test_predictions)
   )
 
-  # null is not an appropriate input to limit
+  # NULL is not an appropriate input to limit
   expect_error(
     apply_threshold(
       threshold = 0.1,
@@ -133,7 +133,7 @@ test_that("Handling of NULL and inf-limits works", {
     regexp = "is.numeric\\(limit\\) is not TRUE"
   )
 
-  # limit = Inf requires a rank column as any other limit
+  # limit = Inf requires a rank column, as any other limit does
   expect_error(
     apply_threshold(
       threshold = 0.1,

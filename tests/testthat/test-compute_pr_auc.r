@@ -1,6 +1,6 @@
-test_that("ci for pr_auc work", {
+test_that("ci for pr auc work", {
   library(purrr, quietly = TRUE, warn.conflicts = FALSE)
-  # this code produces the testdata, but random data replication is
+  # this code produces the test data but random data replication is
   # not always reproducible
   # nolint start
   # set.seed(20)
@@ -106,8 +106,7 @@ test_that("applying limit_range works", {
   detach("package:purrr")
 })
 
-
-test_that("Zero AUC for singleton-curve in empty label_strata", {
+test_that("zero auc for singleton curve in empty label strata", {
   library(purrr, quietly = TRUE, warn.conflicts = FALSE)
 
   gold <- tibble::tribble(
@@ -121,7 +120,7 @@ test_that("Zero AUC for singleton-curve in empty label_strata", {
     "C", "b",
     "C", "d",
     "C", "f",
-    "C", "i", # only label from gnd_entity location, not predicted
+    "C", "i", # only label from gnd_entity "location", not predicted
     "D", "a",
     "D", "c",
     "D", "e",
@@ -139,7 +138,7 @@ test_that("Zero AUC for singleton-curve in empty label_strata", {
     "C", "f", 0.9,
     "D", "a", 0.1,
     "D", "c", 0.2,
-    "D", "h", 0.3 # only label from gnd_entity works, not in gold
+    "D", "h", 0.3 # only label from gnd_entity "works", not in gold
   )
 
   label_groups <- tibble::tribble(
@@ -170,7 +169,7 @@ test_that("Zero AUC for singleton-curve in empty label_strata", {
   detach("package:purrr")
 })
 
-test_that("pr_auc with propensity scored metrics works", {
+test_that("pr auc with propensity scored metrics works", {
   library(purrr, quietly = TRUE, warn.conflicts = FALSE)
 
   gold <- tibble::tribble(
@@ -230,7 +229,7 @@ test_that("parallel compute_pr_auc handles large shared objects gracefully", {
   plan(multisession, workers = 2)
 
   withr::with_options(
-    # 197254 is chosen to be such that the warning is provoked,
+    # 197254 is chosen to provoke that warning,
     # usually `future.globals.maxSize` is much higher
     list(future.globals.maxSize = 197254),
     {

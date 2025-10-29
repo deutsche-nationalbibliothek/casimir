@@ -11,7 +11,6 @@ test_that("propensity score computation works", {
     dplyr::filter(label_id %in% test_ids) |>
     dplyr::arrange(label_weight)
 
-
   expected <- tibble::tribble(
     ~label_id, ~label_weight,
     "040118827", 1.03659472212516, # head label with low weight

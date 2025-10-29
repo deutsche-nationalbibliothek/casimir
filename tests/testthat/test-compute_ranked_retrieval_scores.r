@@ -96,10 +96,10 @@ test_that("grouped ranked retrieval works", {
   doc_wise_results <- create_comparison(pred, gold, doc_groups = doc_groups) |>
     dplyr::group_by(doc_id, hsg) |>
     dplyr::do(
-      ndcg = ndcg_score(.), # according to Reference implementation
-      dcg = dcg_score(.), # according to Reference implementation
+      ndcg = ndcg_score(.), # according to reference implementation
+      dcg = dcg_score(.), # according to reference implementation
       lrap = lrap_score(.)
-    ) |> # according to Reference implementation
+    ) |> # according to reference implementation
     tidyr::unnest(c(ndcg, dcg, lrap))
 
   expected <- doc_wise_results |>
@@ -117,7 +117,6 @@ test_that("grouped ranked retrieval works", {
       values_to = "value"
     ) |>
     dplyr::select(hsg, metric, mode, value, support)
-
 
   expect_equal(observed, expected, tolerance = 10e-6)
 })

@@ -31,7 +31,7 @@ test_that("pr curve computation works", {
   comp <- create_comparison(pred, gold)
 
   thresholds <- unique(quantile(pred$score, probs = seq(0, 1, 0.1), type = 1))
-  # Here is code to "manually" compute the pr curves
+  # here is code to "manually" compute the pr curves
   # nolint start
   # library(dplyr)
   # library(purrr)
@@ -145,12 +145,11 @@ test_that("pr curve computation works", {
   detach("package:purrr")
 })
 
-
-test_that("grouped pr-auc computation works with doc_groups", {
+test_that("grouped pr auc computation works with doc_groups", {
   library(purrr, quietly = TRUE, warn.conflicts = FALSE)
 
-  # Randomly generated testdata seems not reproducible in R CMD check
-  # so we use this code and save the testdata along with the package
+  # randomly generated test data seems not to be reproducible in R CMD check
+  # so we use this code and save the test data along with the package
   # nolint start
   # set.seed(20)
   # n_docs <- 20
@@ -234,9 +233,9 @@ test_that("grouped pr-auc computation works with doc_groups", {
   expect_equal(pr_auc_by_hsg, expected_pr_auc_by_hsg, tolerance = 10e-5)
 })
 
-test_that("grouped pr-auc computation works with label_strata", {
-  # Randomly generated testdata seems not reproducible in R CMD check
-  # so we use this code and save the testdata along with the package
+test_that("grouped pr auc computation works with label_groups", {
+  # randomly generated test data seems not to be reproducible in R CMD check
+  # so we use this code and save the test data along with the package
   # nolint start
   # set.seed(20)
   # n_docs <- 20
@@ -327,8 +326,8 @@ test_that("optimal cutoff works", {
 
 test_that("grouped cutoff works", {
   library(purrr, quietly = TRUE, warn.conflicts = FALSE)
-  # Randomly generated testdata seems not reproducible in R CMD check
-  # so we use this code and save the testdata along with the package
+  # randomly generated test data seems not to be reproducible in R CMD check
+  # so we use this code and save the test data along with the package
   # nolint start
   # set.seed(13436)
   # hsg_mapping <- dnb_gold_standard |>
@@ -370,8 +369,7 @@ test_that("grouped cutoff works", {
   detach("package:purrr")
 })
 
-
-test_that("Empty Recall in label strata gives singleton-curve", {
+test_that("empty recall in label strata gives singleton curve", {
   library(purrr, quietly = TRUE, warn.conflicts = FALSE)
 
   gold <- tibble::tribble(
@@ -385,7 +383,7 @@ test_that("Empty Recall in label strata gives singleton-curve", {
     "C", "b",
     "C", "d",
     "C", "f",
-    "C", "i", # only label from gnd_entity location, not predicted
+    "C", "i", # only label from gnd_entity "location", not predicted
     "D", "a",
     "D", "c",
     "D", "e",
@@ -403,7 +401,7 @@ test_that("Empty Recall in label strata gives singleton-curve", {
     "C", "f", 0.9,
     "D", "a", 0.1,
     "D", "c", 0.2,
-    "D", "h", 0.3 # only label from gnd_entity works, not in gold
+    "D", "h", 0.3 # only label from gnd_entity "works", not in gold
   )
 
   label_groups <- tibble::tribble(
@@ -424,7 +422,7 @@ test_that("Empty Recall in label strata gives singleton-curve", {
     label_groups = label_groups, steps = 10, mode = "micro"
   )
 
-  # expected last row for entity type "location" should be
+  # expect last row should be for entity type "location"
   last_row_entity_location <- tibble::tribble(
     ~searchspace_id, ~prec, ~rec, ~prec_cummax, ~gnd_entity, ~mode,
     5, 0.0, 0.0, 0.0, "location", "micro"

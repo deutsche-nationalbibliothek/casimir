@@ -62,14 +62,12 @@ test_that("ps_rprec_deno is computed correctly", {
       relevance = 0
     )
 
-
   docwise_res_collapse <- find_ps_rprec_deno(
     gold_vs_pred = comp,
     grouping_var = c("doc_id"),
     cost_fp = mlw
   ) |>
     dplyr::ungroup()
-
 
   docwise_res <- find_ps_rprec_deno_dplyr(
     gold_vs_pred = comp,
