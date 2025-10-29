@@ -193,7 +193,7 @@ compute_pr_curve <- function(
     )
   }
   if (verbose) {
-    message("Computing set retrieval metrics for all thresholds and limits.")
+    message("Computing set retrieval metrics for all thresholds and limits ...")
   }
 
   # get results per searchspace_id and

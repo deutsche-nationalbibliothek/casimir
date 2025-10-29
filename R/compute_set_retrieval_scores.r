@@ -206,7 +206,7 @@ compute_set_retrieval_scores <- function(
     boot_results <- NULL
 
     if (verbose) {
-      message("Computing intermediate results...")
+      message("Computing intermediate results ...")
     }
 
     intermediate_results <- compute_intermediate_results(
@@ -218,7 +218,7 @@ compute_set_retrieval_scores <- function(
     )
 
     if (verbose) {
-      message("Summarizing intermediate results...")
+      message("Summarising intermediate results ...")
     }
 
     results <- summarise_intermediate_results(
@@ -232,7 +232,7 @@ compute_set_retrieval_scores <- function(
     # generate n_bt copies of results, plus one original
 
     if (verbose) {
-      message("Computing bootstrap confidence intervals...")
+      message("Computing bootstrap confidence intervals ...")
     }
 
     boot_results <- generate_replicate_results(
@@ -447,7 +447,7 @@ compute_set_retrieval_scores_dplyr <- function( # nolint styler: off
   } else {
     # generate n_bt copies of results, plus one original
     if (verbose) {
-      message("Computing bootstrap confidence intervals...")
+      message("Computing bootstrap confidence intervals ...")
     }
 
     boot_results <- generate_replicate_results_dplyr(

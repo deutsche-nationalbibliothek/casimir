@@ -97,7 +97,7 @@ compute_pr_auc <- function(
 
   if (compute_bootstrap_ci == FALSE) {
     if (verbose) {
-      message("Computing pr-curve")
+      message("Computing pr curve ...")
     }
 
     pr_curve <- compute_pr_curve(
@@ -120,7 +120,7 @@ compute_pr_auc <- function(
       progress = progress
     )
     if (verbose) {
-      message("Computing pr-auc from pr-curve")
+      message("Computing pr auc from pr curve ...")
     }
     remaining_groupvars <- setdiff(
       set_grouping_var(mode, doc_groups, label_groups),
@@ -194,7 +194,7 @@ compute_pr_auc <- function(
 
     # glue together data.frames with different searchspace_id
     if (verbose) {
-      message("Computing intermediate results for all thresholds and limits")
+      message("Computing intermediate results for all thresholds and limits ...")
     }
 
     intermed_res_all_thrsld <- list()
@@ -216,7 +216,7 @@ compute_pr_auc <- function(
     smry_grouping_var <- setdiff(grouping_var, c("doc_id", "label_id"))
 
     if (verbose) {
-      message("Computing bootstrap confidence intervals")
+      message("Computing bootstrap confidence intervals ...")
     }
 
     boot_results <- generate_pr_auc_replica(
