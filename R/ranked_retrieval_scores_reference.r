@@ -11,15 +11,15 @@
 #' @param limit An integer cutoff value for DCG@@N.
 #'
 #' @return The numeric value of DCG.
-dcg_score <- function(df, limit = NULL) {
+dcg_score <- function(gold_vs_pred, limit = NULL) {
   # return the discounted cumulative gain (DCG) score for the selected
   #  labels vs. relevant labels
 
-  df <- df |> dplyr::arrange(dplyr::desc(score))
-  n_pred <- sum(!is.na(df$score))
+  gold_vs_pred <- gold_vs_pred |> dplyr::arrange(dplyr::desc(score))
+  n_pred <- sum(!is.na(gold_vs_pred$score))
   if (!is.null(limit)) n_pred <- min(limit, n_pred)
 
-  gain <- df$gold[1:n_pred]
+  gain <- gold_vs_pred$gold[1:n_pred]
   discount <- log2(1:n_pred + 1)
 
   return(sum(gain / discount))
