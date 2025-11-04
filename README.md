@@ -86,13 +86,6 @@ res <- compute_set_retrieval_scores(
 head(res)
 ```
 
-For more advanced examples visit our vignettes.
-
-  * creating stratified result tables
-  * producing precision-recall curves
-  * computing graded relevance metrics 
-  * computing propensity scored metrics
-
 ## Acknowledgments
 
 This work was created within the [DNB AI Project](https://www.dnb.de/ki-projekt
