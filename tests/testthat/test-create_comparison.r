@@ -51,7 +51,7 @@ test_that("create_comparison produces no nonsense", {
 
   expect_warning(
     create_comparison(pred_scenario3, gold),
-    regexp = "gold standard data contains documents that are not in predicted set" # nolint
+    regexp = "Gold standard data contains documents that are not in predicted set." # nolint
   )
 
   # test that option ignore_inconsistencies works

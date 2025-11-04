@@ -181,11 +181,11 @@ test_that("f1 score handles missings expectedly for micro-avg", {
 
   expect_warning(
     res_collapse <- compute_set_retrieval_scores(pred, gold, mode = "micro"),
-    "gold standard data contains documents that are not in predicted set"
+    "Gold standard data contains documents that are not in predicted set."
   )
   expect_warning(
     res_dplyr <- compute_set_retrieval_scores_dplyr(pred, gold, mode = "micro"),
-    "gold standard data contains documents that are not in predicted set"
+    "Gold standard data contains documents that are not in predicted set."
   )
 
   expect_equal(
@@ -344,8 +344,8 @@ test_that("graded relevance metrics are computed correctly", {
       mode = "doc-avg"
     ),
     paste(
-      "There are 1 inconsistent relevance values with relevance < 1 but",
-      "gold_standard = TRUE."
+      "There are 1 inconsistent relevance values with `relevance < 1` but",
+      "`gold == TRUE`."
     )
   )
 
@@ -368,7 +368,7 @@ test_that("graded relevance metrics are computed correctly", {
       graded_relevance = TRUE,
       mode = "doc-avg"
     ),
-    "NA values in 'relevance' column. Removing rows with NA values."
+    "NA values in `relevance` column. Removing rows with NA values."
   )
 
   # expect warning if relevance is 1 but gold == FALSE
@@ -391,8 +391,8 @@ test_that("graded relevance metrics are computed correctly", {
       mode = "doc-avg"
     ),
     paste(
-      "There are 1 inconsistent relevance values with relevance == 1",
-      "but gold_standard = FALSE."
+      "There are 1 inconsistent relevance values with `relevance == 1` but",
+      "`gold == FALSE`."
     )
   )
 })
@@ -563,14 +563,14 @@ test_that("altering cost_fp works", {
         all(res[[1]] == res[[3]]) ||
         all(res[[2]] == res[[3]])
   ) {
-    stop("altering cost_fp_constant does not change the results")
+    stop("Altering `cost_fp_constant` does not change the results.")
   }
   # nolint end styler on
 
   expect_error(
     test_cost_fp("foo"),
-    "cost_fp_constant must be a numeric value > 0 or one of
-           'max', 'min', 'mean'; not cost_fp_constant = foo"
+    paste0("`cost_fp_constant` must be a numeric value > 0 or one of \n",
+           "'max', 'min', 'mean'; not `cost_fp_constant == \"foo\"`.")
   )
 })
 
@@ -609,8 +609,8 @@ test_that(paste(
 })
 
 test_that(paste(
-  "compute_set_retrieval_scores with graded relevance is",
-  "equivalent to building blocks"
+  "compute_set_retrieval_scores with graded relevance",
+  "is equivalent to building blocks"
 ), {
   gold <- tibble::tribble(
     ~doc_id, ~label_id,

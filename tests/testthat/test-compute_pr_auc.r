@@ -47,7 +47,7 @@ test_that("ci for pr auc work", {
       compute_bootstrap_ci = TRUE,
       n_bt = 20L
     ),
-    regexp = "Confidence intervals for pr-auc in subj-avg-mode are not supported yet" # nolint
+    regexp = "Confidence intervals for pr auc in subj-avg mode are not supported yet." # nolint
   )
 
   expect_silent(

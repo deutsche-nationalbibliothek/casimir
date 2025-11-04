@@ -26,7 +26,7 @@ summarise_intermediate_results <- function(
   intrmd_res <- intermediate_results$results_table
   if (propensity_scored && ("label_id" %in% grouping_var)) {
     if (is.null(label_distribution)) {
-      stop("applying propensity scores requires label_distribution")
+      stop("Applying propensity scores requires `label_distribution`.")
     }
 
     label_weights <- compute_propensity_scores(label_distribution)
@@ -188,7 +188,7 @@ summarise_intermediate_results_dplyr <- function( # nolint styler: off
 
   if (propensity_scored) {
     if (is.null(label_distribution)) {
-      stop("applying propensity scores requires label_distribution")
+      stop("Applying propensity scores requires `label_distribution`.")
     }
 
     label_weights <- compute_propensity_scores(label_distribution)

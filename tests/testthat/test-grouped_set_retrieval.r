@@ -102,7 +102,7 @@ test_that("grouping (doc_groups) of set retrieval computation works", {
       compute_bootstrap_ci = TRUE,
       n_bt = 10L, seed = 134
     ),
-    regexp = "hsg is not a factor variable. Some levels may be lost in bootstrap replications" # nolint
+    regexp = "`hsg` is not a factor variable. Some levels may be lost in bootstrap replications." # nolint
   )
 
   doc_groups_w_factor <- dplyr::mutate(doc_groups, hsg = as.factor(hsg))
@@ -359,7 +359,7 @@ test_that("grouping (label_groups) of set retrieval computation works", {
       label_groups = label_groups,
       compute_bootstrap_ci = TRUE, n_bt = 10L
     ),
-    regexp = "gnd_entity is not a factor variable. Some levels may be lost in bootstrap replications" # nolint
+    regexp = "`gnd_entity` is not a factor variable. Some levels may be lost in bootstrap replications." # nolint
   )
 
   label_groups_w_factor <- dplyr::mutate(

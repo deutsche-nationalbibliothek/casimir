@@ -48,7 +48,7 @@ rename_metrics <- function(
     }
     colnames(res_df)[colnames(res_df) == "pr_auc"] <- new_name
   } else {
-    stop("res_df must contain either 'metric' or 'pr_auc' column")
+    stop("`res_df` must contain either a `metric` or `pr_auc` column.")
   }
 
   res_df

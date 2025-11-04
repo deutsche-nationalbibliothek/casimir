@@ -189,10 +189,10 @@ compute_set_retrieval_scores <- function(
   # give warnings if additional stratification variables are not factors
   test_factor <- function(var) {
     if (!is.factor(compare[[var]])) {
-      warning(paste(
-        var,
-        "is not a factor variable.",
-        "Some levels may be lost in bootstrap replications"
+      warning(paste0(
+        "`", var, "` ",
+        "is not a factor variable. ",
+        "Some levels may be lost in bootstrap replications."
       ))
     }
   }
@@ -288,7 +288,7 @@ compute_set_retrieval_scores <- function(
     if (skewed_ci[["ci_lower_too_high"]] > 0) {
       warning(paste(
         "CI computation produced skewed CI intervals",
-        "with metric value below ci_lower for ",
+        "with metric value below `ci_lower` for",
         skewed_ci[["ci_lower_too_high"]],
         "metric results. Extending CI to include metric value.",
         "This is known to happen for subj-avg metrics with highly skewed",
@@ -299,7 +299,7 @@ compute_set_retrieval_scores <- function(
     if (skewed_ci[["ci_upper_too_low"]] > 0) {
       warning(paste(
         "CI computation produced skewed CI intervals",
-        "with metric value above ci_upper for",
+        "with metric value above `ci_upper` for",
         skewed_ci[["ci_upper_too_low"]],
         "metric results. Extending CI to include metric value.",
         "This is known to happen for subj-avg metrics with highly skewed",
@@ -417,10 +417,10 @@ compute_set_retrieval_scores_dplyr <- function( # nolint styler: off
   # give warnings if additional stratification variables are not factors
   test_factor <- function(var) {
     if (!is.factor(compare[[var]])) {
-      warning(paste(
-        var,
-        "is not a factor variable.",
-        "Some levels may be lost in bootstrap replications"
+      warning(paste0(
+        "`", var, "` ",
+        "is not a factor variable. ",
+        "Some levels may be lost in bootstrap replications."
       ))
     }
   }

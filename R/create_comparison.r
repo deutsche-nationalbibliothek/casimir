@@ -62,14 +62,14 @@ create_comparison <- function(
 
   if (graded_relevance && propensity_scored) {
     warning(
-      "Mixing graded relevance and propensity_scores is not tested. ",
+      "Mixing graded relevance and propensity scores is not tested. ",
       "Are you sure this is what you want?"
     )
   }
 
   if (propensity_scored) {
     if (is.null(label_distribution)) {
-      stop("If propensity_scored = TRUE, label_distribution must be provided.")
+      stop("If `propensity_scored == TRUE`, `label_distribution` must be provided.")
     }
     stopifnot(all(
       c("label_id", "label_freq") %in% colnames(label_distribution)
@@ -99,8 +99,8 @@ create_comparison <- function(
   stopifnot(nrow(predicted_wo_gold) == 0)
   if (nrow(gold_wo_predicted) > 0 && !ignore_inconsistencies) {
     warning(
-      "gold standard data contains documents ",
-      "that are not in predicted set"
+      "Gold standard data contains documents ",
+      "that are not in predicted set."
     )
   }
 
@@ -155,9 +155,9 @@ create_comparison <- function(
   } else {
     # test if relevance column exists
     if ("relevance" %in% colnames(result) && !ignore_inconsistencies) {
-      warning("column 'relevance' in predicted is ignored, as
-              graded_relevance = FALSE. Overwriting with relevance = 0.
-              Silence this warning by setting ignore_inconsistencies = TRUE")
+      warning("Column `relevance` in `predicted` is ignored, as\n",
+              "`graded_relevance == FALSE`. Overwriting with `relevance = 0`. \n",
+              "Silence this warning by setting `ignore_inconsistencies = TRUE`.")
     }
     result <- collapse::ftransform(result, relevance = 0)
   }

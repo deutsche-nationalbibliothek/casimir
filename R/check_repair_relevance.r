@@ -27,14 +27,12 @@ check_repair_relevance_compare <- function(
     )
   )
   if (inconsistent_values_tp > 0 && !ignore_inconsistencies) {
-    warning(
-      paste(
-        "There are",
-        inconsistent_values_tp,
-        "inconsistent relevance values with relevance < 1 but",
-        "gold_standard = TRUE. Setting relevance to 1."
-      )
-    )
+    warning(paste(
+      "There are",
+      inconsistent_values_tp,
+      "inconsistent relevance values with `relevance < 1` but",
+      "`gold == TRUE`. Setting relevance to 1."
+    ))
     compare <- dplyr::mutate(
       compare,
       relevance = dplyr::if_else(
@@ -51,14 +49,12 @@ check_repair_relevance_compare <- function(
     )
   )
   if (inconsistent_values_fp > 0 && !ignore_inconsistencies) {
-    warning(
-      paste(
-        "There are",
-        inconsistent_values_fp,
-        "inconsistent relevance values with relevance == 1 but",
-        "gold_standard = FALSE. Please correct relevance or gold_standard."
-      )
-    )
+    warning(paste(
+      "There are",
+      inconsistent_values_fp,
+      "inconsistent relevance values with `relevance == 1` but",
+      "`gold == FALSE`. Please correct relevance or gold standard."
+    ))
   }
 
   compare
@@ -82,7 +78,7 @@ check_repair_relevance_pred <- function(
   stopifnot(is.numeric(predicted[["relevance"]]))
   # check for missing relevance values
   if (sum(is.na(predicted[["relevance"]])) > 0 && !ignore_inconsistencies) {
-    warning("NA values in 'relevance' column. Removing rows with NA values.")
+    warning("NA values in `relevance` column. Removing rows with NA values.")
     predicted <- dplyr::filter(predicted, !is.na(.data$relevance))
   }
   # check that relevance is between 0 and 1

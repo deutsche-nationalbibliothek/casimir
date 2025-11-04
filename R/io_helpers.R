@@ -64,8 +64,8 @@ process_cost_fp <- function(cost_fp_constant, gold_vs_pred) {
       mean = label_stats$mean
     )
   } else {
-    stop("cost_fp_constant must be a numeric value > 0 or one of
-           'max', 'min', 'mean'; not cost_fp_constant = ", cost_fp_constant)
+    stop("`cost_fp_constant` must be a numeric value > 0 or one of \n",
+         "'max', 'min', 'mean'; not `cost_fp_constant == \"", cost_fp_constant, "\"`.")
   }
   cost_fp_processed
 }
@@ -113,7 +113,7 @@ set_ps_flags <- function(mode, propensity_scored) {
 #'   longer a factor variable.
 check_id_vars_col <- function(df, col) {
   if (col %in% colnames(df) && is.factor(df[[col]])) {
-    warning(col, " should never be factor. Coercing to character.")
+    warning("`", col, "` should never be factor. Coercing to character.")
     df[[col]] <- as.character(df[[col]])
   }
   df

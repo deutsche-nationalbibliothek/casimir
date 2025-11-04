@@ -89,10 +89,7 @@ compute_pr_auc <- function(
   }
 
   if (mode == "subj-avg" && compute_bootstrap_ci == TRUE) {
-    stop(paste(
-      "Confidence intervals for pr-auc in",
-      "subj-avg-mode are not supported yet"
-    ))
+    stop("Confidence intervals for pr auc in subj-avg mode are not supported yet.")
   }
 
   if (compute_bootstrap_ci == FALSE) {
@@ -304,16 +301,16 @@ generate_pr_auc_replica <- function(
   max_size <- getOption("future.globals.maxSize", 500 * 1024^2)
   obj_size <- as.numeric(utils::object.size(intermed_res_all_thrsld))
   if (obj_size > max_size) {
-    warning(paste(
-      "Shared object size for parallel computation in CI bootstrapping",
-      "exceeds default (maxSize = ",
+    warning(paste0(
+      "Shared object size for parallel computation in CI bootstrapping ",
+      "exceeds default \n(maxSize = ",
       max_size,
-      ". Setting `future.globals.maxSize` to",
+      "). Setting `future.globals.maxSize` to ",
       obj_size * 1.1,
-      ", locally. To avoid this warning try one of the following:
-        * increase `future.globals.maxSize` globally
-        * decrease `steps` or `limit_range`
-        * disable CI computation"
+      ", locally. \nTo avoid this warning, try one of the following: \n",
+      "  * increase `future.globals.maxSize` globally \n",
+      "  * decrease `steps` or `limit_range` \n",
+      "  * disable CI computation"
     ))
     withr::local_options(list(future.globals.maxSize = obj_size * 1.1))
   }
