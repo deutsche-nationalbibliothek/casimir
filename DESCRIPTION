@@ -38,3 +38,4 @@ Config/testthat/edition: 3
 Depends: 
     R (>= 4.1.0)
 LazyData: true
+URL: https://deutsche-nationalbibliothek.github.io/casimir/

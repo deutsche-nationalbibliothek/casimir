@@ -8,6 +8,13 @@
 \description{
 This package contains functions for evaluating automatic subject indexing results. The main focus of the package is to enable efficient computation of set retrieval and ranked retrieval metrics across multiple dimensions of a dataset, e.g. document strata or subsets of the label set. The package also provides the possibility of computing bootstrap confidence intervals for all major metrics, with seemless integration of parallel computation and propensity scored variants of standard metrics.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://deutsche-nationalbibliothek.github.io/casimir/}
+}
+
+}
 \author{
 \strong{Maintainer}: Maximilian Kähler \email{m.kaehler@dnb.de} (\href{https://orcid.org/0000-0003-4695-0565}{ORCID})
 
