@@ -328,7 +328,8 @@ compute_set_retrieval_scores <- function(
       results,
       graded_relevance = graded_relevance,
       propensity_scored = propensity_scored,
-      k = k)
+      k = k
+    )
   }
 
   results
@@ -506,7 +507,8 @@ compute_set_retrieval_scores_dplyr <- function( # nolint styler: off
       results,
       graded_relevance = graded_relevance,
       propensity_scored = propensity_scored,
-      k = k)
+      k = k
+    )
   }
 
   results

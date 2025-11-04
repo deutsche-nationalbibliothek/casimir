@@ -69,7 +69,9 @@ create_comparison <- function(
 
   if (propensity_scored) {
     if (is.null(label_distribution)) {
-      stop("If `propensity_scored == TRUE`, `label_distribution` must be provided.")
+      stop(
+        "If `propensity_scored == TRUE`, `label_distribution` must be provided."
+      )
     }
     stopifnot(all(
       c("label_id", "label_freq") %in% colnames(label_distribution)
@@ -155,9 +157,11 @@ create_comparison <- function(
   } else {
     # test if relevance column exists
     if ("relevance" %in% colnames(result) && !ignore_inconsistencies) {
-      warning("Column `relevance` in `predicted` is ignored, as\n",
-              "`graded_relevance == FALSE`. Overwriting with `relevance = 0`. \n",
-              "Silence this warning by setting `ignore_inconsistencies = TRUE`.")
+      warning(
+        "Column `relevance` in `predicted` is ignored, as\n",
+        "`graded_relevance == FALSE`. Overwriting with `relevance = 0`. \n",
+        "Silence this warning by setting `ignore_inconsistencies = TRUE`."
+      )
     }
     result <- collapse::ftransform(result, relevance = 0)
   }

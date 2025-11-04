@@ -89,7 +89,9 @@ compute_pr_auc <- function(
   }
 
   if (mode == "subj-avg" && compute_bootstrap_ci == TRUE) {
-    stop("Confidence intervals for pr auc in subj-avg mode are not supported yet.")
+    stop(
+      "Confidence intervals for pr auc in subj-avg mode are not supported yet."
+    )
   }
 
   if (compute_bootstrap_ci == FALSE) {
@@ -191,7 +193,9 @@ compute_pr_auc <- function(
 
     # glue together data.frames with different searchspace_id
     if (verbose) {
-      message("Computing intermediate results for all thresholds and limits ...")
+      message(
+        "Computing intermediate results for all thresholds and limits ..."
+      )
     }
 
     intermed_res_all_thrsld <- list()
