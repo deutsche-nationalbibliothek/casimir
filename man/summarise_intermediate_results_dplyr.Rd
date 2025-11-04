@@ -2,8 +2,7 @@
 % Please edit documentation in R/summarise_intermediate_results.r
 \name{summarise_intermediate_results_dplyr}
 \alias{summarise_intermediate_results_dplyr}
-\title{Compute mean of intermediate results. Variant with dplyr based
-internals rather then collapse internals}
+\title{Compute the mean of intermediate results}
 \usage{
 summarise_intermediate_results_dplyr(
   intermediate_results,
@@ -12,24 +11,27 @@ summarise_intermediate_results_dplyr(
 )
 }
 \arguments{
-\item{intermediate_results}{as produced by compute intermediate results.
-This requires a list containing
+\item{intermediate_results}{As produced by
+\code{compute_intermediate_results}. This requires a list containing:
 \itemize{
-\item \code{grouping_var} a  character vector of variables to group by
-\item \code{results_table}  a  with cols "prec", "rprec", "rec", "f1" as
+\item \code{results_table} A data.frame with columns \code{"prec",
+     "rprec", "rec", "f1"}.
+\item \code{grouping_var} A character vector of variables to group by.
 }}
 
-\item{propensity_scored}{logical, whether to use propensity scores as weights}
+\item{propensity_scored}{Logical, whether to use propensity scores as
+weights.}
 
-\item{label_distribution}{expects \code{data.frame} with cols
-\emph{"label_id", "label_freq", "n_docs"}. \code{label_freq} corresonds to
-the number of occurences a label has in the gold_standard. \code{n_docs}
-corresponds to the total number of documents in the gold_standard.}
+\item{label_distribution}{Expects a data.frame with columns \code{"label_id",
+  "label_freq", "n_docs"}. \code{label_freq} corresponds to the number of
+occurences a label has in the gold standard. \code{n_docs} corresponds to
+the total number of documents in the gold standard.}
 }
 \value{
-data.frame with cols metric, value
+A data.frame with columns \code{"metric", "value"}.
 }
 \description{
-Compute mean of intermediate results. Variant with dplyr based
-internals rather then collapse internals
+Compute the mean of intermediate results created by
+\code{compute_intermediate_results}. Variant with dplyr based internals
+rather than collapse internals.
 }

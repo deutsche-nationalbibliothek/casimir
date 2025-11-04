@@ -1,4 +1,4 @@
-test_that("grouping (doc-strata) of set retrieval computation works", {
+test_that("grouping (doc_groups) of set retrieval computation works", {
   library(purrr, quietly = TRUE, warn.conflicts = FALSE)
   # some dummy results
   gold_001 <- tibble::tribble(
@@ -26,7 +26,6 @@ test_that("grouping (doc-strata) of set retrieval computation works", {
 
   doc_groups <- dplyr::distinct(gold, doc_id, hsg)
 
-
   pred_001 <- tibble::tribble(
     ~doc_id, ~label_id,
     "A", "a",
@@ -49,7 +48,7 @@ test_that("grouping (doc-strata) of set retrieval computation works", {
   expect_silent(
     casimir:::create_comparison(pred, gold, doc_groups = doc_groups)
   )
-  # expect NA in hsg-column of compare, when no doc_strata are defined
+  # expect NA in hsg column of compare if no doc_groups are defined
   compare_wo_explicit_strata <- casimir:::create_comparison(
     pred, gold,
     doc_groups = NULL
@@ -94,7 +93,7 @@ test_that("grouping (doc-strata) of set retrieval computation works", {
 
   ##############################################################################
   # test bootstrap#######################
-  # if doc_strata is not a factor, it may loose instances during bootstrap
+  # if doc_groups is not a factor, it may lose instances during bootstrap
   expect_warning(
     object = compute_set_retrieval_scores_dplyr(
       pred, gold,
@@ -103,7 +102,7 @@ test_that("grouping (doc-strata) of set retrieval computation works", {
       compute_bootstrap_ci = TRUE,
       n_bt = 10L, seed = 134
     ),
-    regexp = "hsg is not a factor variable. Some levels may be lost in bootstrap replications" # nolint
+    regexp = "`hsg` is not a factor variable. Some levels may be lost in bootstrap replications." # nolint
   )
 
   doc_groups_w_factor <- dplyr::mutate(doc_groups, hsg = as.factor(hsg))
@@ -119,13 +118,13 @@ test_that("grouping (doc-strata) of set retrieval computation works", {
     grouping_var = rlang::syms(c("hsg"))
   )
   expect_equal(nrow(boot_res), 88L,
-    info = "10-fold boot-strap of 4 metrics across two test-strata
+    info = "10-fold bootstrap of 4 metrics across two test strata
                should result in 2x10x4 = 80 rows plus 2x4 originals"
   )
 
 
   ##############################################################################
-  # test general radio silence across all input-configurations
+  # test general radio silence across all input configurations
   ##############################################################################
   set.seed(10)
   configuration <- expand.grid(
@@ -168,7 +167,7 @@ test_that("grouping (doc-strata) of set retrieval computation works", {
   detach("package:purrr")
 })
 
-test_that("grouping (label-groups) of set retrieval computation works", {
+test_that("grouping (label_groups) of set retrieval computation works", {
   library(purrr, quietly = TRUE, warn.conflicts = FALSE)
   # some dummy results
   gold <- tibble::tribble(
@@ -211,7 +210,6 @@ test_that("grouping (label-groups) of set retrieval computation works", {
     "f", "conf",
     "g", "subjh"
   )
-
 
   # expect no error when adding strata
   expect_silent(
@@ -345,7 +343,7 @@ test_that("grouping (label-groups) of set retrieval computation works", {
     )
   )
 
-  # check consistency of the tow methods
+  # check consistency of the two methods
   expect_equal(
     res_dplyr,
     res_collapse
@@ -353,7 +351,7 @@ test_that("grouping (label-groups) of set retrieval computation works", {
 
   ##############################################################################
   # test bootstrap#######################
-  # if label_strata is not a factor, it may loose instances during bootstrap
+  # if label_groups is not a factor, it may lose instances during bootstrap
   expect_warning(
     object = compute_set_retrieval_scores_dplyr(
       pred, gold,
@@ -361,7 +359,7 @@ test_that("grouping (label-groups) of set retrieval computation works", {
       label_groups = label_groups,
       compute_bootstrap_ci = TRUE, n_bt = 10L
     ),
-    regexp = "gnd_entity is not a factor variable. Some levels may be lost in bootstrap replications" # nolint
+    regexp = "`gnd_entity` is not a factor variable. Some levels may be lost in bootstrap replications." # nolint
   )
 
   label_groups_w_factor <- dplyr::mutate(
@@ -376,13 +374,13 @@ test_that("grouping (label-groups) of set retrieval computation works", {
   )
 
   expect_equal(nrow(boot_res), 132L,
-    info = "10-fold boot-strap of 4 metrics across three test-strata
+    info = "10-fold bootstrap of 4 metrics across three test strata
                should result in 3x10x4 = 120 rows plus 3*4 originals"
   )
 
 
   ##############################################################################
-  # test general radio silence across all input-configurations
+  # test general radio silence across all input configurations
   ##############################################################################
   set.seed(10)
   configuration <- expand.grid(
@@ -423,7 +421,7 @@ test_that("grouping (label-groups) of set retrieval computation works", {
     }
   )
 
-  # check that both methods are consistents
+  # check that both methods are consistent
   expect_equal(
     messages,
     messages_collapse

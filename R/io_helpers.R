@@ -1,9 +1,11 @@
-#' determine the appropriate grouping variables for each aggregation mode
+#' Set grouping variables
+#'
+#' Determine the appropriate grouping variables for each aggregation mode.
 #'
 #' @inheritParams compute_set_retrieval_scores
-#' @param var additional variables to include
+#' @param var Additional variables to include.
 #'
-#' @return a character vector of variables that determine the grouping structure
+#' @return A character vector of variables determining the grouping structure.
 set_grouping_var <- function(mode, doc_groups, label_groups, var = NULL) {
   if (!is.null(doc_groups)) {
     stopifnot("doc_id" %in% colnames(doc_groups))
@@ -35,12 +37,15 @@ set_grouping_var <- function(mode, doc_groups, label_groups, var = NULL) {
   grouping_var
 }
 
-#' Process input for cost_fp
+#' Process cost for false positives
+#'
+#' Calculate the cost for false positives depending on the chosen
+#' \code{cost_fp_constant}.
 #'
 #' @inheritParams compute_set_retrieval_scores
 #' @inheritParams compute_intermediate_results
 #'
-#' @return a numeric value > 0
+#' @return A numeric value > 0.
 process_cost_fp <- function(cost_fp_constant, gold_vs_pred) {
   label_stats <- gold_vs_pred |>
     collapse::fsubset(gold == TRUE) |>
@@ -59,22 +64,28 @@ process_cost_fp <- function(cost_fp_constant, gold_vs_pred) {
       mean = label_stats$mean
     )
   } else {
-    stop("cost_fp_constant must be a numeric value > 0 or one of
-           'max', 'min', 'mean'; not cost_fp_constant = ", cost_fp_constant)
+    stop(
+      "`cost_fp_constant` must be a numeric value > 0 or one of \n",
+      "'max', 'min', 'mean'; not `cost_fp_constant == \"", cost_fp_constant,
+      "\"`."
+    )
   }
   cost_fp_processed
 }
 
-#' Generate flags, if propensity scores should be applied to intermediate
-#' results or summarise results
+#' Set flags for propensity scores
+#'
+#' Generate flags if propensity scores should be applied to intermediate results
+#' or summarised results.
 #'
 #' @inheritParams compute_set_retrieval_scores
 #'
-#' @returns list containing logical flags `intermed` and `summarise`
+#' @returns A list containing logical flags \code{"intermed"} and
+#'   \code{"summarise"}.
 set_ps_flags <- function(mode, propensity_scored) {
   stopifnot(mode %in% c("micro", "subj-avg", "doc-avg"))
   stopifnot(is.logical(propensity_scored))
-  # set flag, if propensity scores should be applied to intermediate results
+  # set flag if propensity scores should be applied to intermediate results
   # (not wanted for mode subj-avg)
   if (mode == "subj-avg") {
     intermed <- FALSE
@@ -82,7 +93,7 @@ set_ps_flags <- function(mode, propensity_scored) {
     intermed <- propensity_scored
   }
 
-  # set flag, if propensity scores should be applied to summarise results stage
+  # set flag if propensity scores should be applied to summarise results stage
   # (only wanted for mode subj-avg)
   if (mode == "subj-avg") {
     summarise <- propensity_scored
@@ -93,27 +104,34 @@ set_ps_flags <- function(mode, propensity_scored) {
   list("intermed" = intermed, "summarise" = summarise)
 }
 
-#' Check variable col in df for factor type, and coerce to character
+#' Coerce column to character
 #'
-#' @param df input data.frame
-#' @param col column name to check
+#' Check an arbitrary column in a data.frame for factor type and coerce to
+#' character.
 #'
-#' @returns \code{df}, without factor column on id var col
+#' @param df An input data.frame.
+#' @param col The name of the column to check.
+#'
+#' @returns The input data.frame \code{df} with the specified column being no
+#'   longer a factor variable.
 check_id_vars_col <- function(df, col) {
   if (col %in% colnames(df) && is.factor(df[[col]])) {
-    warning(col, " should never be factor. Coercing to character.")
+    warning("`", col, "` should never be factor. Coercing to character.")
     df[[col]] <- as.character(df[[col]])
   }
   df
 }
 
-#' Internal helper function designed to ensure that id columns are not
-#'  passed as factor variables. Factor variables in id columns may
-#'  cause undesired behaviour with the drop_emtpy_group argument
+#' Coerce id columns to character
 #'
-#' @param df data.frame to check id columns
+#' Internal helper function designed to ensure that id columns are not passed as
+#' factor variables. Factor variables in id columns may cause undesired
+#' behaviour with the \code{drop_empty_group} argument.
 #'
-#' @returns \code{df}, without factor column on id vars
+#' @param df An input data.frame.
+#'
+#' @returns The input data.frame \code{df} with the id columns being no
+#'   longer factor variables.
 check_id_vars <- function(df) {
   df <- check_id_vars_col(df, "doc_id")
   df <- check_id_vars_col(df, "label_id")

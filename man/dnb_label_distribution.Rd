@@ -9,9 +9,12 @@
 
 A data frame with 7,772 rows and 3 columns:
 \describe{
-\item{label_id}{DNB identifier of a concept in the GND subject vocabulary}
-\item{label_freq}{Number of occurences of the specified label in the overall catalogue} # nolint
-\item{n_docs}{Overall number of documents in the ground truth dataset}
+\item{\code{label_id}}{DNB identifier of a concept in the GND subject
+vocabulary.}
+\item{\code{label_freq}}{Number of occurences of the specified label in the
+overall catalogue.}
+\item{\code{n_docs}}{Overall number of documents in the ground truth
+dataset.}
 }
 }
 }
@@ -21,6 +24,6 @@ dnb_label_distribution
 \description{
 A subset of labels used in the catalogue of the DNB along with their
 frequencies of occurrence. The label_ids match those in the
-\code{dnb_gold_standard} and \code{dnb_test_predictions} data-sets.
+\code{dnb_gold_standard} and \code{dnb_test_predictions} datasets.
 }
 \keyword{datasets}

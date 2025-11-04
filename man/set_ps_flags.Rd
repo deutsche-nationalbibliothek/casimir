@@ -2,20 +2,22 @@
 % Please edit documentation in R/io_helpers.R
 \name{set_ps_flags}
 \alias{set_ps_flags}
-\title{Generate flags, if propensity scores should be applied to intermediate
-results or summarise results}
+\title{Set flags for propensity scores}
 \usage{
 set_ps_flags(mode, propensity_scored)
 }
 \arguments{
-\item{mode}{aggregation mode: \emph{"doc-avg", "subj-avg", "micro"}}
+\item{mode}{One of the following aggregation modes: \code{"doc-avg",
+"subj-avg", "micro"}.}
 
-\item{propensity_scored}{logical, whether to use propensity scores as weights}
+\item{propensity_scored}{Logical, whether to use propensity scores as
+weights.}
 }
 \value{
-list containing logical flags \code{intermed} and \code{summarise}
+A list containing logical flags \code{"intermed"} and
+\code{"summarise"}.
 }
 \description{
-Generate flags, if propensity scores should be applied to intermediate
-results or summarise results
+Generate flags if propensity scores should be applied to intermediate results
+or summarised results.
 }

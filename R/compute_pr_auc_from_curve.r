@@ -1,16 +1,18 @@
-#' Compute area under precision-recall curve given pr-curve data
+#' Compute area under precision-recall curve
 #'
-#' This function is mainly intended for generating plot data. For computation of
-#'  the area under the curve use compute_pr_auc. The function uses a simple
-#'  trapezoidal rule approximation along the steps of the generated curve data.
+#' Compute the area under the precision-recall curve given pr curve data. This
+#' function is mainly intended for generating plot data. For computation of the
+#' area under the curve, use \code{compute_pr_auc}. The function uses a simple
+#' trapezoidal rule approximation along the steps of the generated curve data.
 #'
-#' @param pr_curve_data a \code{data.frame} as produced by
-#'   \code{compute_pr_curve}, containing cols "searchspace_id",
-#'   "prec", "rec", "prec_cummax", "mode"
-#' @param grouping_vars additional columns of the input data to group by
+#' @param pr_curve_data A data.frame as produced by
+#'   \code{compute_pr_curve}, containing columns \code{"searchspace_id",
+#'   "prec", "rec", "prec_cummax", "mode"}.
+#' @param grouping_vars Additional columns of the input data to group by.
 #' @inheritParams option_params
 #'
-#' @return a \code{data.frame} with col pr_auc and potential grouping_vars
+#' @return A data.frame with a column \code{"pr_auc"} and optional
+#'   \code{grouping_vars}.
 #' @export
 #'
 #' @seealso compute_pr_curve
@@ -56,8 +58,7 @@
 #'
 #' auc <- compute_pr_auc_from_curve(pr_curve)
 #'
-#'
-#' # note that pr-curves take the cummax(prec), not the precision
+#' # note that pr curves take the cummax(prec), not the precision
 #' ggplot(pr_curve$plot_data, aes(x = rec, y = prec_cummax)) +
 #'   geom_point(
 #'     data = pr_curve$opt_cutoff,

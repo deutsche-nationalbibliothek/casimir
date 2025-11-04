@@ -2,8 +2,7 @@
 % Please edit documentation in R/check_repair_relevance.r
 \name{check_repair_relevance_compare}
 \alias{check_repair_relevance_compare}
-\title{Internal helper function to check comparison matrix for
-inconsistent gold_standard and relevance values}
+\title{Check for inconsistent relevance values}
 \usage{
 check_repair_relevance_compare(
   gold_vs_pred,
@@ -11,14 +10,15 @@ check_repair_relevance_compare(
 )
 }
 \arguments{
-\item{gold_vs_pred}{as created by \code{create_comparison}}
+\item{gold_vs_pred}{As created by \code{create_comparison}.}
 
 \item{ignore_inconsistencies}{Warnings about data inconsistencies will be silenced. (Defaults to \code{FALSE}, overwritable using option 'casimir.ignore_inconsistencies' or environment variable 'R_CASIMIR_IGNORE_INCONSISTENCIES')}
 }
 \value{
-comparison matrix compatible with compute_intermediate_results
+A valid comparison matrix with possibly corrected relevance values,
+being compatible with \code{compute_intermediate_results}.
 }
 \description{
-Internal helper function to check comparison matrix for
-inconsistent gold_standard and relevance values
+Internal helper function to check a comparison matrix for inconsistent
+relevance values of gold standard and predicted labels.
 }

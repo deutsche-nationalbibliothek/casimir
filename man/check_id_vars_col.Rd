@@ -2,18 +2,20 @@
 % Please edit documentation in R/io_helpers.R
 \name{check_id_vars_col}
 \alias{check_id_vars_col}
-\title{Check variable col in df for factor type, and coerce to character}
+\title{Coerce column to character}
 \usage{
 check_id_vars_col(df, col)
 }
 \arguments{
-\item{df}{input data.frame}
+\item{df}{An input data.frame.}
 
-\item{col}{column name to check}
+\item{col}{The name of the column to check.}
 }
 \value{
-\code{df}, without factor column on id var col
+The input data.frame \code{df} with the specified column being no
+longer a factor variable.
 }
 \description{
-Check variable col in df for factor type, and coerce to character
+Check an arbitrary column in a data.frame for factor type and coerce to
+character.
 }

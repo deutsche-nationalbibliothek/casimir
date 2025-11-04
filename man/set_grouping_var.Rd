@@ -2,37 +2,36 @@
 % Please edit documentation in R/io_helpers.R
 \name{set_grouping_var}
 \alias{set_grouping_var}
-\title{determine the appropriate grouping variables for each aggregation mode}
+\title{Set grouping variables}
 \usage{
 set_grouping_var(mode, doc_groups, label_groups, var = NULL)
 }
 \arguments{
-\item{mode}{aggregation mode: \emph{"doc-avg", "subj-avg", "micro"}}
+\item{mode}{One of the following aggregation modes: \code{"doc-avg",
+"subj-avg", "micro"}.}
 
-\item{doc_groups}{two-column \code{data.frame} with col \emph{"doc_id"}
-and a second column that defines groups of labels to stratify results by.
-It is recommended that groups are of type factor, so that levels are
-not implicitly dropped during bootstrap replications}
+\item{doc_groups}{A two-column data.frame with a column \code{"doc_id"} and a
+second column defining groups of documents to stratify results by. It is
+recommended that groups are of type factor so that levels are not
+implicitly dropped during bootstrap replications.}
 
-\item{label_groups}{two-column \code{data.frame} with col \emph{"label_id"}
-and a second column that defines groups of labels to stratify results by.
-Results in each stratum
-will restrict gold_standard and predictions to the specified label-groups,
-as if the vocabulary was consisting of the label group only.
-All modes \code{c("doc-avg", "subj-avg", "micro") } are supported within
-label-strata.
-Nevertheless, mixing \code{mode = "doc-avg"} with fine-grained
-label_strata can result in many missing values on document-level results.
-Also rank-based thresholding (e.g. Top-5) will result in inhomogeneous
-number of labels per documents within the defined label-strata.
-\code{mode = "subj-avg"} or \code{mode = "micro"} can be more appropriate
-in these circumstances.}
+\item{label_groups}{A two-column data.frame with a column \code{"label_id"}
+and a second column defining groups of labels to stratify results by.
+Results in each stratum will restrict gold standard and predictions to the
+specified label groups as if the vocabulary was consisting of the label
+group only. All modes \code{"doc-avg", "subj-avg", "micro"} are supported
+within label strata. Nevertheless, mixing \code{mode = "doc-avg"} with
+fine-grained label strata can result in many missing values on
+document-level results. Also rank-based thresholding (e.g. top 5) will
+result in inhomogeneous numbers of labels per document within the defined
+label strata. \code{mode = "subj-avg"} or \code{mode = "micro"} can be more
+appropriate in these circumstances.}
 
-\item{var}{additional variables to include}
+\item{var}{Additional variables to include.}
 }
 \value{
-a character vector of variables that determine the grouping structure
+A character vector of variables determining the grouping structure.
 }
 \description{
-determine the appropriate grouping variables for each aggregation mode
+Determine the appropriate grouping variables for each aggregation mode.
 }

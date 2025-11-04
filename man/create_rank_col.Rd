@@ -3,24 +3,25 @@
 \name{create_rank_col}
 \alias{create_rank_col}
 \alias{create_rank_col_dplyr}
-\title{Create a rank per doc_id based on score}
+\title{Create a rank column}
 \usage{
 create_rank_col(df)
 
 create_rank_col_dplyr(df)
 }
 \arguments{
-\item{df}{with columns "score" and "doc_id"}
+\item{df}{A data.frame with columns \code{"doc_id", "score"}.}
 }
 \value{
-\code{df} with extra column "rank"
+The input data.frame \code{df} with an additional column
+\code{"rank"}.
 }
 \description{
-Create a rank per doc_id based on score
+Create a rank per document id based on score.
 }
 \section{Functions}{
 \itemize{
-\item \code{create_rank_col_dplyr()}: variant with internal usage of
+\item \code{create_rank_col_dplyr()}: Variant with internal usage of
 dplyr rather than collapse library.
 
 }}

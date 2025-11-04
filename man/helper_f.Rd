@@ -2,7 +2,7 @@
 % Please edit documentation in R/bootstrap_helpers.r
 \name{helper_f}
 \alias{helper_f}
-\title{wrapper for compute_intermediate and summarise on one bt_sample}
+\title{Calculate bootstrapping results for one sample}
 \usage{
 helper_f(
   sampled_id_list,
@@ -16,32 +16,38 @@ helper_f(
 )
 }
 \arguments{
-\item{sampled_id_list}{doc_ids of this bootstrap}
+\item{sampled_id_list}{A list of all doc_ids of this bootstrap.}
 
-\item{compare_cpy}{as created by \code{create_comparison}}
+\item{compare_cpy}{As created by \code{create_comparison}.}
 
-\item{grouping_var}{variables for aggreation}
+\item{grouping_var}{A vector of variables to be used for aggregation.}
 
-\item{label_distribution}{as in compute_set_retrieval_scores}
+\item{label_distribution}{Expects a data.frame with columns \code{"label_id",
+  "label_freq", "n_docs"}. \code{label_freq} corresponds to the number of
+occurences a label has in the gold standard. \code{n_docs} corresponds to
+the total number of documents in the gold standard.}
 
-\item{ps_flags}{list as returned by \code{set_ps_flags}}
+\item{ps_flags}{A list as returned by \code{set_ps_flags}.}
 
-\item{cost_fp}{numeric > 0}
+\item{cost_fp}{A numeric value > 0, defaults to NULL.}
 
-\item{replace_zero_division_with}{In macro averaged results (doc-avg, subj-avg) it may occur that some
-instances have no predictions or no gold-standard. In these cases calculating
-precision and recall may lead to zero divisions. CASIMiR standardly removes
-these missing values from macro averages, leading to a smaller \code{support}
-(count of instances that were averaged). Other implementations of macro
-averaged precision and recall default to 0 in these cases. This option
-will allow to control the default. Set any value between 0 and 1. (Defaults to \code{NULL}, overwritable using option 'casimir.replace_zero_division_with' or environment variable 'R_CASIMIR_REPLACE_ZERO_DIVISION_WITH')}
+\item{replace_zero_division_with}{In macro averaged results (doc-avg, subj-avg), it may occur that some
+instances have no predictions or no gold standard. In these cases,
+calculating precision and recall may lead to division by zero. CASIMiR
+standardly removes these missing values from macro averages, leading to a
+smaller support (count of instances that were averaged). Other
+implementations of macro averaged precision and recall default to 0 in these
+cases. This option allows to control the default. Set any value between 0
+and 1. (Defaults to \code{NULL}, overwritable using option 'casimir.replace_zero_division_with' or environment variable 'R_CASIMIR_REPLACE_ZERO_DIVISION_WITH')}
 
-\item{drop_empty_groups}{Should empty levels of factor variables be droped in grouped set retrieval
+\item{drop_empty_groups}{Should empty levels of factor variables be dropped in grouped set retrieval
 computation? (Defaults to \code{TRUE}, overwritable using option 'casimir.drop_empty_groups' or environment variable 'R_CASIMIR_DROP_EMPTY_GROUPS')}
 }
 \value{
-as \code{summarise_intermediate_results}
+A data.frame as returned by \code{summarise_intermediate_results}.
 }
 \description{
-wrapper for compute_intermediate and summarise on one bt_sample
+Internal wrapper for computing bootstrapping results on one sample, combining
+the functionality of \code{compute_intermediate_results} and
+\code{summarise_intermediate_results}.
 }

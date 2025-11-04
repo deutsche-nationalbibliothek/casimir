@@ -7,10 +7,11 @@
 \format{
 \subsection{\code{dnb_gold_standard}}{
 
-A data frame with 337 rows and 2 columns:
+A data.frame with 337 rows and 2 columns:
 \describe{
-\item{doc_id}{DNB identifier of a document in catalogue}
-\item{label_id}{DNB identifier of a concept in the GND subject vocabulary}
+\item{\code{doc_id}}{DNB identifier of a document in the catalogue.}
+\item{\code{label_id}}{DNB identifier of a concept in the GND subject
+vocabulary.}
 }
 }
 }

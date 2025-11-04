@@ -1,31 +1,39 @@
-#' compute precision-recall-curve for a given step size and limit_range
+#' Compute precision-recall curve
+#'
+#' Compute the precision-recall curve for a given step size and limit range.
+#'
 #' @inheritParams compute_set_retrieval_scores
-#' @param predicted multi-label prediction results. expects \code{data.frame}
-#'   with cols \emph{"label_id", "doc_id", "score"}
-#' @param steps how many steps to take between c(0,1) as a grid for computing
-#'  the pr-curve
-#' @param thresholds alternatively to steps, one can manually set, which
-#'   thresholds are used to build the pr_curve. Defaults to `steps`-percentiles
-#'   of the score distribution of true positives suggestions
-#' @param limit_range a vector of limit values to apply on rank-column.
-#'   Defaults to NA, applying no cutoff on label-rank of predictions.
-#' @param optimize_cutoff logical. If \code{TRUE} performs a grid search to
-#'   find optimal limit and threshold  with respect to f1-measure in the
-#'   search space specified by \code{limit_range} and \code{steps}.
+#' @param predicted Multi-label prediction results. Expects a data.frame with
+#'   columns \code{"label_id", "doc_id", "score"}.
+#' @param steps Number of breaks to divide the interval \eqn{[0, 1]} into. These
+#'   breaks will be used as quantiles to be calculated on the true positive
+#'   suggestions' score distribution and therefore build one axis of the grid
+#'   for computing the pr curve.
+#' @param thresholds Alternatively to steps, one can manually set the thresholds
+#'   to be used to build the pr curve. Defaults to the quantiles of the true
+#'   positive suggestions' score distribution to be obtained from \code{steps}.
+#' @param limit_range A vector of limit values to apply on the rank column.
+#'   Defaults to NA, applying no cutoff on the predictions' label rank.
+#' @param optimize_cutoff Logical. If \code{TRUE}, a grid search in the search
+#'   space specified by \code{limit_range} and \code{steps} or \code{thresholds}
+#'   is performed to find optimal limit and threshold with respect to F1
+#'   measure.
 #' @inheritParams option_params
 #'
-#' @return a \code{list} with of two elemets:
-#'   \enumerate{
-#'     \item \code{plot_data} a \code{data.frame} with cols
-#'       \code{c("searchspace_id", "prec", "rec", "prec_cummax")}
-#'     \item \code{opt_cutoff} a \code{data.frame} with cols
-#'       \code{c("thresholds", "limits", "f1_max",
-#'       "prec", "rec", "prec_cummax")}
+#' @return A list of three elements:
+#'   \itemize{
+#'     \item \code{plot_data} A data.frame with full pr curves and columns
+#'       \code{"searchspace_id", "prec", "rec", "prec_cummax", "mode"}.
+#'     \item \code{opt_cutoff} A data.frame with optimal cutoffs and columns
+#'       \code{"thresholds", "limits", "searchspace_id", "f1_max", "prec",
+#'       "rec", "prec_cummax", "mode"}.
+#'     \item \code{all_cutoffs} A data.frame with all cutoffs and columns
+#'       \code{"thresholds", "limits", "searchspace_id", "metric", "value",
+#'       "support", "f1_max", "prec", "rec", "prec_cummax", "mode"}.
 #'   }
-#'
-#'
-#'   and possibly additional stratification variables passed with doc_groups
-#'   and label_groups
+#'   All three data.frames may contain additional stratification variables
+#'   passed with \code{doc_groups} and \code{label_groups}. The latter two
+#'   data.frames are non-empty only if \code{optimize_cutoff == TRUE}.
 #' @export
 #'
 #' @examples
@@ -69,8 +77,7 @@
 #'
 #' auc <- compute_pr_auc_from_curve(pr_curve$plot_data)
 #'
-#'
-#' # note that pr-curves take the cummax(prec), not the precision
+#' # note that pr curves take the cummax(prec), not the precision
 #' ggplot(pr_curve$plot_data, aes(x = rec, y = prec_cummax)) +
 #'   geom_point(
 #'     data = pr_curve$opt_cutoff,
@@ -186,9 +193,8 @@ compute_pr_curve <- function(
     )
   }
   if (verbose) {
-    message("Computing set retrieval metrics for all thresholds and limits.")
+    message("Computing set retrieval metrics for all thresholds and limits ...")
   }
-
 
   # get results per searchspace_id and
   # glue together data.frames with different searchspace_id

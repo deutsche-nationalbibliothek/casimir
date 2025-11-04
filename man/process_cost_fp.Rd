@@ -2,24 +2,24 @@
 % Please edit documentation in R/io_helpers.R
 \name{process_cost_fp}
 \alias{process_cost_fp}
-\title{Process input for cost_fp}
+\title{Process cost for false positives}
 \usage{
 process_cost_fp(cost_fp_constant, gold_vs_pred)
 }
 \arguments{
 \item{cost_fp_constant}{Constant cost assigned to false positives.
-cost_fp_constant must be
-a numeric value > 0 or one of 'max', 'min', 'mean' (computed with reference
-to the \code{gold_standard} label distribution). The default is NULL, i.e.
-label weights are applied to false positives as to false negatives and
-true positives.}
+\code{cost_fp_constant} must be a numeric value > 0 or one of 'max', 'min',
+'mean' (computed with reference to the \code{gold_standard} label
+distribution). Defaults to NULL, i.e. label weights are applied to false
+positives in the same way as to false negatives and true positives.}
 
-\item{gold_vs_pred}{\code{data.frame} with logical columns
-\emph{"suggested", "gold"} as produced by \code{create_comparison}}
+\item{gold_vs_pred}{A data.frame with logical columns \code{"suggested",
+"gold"} as produced by \code{create_comparison}.}
 }
 \value{
-a numeric value > 0
+A numeric value > 0.
 }
 \description{
-Process input for cost_fp
+Calculate the cost for false positives depending on the chosen
+\code{cost_fp_constant}.
 }

@@ -1,9 +1,12 @@
-#' Create a rank per doc_id based on score
+#' Create a rank column
 #'
-#' @param df with columns "score" and "doc_id"
+#' Create a rank per document id based on score.
+#'
+#' @param df A data.frame with columns \code{"doc_id", "score"}.
 #'
 #' @export
-#' @returns \code{df} with extra column "rank"
+#' @return The input data.frame \code{df} with an additional column
+#'   \code{"rank"}.
 create_rank_col <- function(df) {
   stopifnot(all(c("doc_id", "score") %in% colnames(df)))
 
@@ -14,7 +17,7 @@ create_rank_col <- function(df) {
   )
 }
 
-#' @describeIn create_rank_col variant with internal usage of
+#' @describeIn create_rank_col Variant with internal usage of
 #'  dplyr rather than collapse library.
 create_rank_col_dplyr <- function(df) {
   stopifnot(all(c("doc_id", "score") %in% colnames(df)))

@@ -1,4 +1,4 @@
-test_that("create_comparison produces no nonesens", {
+test_that("create_comparison produces no nonsense", {
   # some dummy results
   gold <- tibble::tribble(
     ~doc_id, ~label_id,
@@ -26,7 +26,6 @@ test_that("create_comparison produces no nonesens", {
   # scenario runs throughs undisturbed
   expect_silent(casimir:::create_comparison(pred_scenario1, gold))
 
-
   pred_scenario2 <- tibble::tribble(
     ~doc_id, ~label_id, ~score,
     "A", "a",
@@ -52,7 +51,7 @@ test_that("create_comparison produces no nonesens", {
 
   expect_warning(
     create_comparison(pred_scenario3, gold),
-    regexp = "gold standard data contains documents that are not in predicted set" # nolint
+    regexp = "Gold standard data contains documents that are not in predicted set." # nolint
   )
 
   # test that option ignore_inconsistencies works

@@ -1,11 +1,14 @@
-#' Helper function to perform a secure join of comparision matrix with
-#'   propensity scores
+#' Join propensity scores
 #'
-#' @param input_data \code{data.frame} containing at least the column `label_id`
-#' @param label_weights expects \code{data.frame} with cols
-#'   \emph{"label_id", "label_weight"}.
-#' @return the input \code{data.frame} \code{gold_vs_pred} with additional cols
-#'   \emph{"label_weight"}
+#' Helper function to perform a secure join of a comparison matrix with
+#' propensity scores.
+#'
+#' @param input_data A data.frame containing at least the column
+#'   \code{"label_id"}.
+#' @param label_weights Expects a data.frame with columns \code{"label_id",
+#'   "label_weight"}.
+#' @return The input data.frame \code{input_data} with an additional column
+#'   \code{"label_weight"}.
 #' @export
 #'
 #' @examples
@@ -65,8 +68,8 @@ join_propensity_scores <- function(
         # expect every record in x to be matched
         require = list(x = 1, fail = "error"),
         verbose = 0
-      ) # i.e. every label in gold_vs_pred must have
-      # exactly one weight, but the label_weights
+      ) # i.e. every label in input_data must have
+      # exactly one weight but the label_weights
       # may contain more labels than compare
     },
     error = function(cnd) {
@@ -80,8 +83,8 @@ join_propensity_scores <- function(
   compare
 }
 
-#' @describeIn join_propensity_scores variant with dplyr based
-#' internals rather then collapse internals
+#' @describeIn join_propensity_scores Variant with dplyr based
+#' internals rather than collapse internals.
 join_propensity_scores_dplyr <- function(
     input_data,
     label_weights) {

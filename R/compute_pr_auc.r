@@ -1,25 +1,28 @@
-#' Compute Area under precision recall curve with support for bootstrap based
-#' confidence intervals and different stratification and aggregation modes
-#' for the underlying precision and recall aggregation
-#' Precision is calculated as the best value at a given level of recall for
-#' all possible thresholds on score and limits on rank. In essence,
-#' compute_pr_auc performs a two dimensional optimisation over thresholds and
-#' limits applying both threshold-based cutoff as well as rank-based cutoff.
+#' Compute area under precision-recall curve
 #'
-#' @param predicted multi-label prediction results. expects \code{data.frame}
-#'   with cols \emph{"label_id", "doc_id", "score"}
+#' Compute the area under the precision-recall curve with support for
+#' bootstrap-based confidence intervals and different stratification and
+#' aggregation modes for the underlying precision and recall aggregation.
+#' Precision is calculated as the best value at a given level of recall for all
+#' possible thresholds on score and limits on rank. In essence,
+#' \code{compute_pr_auc} performs a two-dimensional optimisation over thresholds
+#' and limits applying both threshold-based cutoff as well as rank-based cutoff.
+#'
+#' @param predicted Multi-label prediction results. Expects a data.frame with
+#'   columns \code{"label_id", "doc_id", "score"}.
 #' @inheritParams compute_set_retrieval_scores
 #' @inheritParams compute_pr_curve
 #' @inheritParams option_params
 #'
-#' @return a \code{data.frame} with cols pr_auc and (if applicable)
-#'   ci_lower, ci_upper and additional stratification variables
+#' @return A data.frame with columns \code{"pr_auc"} and (if applicable)
+#'   \code{"ci_lower", "ci_upper"} and additional stratification variables.
 #' @export
 #'
-#' @seealso compute_set_retrieval_scores compute_pr_auc_from_curve
+#' @seealso \code{compute_set_retrieval_scores},
+#'   \code{compute_pr_auc_from_curve}
 #'
 #' @examples
-#' #' library(ggplot2)
+#' library(ggplot2)
 #' library(casimir)
 #'
 #' gold <- tibble::tribble(
@@ -81,21 +84,19 @@ compute_pr_auc <- function(
     stopifnot(all(limit_range >= 1L))
   }
 
-
   if (!all(is.na(limit_range)) && !"rank" %in% colnames(predicted)) {
     predicted <- create_rank_col(predicted)
   }
 
   if (mode == "subj-avg" && compute_bootstrap_ci == TRUE) {
-    stop(paste(
-      "Confidence intervals for pr-auc in",
-      "subj-avg-mode are not supported yet"
-    ))
+    stop(
+      "Confidence intervals for pr auc in subj-avg mode are not supported yet."
+    )
   }
 
   if (compute_bootstrap_ci == FALSE) {
     if (verbose) {
-      message("Computing pr-curve")
+      message("Computing pr curve ...")
     }
 
     pr_curve <- compute_pr_curve(
@@ -118,7 +119,7 @@ compute_pr_auc <- function(
       progress = progress
     )
     if (verbose) {
-      message("Computing pr-auc from pr-curve")
+      message("Computing pr auc from pr curve ...")
     }
     remaining_groupvars <- setdiff(
       set_grouping_var(mode, doc_groups, label_groups),
@@ -192,7 +193,9 @@ compute_pr_auc <- function(
 
     # glue together data.frames with different searchspace_id
     if (verbose) {
-      message("Computing intermediate results for all thresholds and limits")
+      message(
+        "Computing intermediate results for all thresholds and limits ..."
+      )
     }
 
     intermed_res_all_thrsld <- list()
@@ -207,14 +210,14 @@ compute_pr_auc <- function(
       .progress = progress
     )
     grouping_var_w_thrsld <- c("searchspace_id", grouping_var)
-    # we have to set the grouping structure explicitly, as this was lost
+    # we have to set the grouping structure explicitly as this was lost
     # during parallel computation
     intermed_res_all_thrsld[["grouping_var"]] <- grouping_var_w_thrsld
 
     smry_grouping_var <- setdiff(grouping_var, c("doc_id", "label_id"))
 
     if (verbose) {
-      message("Computing bootstrap confidence intervals")
+      message("Computing bootstrap confidence intervals ...")
     }
 
     boot_results <- generate_pr_auc_replica(
@@ -231,9 +234,9 @@ compute_pr_auc <- function(
       -"boot_replicate"
     )
 
-    # compute the confidence intervals as quantiles of the value-distribution
-    # coming from the boot-strap copies
-    # Note: this has to respect the desired grouping structure for the various
+    # compute the confidence intervals as quantiles of the value distribution
+    # coming from the bootstrap copies
+    # note: this has to respect the desired grouping structure for the various
     # stratification variables
     boot_results_grpd <- dplyr::group_by(
       boot_results,
@@ -268,18 +271,18 @@ compute_pr_auc <- function(
   pr_auc
 }
 
-#' Compute bootstrap replica of pr-auc
+#' Compute bootstrap replica of pr auc
 #'
-#' Helper function whcih performs the major bootstrap operation and wraps the
+#' Helper function which performs the major bootstrap operation and wraps the
 #' repeated application of \code{summarise_intermediate_results} and
-#' \code{compute_pr_auc_from_curve} for each bootstrap run
+#' \code{compute_pr_auc_from_curve} for each bootstrap run.
 #'
-#' @param intermed_res_all_thrsld intermediate results as produced by
+#' @param intermed_res_all_thrsld Intermediate results as produced by
 #'   \code{compute_intermediate_results}, with a column \code{"searchspace_id"}
-#'   as grouping variable
+#'   as grouping variable.
 #' @inheritParams compute_pr_auc
 #'
-#' @return \code{data.frame} with cols \code{c("boot_replicate", "pr_auc")}
+#' @return A data.frame with columns \code{"boot_replicate", "pr_auc"}.
 generate_pr_auc_replica <- function(
     intermed_res_all_thrsld,
     seed, n_bt,
@@ -290,7 +293,7 @@ generate_pr_auc_replica <- function(
     intermed_res_all_thrsld$results_table,
     .data$doc_id
   )
-  # core resampling is done by rsample library:
+  # core resampling is done by rsample library
   if (!is.null(seed)) {
     set.seed(seed)
   }
@@ -302,16 +305,16 @@ generate_pr_auc_replica <- function(
   max_size <- getOption("future.globals.maxSize", 500 * 1024^2)
   obj_size <- as.numeric(utils::object.size(intermed_res_all_thrsld))
   if (obj_size > max_size) {
-    warning(paste(
-      "Shared object size for parallel computation in CI bootstrapping",
-      "exceeds default (maxSize = ",
+    warning(paste0(
+      "Shared object size for parallel computation in CI bootstrapping ",
+      "exceeds default \n(maxSize = ",
       max_size,
-      ". Setting `future.globals.maxSize` to",
+      "). Setting `future.globals.maxSize` to ",
       obj_size * 1.1,
-      ", locally. To avoid this warning try one of the following:
-        * increase `future.globals.maxSize` globally
-        * decrease `steps` or `limit_range`
-        * disable CI computation"
+      ", locally. \nTo avoid this warning, try one of the following: \n",
+      "  * increase `future.globals.maxSize` globally \n",
+      "  * decrease `steps` or `limit_range` \n",
+      "  * disable CI computation"
     ))
     withr::local_options(list(future.globals.maxSize = obj_size * 1.1))
   }
@@ -331,22 +334,26 @@ generate_pr_auc_replica <- function(
   boot_results
 }
 
-#' A wrapper for use within bootstrap computation of auc
-#' which covers the repeated application of
-#'   1. join with resampled doc_ids
-#'   2. summarise_intermediate_results
-#'   3. post_processing_of_curve data
-#'   4. auc computation
+#' Compute bootstrap replica of pr auc
 #'
+#' A wrapper for use within bootstrap computation of pr auc which covers the
+#' repeated application of:
+#' \enumerate{
+#'     \item join with resampled doc_ids
+#'     \item summarise_intermediate_results
+#'     \item postprocessing of curve data
+#'     \item auc computation
+#'   }
 #'
-#' @param sampled_id_list doc_ids of the examples drawn in each bootstrap
-#'   iteration
-#' @param intermed_res intermediate results as produced by
+#' @param sampled_id_list A list of all doc_ids of the examples drawn in each
+#'   bootstrap iteration.
+#' @param intermed_res Intermediate results as produced by
 #'   \code{compute_intermediate_results}, with a column \code{"searchspace_id"}
-#'   as grouping variable
+#'   as grouping variable.
 #' @inheritParams compute_pr_auc
 #'
-#' @return  a \code{data.frame} with col pr_auc and potential grouping_vars
+#' @return A data.frame with a column \code{"pr_auc"} and optional
+#'   \code{grouping_vars}.
 boot_worker_fn <- function(sampled_id_list,
                            intermed_res,
                            propensity_scored,
@@ -369,7 +376,7 @@ boot_worker_fn <- function(sampled_id_list,
     set = TRUE
   )
 
-  # 3. post_processing_of_curve data
+  # 3. postprocessing of curve data
   pr_curve_data_reshaped <- pr_curve_post_processing(pr_curve_data)
 
   # 4. auc computation

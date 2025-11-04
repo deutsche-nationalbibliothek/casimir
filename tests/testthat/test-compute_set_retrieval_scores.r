@@ -101,7 +101,6 @@ test_that("compute_set_retrieval_scores works", {
     !(.graded_relevance & .propensity_scored) # not supported
   )
 
-
   res_across_config <- purrr::pmap(
     configuration,
     .f = function(.mode,
@@ -158,8 +157,8 @@ test_that("compute_set_retrieval_scores works", {
   detach("package:purrr")
 })
 
-test_that("f1 scores handles missings expectedly for micro-avg", {
-  # test if f1-micro-average still gives 0, if one of the
+test_that("f1 score handles missings expectedly for micro-avg", {
+  # test if micro average F1 still gives 0 if one of the
   # constituents is missing
   # label a: 1 gold, 0 pred --> prec = NA, rec = 0, f1 = 0
 
@@ -182,11 +181,11 @@ test_that("f1 scores handles missings expectedly for micro-avg", {
 
   expect_warning(
     res_collapse <- compute_set_retrieval_scores(pred, gold, mode = "micro"),
-    "gold standard data contains documents that are not in predicted set"
+    "Gold standard data contains documents that are not in predicted set."
   )
   expect_warning(
     res_dplyr <- compute_set_retrieval_scores_dplyr(pred, gold, mode = "micro"),
-    "gold standard data contains documents that are not in predicted set"
+    "Gold standard data contains documents that are not in predicted set."
   )
 
   expect_equal(
@@ -199,7 +198,7 @@ test_that("f1 scores handles missings expectedly for micro-avg", {
 })
 
 test_that("graded relevance metrics are computed correctly", {
-  # reference implementation adapted from markus' code
+  # reference implementation adapted from Markus' code
   reference_graded_relevance <- function(gold_standard, predicted) {
     comp <- create_comparison(
       dplyr::filter(predicted, !is.na(relevance)),
@@ -207,8 +206,8 @@ test_that("graded relevance metrics are computed correctly", {
       ignore_inconsistencies = TRUE
     ) |>
       # remove artificially generated relevance = 0 column
-      # because crate_comparison overwrites relevance column
-      # if graded_relevance = FALSE
+      # because create_comparison overwrites relevance column
+      # if graded_relevance == FALSE
       dplyr::select(-relevance) |>
       # join actual relevance column for the test
       dplyr::left_join(
@@ -216,7 +215,7 @@ test_that("graded relevance metrics are computed correctly", {
         by = c("doc_id", "label_id")
       ) |>
       dplyr::mutate(relevance = dplyr::case_when(
-        gold ~ 1.0, # Gold-Standard (tp and fn)
+        gold ~ 1.0, # gold standard (tp and fn)
         # is.na(relevance) ~ 0.0, # fp without relevance
         # relevance == 1.0 ~ 2/3, # fp with inconsistent relevance
         TRUE ~ relevance # remaining fp with relevance != 1.0
@@ -233,7 +232,6 @@ test_that("graded relevance metrics are computed correctly", {
         GR = mean(GR, na.rm = TRUE)
       )
   }
-
 
   gold <- tibble::tribble(
     ~doc_id, ~label_id,
@@ -326,10 +324,10 @@ test_that("graded relevance metrics are computed correctly", {
     info = "results should match reference implementation"
   )
 
-  # expect a warning when inconsitent data is passed
+  # expect a warning if inconsistent data is passed
   inconsistent_pred_w_relevance <- tibble::tribble(
     ~doc_id, ~label_id, ~relevance,
-    "A", "a", 2 / 3, # inconsistent to gold_standrad "A", "a"
+    "A", "a", 2 / 3, # inconsistent with gold standard "A", "a"
     "A", "d", 0.0,
     "A", "f", 0.0,
     "B", "a", 1.0,
@@ -346,12 +344,12 @@ test_that("graded relevance metrics are computed correctly", {
       mode = "doc-avg"
     ),
     paste(
-      "There are 1 inconsistent relevance values with relevance < 1 but",
-      "gold_standard = TRUE."
+      "There are 1 inconsistent relevance values with `relevance < 1` but",
+      "`gold == TRUE`."
     )
   )
 
-  # expect warning when missing values in relevance occur
+  # expect warning if missing values in relevance occur
   pred_w_missing_relevance <- tibble::tribble(
     ~doc_id, ~label_id, ~relevance,
     "A", "a", 1.0,
@@ -370,10 +368,10 @@ test_that("graded relevance metrics are computed correctly", {
       graded_relevance = TRUE,
       mode = "doc-avg"
     ),
-    "NA values in 'relevance' column. Removing rows with NA values."
+    "NA values in `relevance` column. Removing rows with NA values."
   )
 
-  # expect warning when relevance is 1 but gold_standard = FALSE
+  # expect warning if relevance is 1 but gold == FALSE
   pred_w_false_gold <- tibble::tribble(
     ~doc_id, ~label_id, ~relevance,
     "A", "a", 1.0,
@@ -382,7 +380,7 @@ test_that("graded relevance metrics are computed correctly", {
     "B", "a", 1.0,
     "B", "e", 1 / 3,
     "C", "f", 1.0,
-    "C", "e", 1.0 # not in gold_standard
+    "C", "e", 1.0 # not in gold standard
   )
 
   expect_warning(
@@ -393,8 +391,8 @@ test_that("graded relevance metrics are computed correctly", {
       mode = "doc-avg"
     ),
     paste(
-      "There are 1 inconsistent relevance values with relevance == 1",
-      "but gold_standard = FALSE."
+      "There are 1 inconsistent relevance values with `relevance == 1` but",
+      "`gold == FALSE`."
     )
   )
 })
@@ -448,7 +446,6 @@ test_that("propensity scores works", {
       cost_fp_constant = "mean"
     )
   )
-
 
   # check that errors occur if a label has no match in label_distribution
   expect_error(
@@ -543,7 +540,6 @@ test_that("propensity scores works", {
   )
 })
 
-
 test_that("altering cost_fp works", {
   test_cost_fp <- function(cost_fp) {
     compute_set_retrieval_scores(
@@ -567,18 +563,16 @@ test_that("altering cost_fp works", {
         all(res[[1]] == res[[3]]) ||
         all(res[[2]] == res[[3]])
   ) {
-    stop("altering cost_fp_constant doesn't change the results")
+    stop("Altering `cost_fp_constant` does not change the results.")
   }
   # nolint end styler on
 
-
   expect_error(
     test_cost_fp("foo"),
-    "cost_fp_constant must be a numeric value > 0 or one of
-           'max', 'min', 'mean'; not cost_fp_constant = foo"
+    paste0("`cost_fp_constant` must be a numeric value > 0 or one of \n",
+           "'max', 'min', 'mean'; not `cost_fp_constant == \"foo\"`.")
   )
 })
-
 
 test_that(paste(
   "compute_set_retrieval_scores with propensity_scores",
@@ -615,8 +609,8 @@ test_that(paste(
 })
 
 test_that(paste(
-  "compute_set_retrieval_scores with graded relevance is",
-  "equivalent to building blocks"
+  "compute_set_retrieval_scores with graded relevance",
+  "is equivalent to building blocks"
 ), {
   gold <- tibble::tribble(
     ~doc_id, ~label_id,
@@ -664,7 +658,7 @@ test_that(paste(
   )
 })
 
-test_that("Limit k is set correctly", {
+test_that("limit k is set correctly", {
   df <- dnb_test_predictions |>
     dplyr::group_by(doc_id) |>
     dplyr::mutate(rank = dplyr::row_number(-score)) |>

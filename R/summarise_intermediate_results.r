@@ -1,17 +1,21 @@
-#' Compute mean of intermediate results
+#' Compute the mean of intermediate results
 #'
-#' @param intermediate_results as produced by compute intermediate results.
-#'   This requires a list containing
+#' Compute the mean of intermediate results created by
+#' \code{compute_intermediate_results}.
+#'
+#' @param intermediate_results As produced by
+#'   \code{compute_intermediate_results}. This requires a list containing:
 #'   \itemize{
-#'    \item \code{grouping_var} a  character vector of variables to group by
-#'    \item \code{results_table}  a  with cols "prec", "rprec", "rec", "f1" as
+#'    \item \code{results_table} A data.frame with columns \code{"prec",
+#'      "rprec", "rec", "f1"}.
+#'    \item \code{grouping_var} A character vector of variables to group by.
 #'   }
 #' @inheritParams compute_set_retrieval_scores
-#' @param set logical. allow in place modification of intermediate_results
-#'  only recommended for internal package usage
+#' @param set Logical. Allow in-place modification of
+#'   \code{intermediate_results}. Only recommended for internal package usage.
 #' @export
 #'
-#' @return data.frame with cols metric, value
+#' @return A data.frame with columns \code{"metric", "value"}.
 summarise_intermediate_results <- function(
     intermediate_results,
     propensity_scored = FALSE,
@@ -22,7 +26,7 @@ summarise_intermediate_results <- function(
   intrmd_res <- intermediate_results$results_table
   if (propensity_scored && ("label_id" %in% grouping_var)) {
     if (is.null(label_distribution)) {
-      stop("applying propensity scores requires label_distribution")
+      stop("Applying propensity scores requires `label_distribution`.")
     }
 
     label_weights <- compute_propensity_scores(label_distribution)
@@ -66,7 +70,7 @@ summarise_intermediate_results <- function(
   }
 
   fsum_custom <- function(x, w = NULL) {
-    # note function needs a dummy variable `w`, so that it can be passed to
+    # note: function needs a dummy variable `w` so that it can be passed to
     fsum(!is.na(x))
   }
 
@@ -89,7 +93,7 @@ summarise_intermediate_results <- function(
         NA_real_,
         (tp + delta_relevance) / (tp + fp)
       ),
-      # compute rprecision as in Manning etal.
+      # compute R-precision as in Manning et al.
       rprec_value = ifelse(pmin(n_gold, n_suggested) == 0,
         NA_real_,
         (tp + delta_relevance) /
@@ -99,7 +103,7 @@ summarise_intermediate_results <- function(
         NA_real_,
         (tp + delta_relevance) / (tp + fn + delta_relevance)
       ),
-      # NA-Handling for F1:
+      # NA handling for F1:
       # return NA if both prec and rec are NA
       # return 0 if only one of them is NA
       f1_value = ifelse(
@@ -112,14 +116,14 @@ summarise_intermediate_results <- function(
       rprec_support = pmin(n_gold, n_suggested),
       f1_support = 0.5 * (n_suggested + n_gold)
     )
-  } else { # for macro-avegared results
+  } else { # for macro averaged results
 
     if (!is.null(replace_zero_division_with)) {
       intrmd_res_regrouped <- collapse::replace_na(
         X = intrmd_res_regrouped,
         cols = c("prec", "rec", "rprec", "f1"),
         value = replace_zero_division_with,
-        set = set # allow inplace modification
+        set = set # allow in-place modification
       )
     }
 
@@ -158,12 +162,15 @@ summarise_intermediate_results <- function(
   dplyr::arrange(im_res_smry_wide, .data$metric)
 }
 
-#' Compute mean of intermediate results. Variant with dplyr based
-#' internals rather then collapse internals
+#' Compute the mean of intermediate results
+#'
+#' Compute the mean of intermediate results created by
+#' \code{compute_intermediate_results}. Variant with dplyr based internals
+#' rather than collapse internals.
 #'
 #' @inheritParams summarise_intermediate_results
 #'
-#' @return data.frame with cols metric, value
+#' @return A data.frame with columns \code{"metric", "value"}.
 summarise_intermediate_results_dplyr <- function( # nolint styler: off
     intermediate_results,
     propensity_scored = FALSE,
@@ -181,7 +188,7 @@ summarise_intermediate_results_dplyr <- function( # nolint styler: off
 
   if (propensity_scored) {
     if (is.null(label_distribution)) {
-      stop("applying propensity scores requires label_distribution")
+      stop("Applying propensity scores requires `label_distribution`.")
     }
 
     label_weights <- compute_propensity_scores(label_distribution)
@@ -231,7 +238,7 @@ summarise_intermediate_results_dplyr <- function( # nolint styler: off
         NA_real_,
         (tp + delta_relevance) / (tp + fp)
       ),
-      # compute rprecision as in Manning etal.
+      # compute R-precision as in Manning et al.
       rprec_value = ifelse(rprec_deno == 0,
         NA_real_,
         (tp + delta_relevance) / rprec_deno
@@ -240,7 +247,7 @@ summarise_intermediate_results_dplyr <- function( # nolint styler: off
         NA_real_,
         (tp + delta_relevance) / (tp + fn + delta_relevance)
       ),
-      # NA-Handling for F1:
+      # NA handling for F1:
       # return NA if both prec and rec are NA
       # return 0 if only one of them is NA
       f1_value = ifelse(

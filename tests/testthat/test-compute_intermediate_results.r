@@ -33,7 +33,6 @@ test_that("compute_intermediate_results checks out", {
     grouping_var = c("doc_id")
   )
 
-
   expected_per_doc <- structure(
     list(
       doc_id = c("A", "B", "C"),
@@ -53,7 +52,6 @@ test_that("compute_intermediate_results checks out", {
     class = c("tbl_df", "tbl", "data.frame")
   )
   expected_per_doc_grouped <- dplyr::group_by(expected_per_doc, .data$doc_id)
-
 
   expect_equal(res_per_doc_dplyr, expected_per_doc_grouped)
   # also for collapse variant
@@ -95,7 +93,7 @@ test_that("compute_intermediate_results checks out", {
   expect_equal(res_per_subj_collapse$results_table, expected_per_subj)
 })
 
-test_that("grouping vars with dots are rejected", {
+test_that("grouping variables with dots are rejected", {
   gold <- tibble::tribble(
     ~doc_id, ~label_id,
     "A", "a",
@@ -115,7 +113,6 @@ test_that("grouping vars with dots are rejected", {
     "B", "0.1.1",
     "C", "0.2.1"
   )
-
 
   doc_groups_no_dots <- tibble::tribble(
     ~doc_id, ~hsg,
@@ -201,7 +198,7 @@ test_that("grouping vars with dots are rejected", {
   )
 })
 
-test_that("f1-score handles missings expectedly in intermediate stage", {
+test_that("f1 score handles missings expectedly in intermediate stage", {
   # label a: 1 gold, no pred --> f1 = 0
   # label b: 0 gold, 1 pred --> f1 = 0
   # label c: 1 gold, 1 pred --> f1 = 1
@@ -243,7 +240,7 @@ test_that("f1-score handles missings expectedly in intermediate stage", {
   )
 })
 
-test_that("propensity scored rprecision is correct on intermediate level", {
+test_that("propensity scored R-precision is correct on intermediate level", {
   # some dummy results
   gold <- tibble::tribble(
     ~doc_id, ~label_id,
@@ -325,7 +322,6 @@ test_that("propensity scored rprecision is correct on intermediate level", {
     tolerance = 1e-6
   )
 
-
   label_wise_res <- compute_intermediate_results(
     gold_vs_pred = comp,
     grouping_var = "label_id",
@@ -383,102 +379,99 @@ test_that("propensity scored rprecision is correct on intermediate level", {
   )
 })
 
-test_that(
-  "intermediate results for graded relevance are computed correctly",
-  {
-    gold <- tibble::tribble(
-      ~doc_id, ~label_id,
-      "A", "a",
-      "A", "b",
-      "A", "c",
-      "B", "a",
-      "B", "d",
-      "C", "a",
-      "C", "b",
-      "C", "d",
-      "C", "f"
-    )
+test_that("intermediate results for graded relevance are computed correctly", {
+  gold <- tibble::tribble(
+    ~doc_id, ~label_id,
+    "A", "a",
+    "A", "b",
+    "A", "c",
+    "B", "a",
+    "B", "d",
+    "C", "a",
+    "C", "b",
+    "C", "d",
+    "C", "f"
+  )
 
-    pred_w_relevance <- tibble::tribble(
-      ~doc_id, ~label_id, ~relevance,
-      "A", "a", 1.0,
-      "A", "d", 0.0,
-      "A", "f", 0.0,
-      "B", "a", 1.0,
-      "B", "e", 1 / 3,
-      "C", "f", 1.0,
-      "C", "e", 1 / 3
-    )
+  pred_w_relevance <- tibble::tribble(
+    ~doc_id, ~label_id, ~relevance,
+    "A", "a", 1.0,
+    "A", "d", 0.0,
+    "A", "f", 0.0,
+    "B", "a", 1.0,
+    "B", "e", 1 / 3,
+    "C", "f", 1.0,
+    "C", "e", 1 / 3
+  )
 
-    comp <- create_comparison(
-      pred_w_relevance, gold,
-      graded_relevance = TRUE
-    )
+  comp <- create_comparison(
+    pred_w_relevance, gold,
+    graded_relevance = TRUE
+  )
 
-    res_collapse <- compute_intermediate_results(
-      gold_vs_pred = comp,
-      grouping_var = "doc_id"
-    )
+  res_collapse <- compute_intermediate_results(
+    gold_vs_pred = comp,
+    grouping_var = "doc_id"
+  )
 
-    res_dplyr <- compute_intermediate_results_dplyr(
-      gold_vs_pred = comp,
-      grouping_var = rlang::syms("doc_id")
-    )
+  res_dplyr <- compute_intermediate_results_dplyr(
+    gold_vs_pred = comp,
+    grouping_var = rlang::syms("doc_id")
+  )
 
-    expected <- tibble::tribble(
-      ~doc_id, ~prec, ~rec,
-      "A", 0.333, 0.333,
-      "B", 0.667, 0.571,
-      "C", 0.667, 0.308
-    )
+  expected <- tibble::tribble(
+    ~doc_id, ~prec, ~rec,
+    "A", 0.333, 0.333,
+    "B", 0.667, 0.571,
+    "C", 0.667, 0.308
+  )
 
-    expect_equal(
-      res_dplyr |>
-        dplyr::select(dplyr::all_of(c("doc_id", "prec", "rec"))) |>
-        dplyr::ungroup(),
-      expected,
-      tolerance = 1e-3
-    )
+  expect_equal(
+    res_dplyr |>
+      dplyr::select(dplyr::all_of(c("doc_id", "prec", "rec"))) |>
+      dplyr::ungroup(),
+    expected,
+    tolerance = 1e-3
+  )
 
-    expect_equal(
-      res_collapse$results_table |>
-        dplyr::select(dplyr::all_of(c("doc_id", "prec", "rec"))),
-      expected,
-      tolerance = 1e-3
-    )
+  expect_equal(
+    res_collapse$results_table |>
+      dplyr::select(dplyr::all_of(c("doc_id", "prec", "rec"))),
+    expected,
+    tolerance = 1e-3
+  )
 
-    micro_res_dplyr <- compute_intermediate_results_dplyr(
-      gold_vs_pred = comp,
-      grouping_var = rlang::syms(c("doc_id", "label_id"))
-    ) |>
-      summarise_intermediate_results_dplyr()
+  micro_res_dplyr <- compute_intermediate_results_dplyr(
+    gold_vs_pred = comp,
+    grouping_var = rlang::syms(c("doc_id", "label_id"))
+  ) |>
+    summarise_intermediate_results_dplyr()
 
-    micro_res_collapse <- compute_intermediate_results(
-      gold_vs_pred = comp,
-      grouping_var = c("doc_id", "label_id")
-    ) |>
-      summarise_intermediate_results()
+  micro_res_collapse <- compute_intermediate_results(
+    gold_vs_pred = comp,
+    grouping_var = c("doc_id", "label_id")
+  ) |>
+    summarise_intermediate_results()
 
-    # summarise intermediate results should account for delta_delevance
-    # when computing mirro averages
-    micro_expected <- tibble::tribble(
-      ~metric, ~value, ~support,
-      "f1", 0.44, 8,
-      "prec", (3 + 2 / 3) / 7, 7,
-      "rec", (3 + 2 / 3) / (9 + 2 / 3), 9,
-      "rprec", 0.5238095, 7
-    )
+  # summarise_intermediate_results should account for delta_delevance
+  # when computing micro averages
+  micro_expected <- tibble::tribble(
+    ~metric, ~value, ~support,
+    "f1", 0.44, 8,
+    "prec", (3 + 2 / 3) / 7, 7,
+    "rec", (3 + 2 / 3) / (9 + 2 / 3), 9,
+    "rprec", 0.5238095, 7
+  )
 
-    expect_equal(
-      micro_res_dplyr,
-      micro_expected,
-      tolerance = 1e-6
-    )
+  expect_equal(
+    micro_res_dplyr,
+    micro_expected,
+    tolerance = 1e-6
+  )
 
-    expect_equal(
-      micro_res_collapse,
-      micro_expected,
-      tolerance = 1e-6
-    )
-  }
-)
+  expect_equal(
+    micro_res_collapse,
+    micro_expected,
+    tolerance = 1e-6
+  )
+})

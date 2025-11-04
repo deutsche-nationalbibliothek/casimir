@@ -13,39 +13,37 @@ compute_ranked_retrieval_scores(
 )
 }
 \arguments{
-\item{predicted}{multi-label prediction results. expects \code{data.frame}
-with cols \emph{"label_id", "doc_id", "score"}}
+\item{predicted}{Multi-label prediction results. Expects a data.frame with
+columns \code{"label_id", "doc_id", "score"}.}
 
-\item{gold_standard}{expects \code{data.frame} with cols
-\emph{"label_id", "doc_id"}}
+\item{gold_standard}{Expects a data.frame with columns \code{"label_id",
+"doc_id"}.}
 
-\item{doc_groups}{two-column \code{data.frame} with col \emph{"doc_id"}
-and a second column that defines groups of labels to stratify results by.
-It is recommended that groups are of type factor, so that levels are
-not implicitly dropped during bootstrap replications}
+\item{doc_groups}{A two-column data.frame with a column \code{"doc_id"} and a
+second column defining groups of documents to stratify results by. It is
+recommended that groups are of type factor so that levels are not
+implicitly dropped during bootstrap replications.}
 
-\item{drop_empty_groups}{Should empty levels of factor variables be droped in grouped set retrieval
+\item{drop_empty_groups}{Should empty levels of factor variables be dropped in grouped set retrieval
 computation? (Defaults to \code{TRUE}, overwritable using option 'casimir.drop_empty_groups' or environment variable 'R_CASIMIR_DROP_EMPTY_GROUPS')}
 
 \item{progress}{Display progress bars for iterated computations (like bootstrap CI or
-PR-Curves) (Defaults to \code{FALSE}, overwritable using option 'casimir.progress' or environment variable 'R_CASIMIR_PROGRESS')}
+pr curves). (Defaults to \code{FALSE}, overwritable using option 'casimir.progress' or environment variable 'R_CASIMIR_PROGRESS')}
 }
 \value{
-a \code{data.frame} with cols
-\emph{"metric", "mode", "value", "support"}
-and optionally grouping
-variables supplied in doc_groups. Here, \strong{support}
-is defined as number of documents that contribute to the document average
-in aggregation of the overall result.
+A data.frame with columns \code{"metric", "mode", "value", "support"}
+and optional grouping variables supplied in \code{doc_groups}. Here,
+\code{support} is defined as number of documents that contribute to the
+document average in aggregation of the overall result.
 }
 \description{
-Rankied retrieval, unlike set retrieval, assumes ordered predictions. This
-function computes dcg, ndcg, idcg and lrap
-}
-\details{
-Unlike set retrieval metrics, ranked retrieval metrics are logically bound to
-a document wise evaluation. Thus, there is only the aggregation mode
-"doc-avg" for these scores available.
+This function computes the ranked retrieval scores Discounted
+Cumulative Gain (DCG), Ideal Discounted Cumulative Gain (IDCG), Normalised
+Discounted Cumulative Gain (NDCG) and Label Ranking Average Precision (LRAP).
+Ranked retrieval, unlike set retrieval, assumes ordered predictions. Unlike
+set retrieval metrics, ranked retrieval metrics are logically bound to a
+document-wise evaluation. Thus, only the aggregation mode "doc-avg" is
+available for these scores.
 }
 \examples{
 # some dummy results

@@ -1,27 +1,29 @@
-#' Rename metric names for generalized precision etc.
-#' The output will renamed if:
+#' Rename metrics
+#'
+#' Rename metric names for generalised precision etc. The output will be renamed
+#' if:
 #'   \describe{
-#'     \item{\code{graded_relevance = TRUE}}{prefixed with \emph{"g-"} to
-#'     indicate that metrics are computed with graded relevance.}
-#'     \item{\code{propensity_scored = TRUE}}{prefixed with \emph{"ps-"} to
-#'     indicate that metrics are computed with propensity scores}
+#'     \item{\code{graded_relevance == TRUE}}{prefixed with \emph{"g-"} to
+#'       indicate that metrics are computed with graded relevance.}
+#'     \item{\code{propensity_scored == TRUE}}{prefixed with \emph{"ps-"} to
+#'       indicate that metrics are computed with propensity scores.}
 #'     \item{\code{!is.null(k)}}{suffixed with \emph{"@@k"} to indicate
-#'     that metrics are limited to top-k predictions}
+#'       that metrics are limited to top k predictions.}
 #'    }
 #'
-#' @param res_df data.frame with column \emph{"metric"} containing metric names
-#'   prec, rec, f1, rprec
+#' @param res_df A data.frame with a column \code{"metric"} containing metric
+#'   names \code{"f1", "prec", "rec", "rprec"}.
 #' @inheritParams compute_set_retrieval_scores
 #'
-#' @return results data.frame with renamed metrics for
-#'   generalized precision etc.
+#' @return The input data.frame \code{res_df} with renamed metrics for
+#'   generalised precision etc.
 rename_metrics <- function(
     res_df,
     k = NULL,
     propensity_scored = FALSE,
     graded_relevance = FALSE) {
   if ("metric" %in% colnames(res_df)) {
-    # renames the content of the column `metric``
+    # rename the content of the metric column
     var <- "metric"
     if (graded_relevance) {
       res_df[[var]] <- paste0("g-", res_df[[var]])
@@ -33,7 +35,7 @@ rename_metrics <- function(
       res_df[[var]] <- paste0("ps-", res_df[[var]])
     }
   } else if ("pr_auc" %in% colnames(res_df)) {
-    # renames the column name `pr_auc`
+    # rename the pr_auc column
     new_name <- "pr_auc"
     if (graded_relevance) {
       new_name <- paste0("g-", new_name)
@@ -46,7 +48,7 @@ rename_metrics <- function(
     }
     colnames(res_df)[colnames(res_df) == "pr_auc"] <- new_name
   } else {
-    stop("res_df must contain either 'metric' or 'pr_auc' column")
+    stop("`res_df` must contain either a `metric` or `pr_auc` column.")
   }
 
   res_df

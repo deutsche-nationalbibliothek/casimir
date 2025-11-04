@@ -39,8 +39,8 @@ test_that("summarise_intermediate_results checks out", {
   expect_equal(actual_res_collapse, expected_res)
 })
 
-test_that("f1-score handles missings expectedly in summarise stage", {
-  # Scenraio 1: Micro-Averaged precision and recall are both 0
+test_that("f1 score handles missings expectedly in summarise stage", {
+  # scenario 1: micro averaged precision and recall are both 0
   intermediate_results <- structure(
     list(
       doc_id = c("A", "A"),
@@ -59,7 +59,6 @@ test_that("f1-score handles missings expectedly in summarise stage", {
     class = c("tbl_df", "tbl", "data.frame")
   )
 
-
   expected <- structure(
     list(
       metric = c("f1", "prec", "rec", "rprec"),
@@ -74,10 +73,9 @@ test_that("f1-score handles missings expectedly in summarise stage", {
     results_table = intermediate_results, grouping_var = c("doc_id", "label_id")
   ))
 
-
   expect_equal(observed, expected)
 
-  # Scenraio 2: Micro-Averaged precision is NA and recall is zero
+  # scenario 2: micro averaged precision is NA and recall is 0
   intermediate_results <- structure(
     list(
       doc_id = c("A", "A"),
@@ -96,7 +94,6 @@ test_that("f1-score handles missings expectedly in summarise stage", {
     class = c("tbl_df", "tbl", "data.frame")
   )
 
-
   expected <- structure(
     list(
       metric = c("f1", "prec", "rec", "rprec"),
@@ -114,7 +111,7 @@ test_that("f1-score handles missings expectedly in summarise stage", {
 
   expect_equal(observed, expected)
 
-  # Scenraio 3: Micro-Averaged precision is zero and recall is NA
+  # scenario 3: micro averaged precision is 0 and recall is NA
   intermediate_results <- structure(
     list(
       doc_id = c("A", "A"),
@@ -133,7 +130,6 @@ test_that("f1-score handles missings expectedly in summarise stage", {
     class = c("tbl_df", "tbl", "data.frame")
   )
 
-
   expected <- structure(
     list(
       metric = c("f1", "prec", "rec", "rprec"),
@@ -151,7 +147,7 @@ test_that("f1-score handles missings expectedly in summarise stage", {
 
   expect_equal(observed, expected)
 
-  # Scenraio 4: Micro-Averaged precision is NA and recall is NA
+  # scenario 4: micro averaged precision is NA and recall is NA
   intermediate_results <- structure(
     list(
       doc_id = c("A", "A"),
@@ -169,7 +165,6 @@ test_that("f1-score handles missings expectedly in summarise stage", {
     ),
     class = c("tbl_df", "tbl", "data.frame")
   )
-
 
   expected <- structure(
     list(
@@ -189,7 +184,7 @@ test_that("f1-score handles missings expectedly in summarise stage", {
   expect_equal(observed, expected)
 })
 
-test_that("Summarise works with weighted mean", {
+test_that("summarise works with weighted mean", {
   gold <- tibble::tribble(
     ~doc_id, ~label_id,
     "A", "a",
@@ -273,7 +268,7 @@ test_that("Summarise works with weighted mean", {
   )
 })
 
-test_that("summarise can replace na precison", {
+test_that("summarise can replace NA precision", {
   gold <- tibble::tribble(
     ~doc_id, ~label_id,
     "A", "a",

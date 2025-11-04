@@ -1,5 +1,5 @@
 test_that("grouping_var selection works", {
-  # test that function remains siltnt across all possible configs
+  # test that function remains silent across all possible configurations
   config <- expand.grid(
     .mode = c("micro", "subj-avg", "doc-avg"),
     .doc_groups = list(
