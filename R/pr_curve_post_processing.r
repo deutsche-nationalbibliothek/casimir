@@ -62,7 +62,7 @@ pr_curve_post_processing <- function(results_summary) {
     )
   )
 
-  # add a zero precision value at the maximum recall for visualization
+  # add a zero precision value at the maximum recall for visualisation
   group_max_recall <- dplyr::summarise(
     results_summary,
     rec = max(dplyr::coalesce(.data$rec, 0), na.rm = TRUE)
@@ -76,7 +76,7 @@ pr_curve_post_processing <- function(results_summary) {
     rec = ifelse(is.na(rec), 0.0, rec)
   )
 
-  # add a zero recall value at the maximum precision for visualization
+  # add a zero recall value at the maximum precision for visualisation
   group_max_precision <- dplyr::summarise(
     results_summary,
     searchspace_id = max(.data$searchspace_id) + 1L,

@@ -41,7 +41,7 @@ dcg_score <- function(gold_vs_pred, limit = NULL) {
 #'
 #' @return The numeric value of NDCG.
 ndcg_score <- function(gold_vs_pred, limit = NULL) {
-  # return the normalized discounted cumulative gain (NDCG) score for the
+  # return the normalised discounted cumulative gain (NDCG) score for the
   #  selected labels vs. relevant labels
 
   scores <- c()

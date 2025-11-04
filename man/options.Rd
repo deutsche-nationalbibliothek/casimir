@@ -4,7 +4,7 @@
 \alias{options}
 \title{casimir Options}
 \description{
-Internally used, package-specific options. All options will prioritize R options() values, and fall back to environment variables if undefined. If neither the option nor the environment variable is set, a default value is used.
+Internally used, package-specific options. All options will prioritise R options() values, and fall back to environment variables if undefined. If neither the option nor the environment variable is set, a default value is used.
 }
 \section{Checking Option Values}{
 
