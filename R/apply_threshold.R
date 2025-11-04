@@ -11,8 +11,8 @@
 #'
 #' @return A data.frame with observations that satisfy (\code{score >=
 #'   threshold} AND (if applicable) \code{rank <= limit}) OR \code{gold ==
-#'   TRUE}. A new logical column \code{suggested} indicates true if \code{score
-#'   >= threshold} AND (if applicable) \code{rank <= limit}, and false for
+#'   TRUE}. A new logical column \code{suggested} indicates TRUE if \code{score
+#'   >= threshold} AND (if applicable) \code{rank <= limit}, and FALSE for
 #'   false negative observations (that may have no score, a score below the
 #'   threshold or rank above the limit).
 #' @export

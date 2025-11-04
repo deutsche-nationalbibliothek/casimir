@@ -28,10 +28,10 @@ weights.}
 }
 \value{
 The input data.frame \code{res_df} with renamed metrics for
-generalized precision etc.
+generalised precision etc.
 }
 \description{
-Rename metric names for generalized precision etc. The output will be renamed
+Rename metric names for generalised precision etc. The output will be renamed
 if:
 \describe{
 \item{\code{graded_relevance == TRUE}}{prefixed with \emph{"g-"} to

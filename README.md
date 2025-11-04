@@ -4,7 +4,7 @@
 [![R-CMD-check](https://github.com/deutsche-nationalbibliothek/casimir/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/deutsche-nationalbibliothek/casimir/actions/workflows/R-CMD-check.yaml)
 
 CASIMiR is a toolbox to facilitate comparative analysis of automated subject
-indexing methods in R. 
+indexing methods in R.
 
 ## Why should you use CASIMiR?
 
@@ -32,7 +32,7 @@ Mainly due to the authors' love for R, but here are some reasons that might
 convince other people:
 
   * R's user-friendly capabilities for data analysis with the tidyverse packages 
-  * professional visualization with ggplot2
+  * professional visualisation with ggplot2
   * seamless handling of grouped data structures
   * efficient data wrangling libraries, such as collapse and dplyr, 
     which are the backbone of CASIMiR

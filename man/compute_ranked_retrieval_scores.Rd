@@ -38,7 +38,7 @@ document average in aggregation of the overall result.
 }
 \description{
 This function computes the ranked retrieval scores Discounted
-Cumulative Gain (DCG), Ideal Discounted Cumulative Gain (IDCG), Normalized
+Cumulative Gain (DCG), Ideal Discounted Cumulative Gain (IDCG), Normalised
 Discounted Cumulative Gain (NDCG) and Label Ranking Average Precision (LRAP).
 Ranked retrieval, unlike set retrieval, assumes ordered predictions. Unlike
 set retrieval metrics, ranked retrieval metrics are logically bound to a

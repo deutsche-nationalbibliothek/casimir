@@ -25,7 +25,7 @@ A data.frame with columns \code{"dcg", "idcg", "ndcg", "lrap"}.
 }
 \description{
 Compute intermediate ranked retrieval results per group such as Discounted
-Cumulative Gain (DCG), Ideal Discounted Cumulative Gain (IDCG), Normalized
+Cumulative Gain (DCG), Ideal Discounted Cumulative Gain (IDCG), Normalised
 Discounted Cumulative Gain (NDCG) and Label Ranking Average Precision (LRAP).
 }
 \examples{

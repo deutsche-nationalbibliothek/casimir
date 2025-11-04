@@ -5,7 +5,7 @@
 #' @param df A data.frame with columns \code{"doc_id", "score"}.
 #'
 #' @export
-#' @returns The input data.frame \code{df} with an additional column
+#' @return The input data.frame \code{df} with an additional column
 #'   \code{"rank"}.
 create_rank_col <- function(df) {
   stopifnot(all(c("doc_id", "score") %in% colnames(df)))

@@ -1,6 +1,6 @@
 #' Rename metrics
 #'
-#' Rename metric names for generalized precision etc. The output will be renamed
+#' Rename metric names for generalised precision etc. The output will be renamed
 #' if:
 #'   \describe{
 #'     \item{\code{graded_relevance == TRUE}}{prefixed with \emph{"g-"} to
@@ -16,7 +16,7 @@
 #' @inheritParams compute_set_retrieval_scores
 #'
 #' @return The input data.frame \code{res_df} with renamed metrics for
-#'   generalized precision etc.
+#'   generalised precision etc.
 rename_metrics <- function(
     res_df,
     k = NULL,
