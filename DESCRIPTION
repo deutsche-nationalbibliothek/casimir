@@ -11,7 +11,7 @@ Description: This package contains functions for evaluating automatic subject
   computation of set retrieval and ranked retrieval metrics across multiple
   dimensions of a dataset, e.g. document strata or subsets of the label set. 
   The package also provides the possibility of computing bootstrap confidence
-  intervals for all major metrics, with seemless integration of parallel
+  intervals for all major metrics, with seamless integration of parallel
   computation and propensity scored variants of standard metrics. 
 License: MIT + file LICENSE
 Encoding: UTF-8
