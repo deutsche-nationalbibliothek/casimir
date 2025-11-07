@@ -88,7 +88,7 @@ head(res)
 
 ## Acknowledgments
 
-This work was created within the [DNB AI Project](https://www.dnb.de/ki-projekt
+This work was created within the [DNB AI Project](https://www.dnb.de/DE/Professionell/ProjekteKooperationen/Projekte/KI/ki_node.html
 ). The project was funded by
 [Federal Government Commissioner for Culture and the Media](https://kulturstaatsminister.de//)
 as part of the national AI strategy. 
