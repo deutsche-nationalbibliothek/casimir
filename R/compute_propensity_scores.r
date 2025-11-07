@@ -5,7 +5,7 @@
 #' & Varma, M. (2016). Extreme Multi-label Loss Functions for Recommendation,
 #' Tagging, Ranking and Other Missing Label Applications. Proceedings of the
 #' 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data
-#' Mining, 13-17-Aug, 935–944. \url{https://doi.org/10.1145/2939672.2939756}.
+#' Mining, 13-17-Aug, 935–944. \doi{10.1145/2939672.2939756}.
 #'
 #' @param label_distribution Expects a data.frame with columns \code{"label_id",
 #'   "label_freq", "n_docs"}. \code{label_freq} corresponds to the number of

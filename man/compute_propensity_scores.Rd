@@ -27,7 +27,7 @@ scores for extreme multi-label learning are proposed in Jain, H., Prabhu, Y.,
 & Varma, M. (2016). Extreme Multi-label Loss Functions for Recommendation,
 Tagging, Ranking and Other Missing Label Applications. Proceedings of the
 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data
-Mining, 13-17-Aug, 935–944. \url{https://doi.org/10.1145/2939672.2939756}.
+Mining, 13-17-Aug, 935–944. \doi{10.1145/2939672.2939756}.
 }
 \examples{
 
