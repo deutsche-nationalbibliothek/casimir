@@ -29,6 +29,8 @@ threshold or rank below some limit rank.
 }
 \examples{
 
+library(casimir)
+
 gold <- tibble::tribble(
   ~doc_id, ~label_id,
   "A", "a",
@@ -56,9 +58,9 @@ pred <- tibble::tribble(
   "C", "e", 0.2
 )
 
-base_compare <- casimir:::create_comparison(gold, pred)
-# applying zero as threshold should not change anything
-res_0 <- casimir:::apply_threshold(
+base_compare <- create_comparison(gold, pred)
+
+res_0 <- apply_threshold(
   threshold = 0.3,
   base_compare = base_compare
 )

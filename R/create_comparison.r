@@ -36,7 +36,7 @@
 #'   "C", "f"
 #' )
 #'
-#' casimir::create_comparison(pred, gold)
+#' create_comparison(pred, gold)
 create_comparison <- function(
     predicted, gold_standard,
     doc_groups = NULL, label_groups = NULL,

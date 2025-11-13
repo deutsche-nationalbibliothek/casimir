@@ -38,7 +38,7 @@ test_that("pr curve computation works", {
   # library(tidyr)
   #
   # thresholds |>
-  #   map(.f = casimir:::apply_threshold, base_compare = comp) |>
+  #   map(.f = casimir::apply_threshold, base_compare = comp) |>
   #   map(
   #     .f = compute_intermediate_results,
   #     grouping_var = c("label_id", "doc_id")

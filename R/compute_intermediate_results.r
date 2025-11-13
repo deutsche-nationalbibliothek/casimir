@@ -23,6 +23,8 @@
 #'
 #' @examples
 #'
+#' library(casimir)
+#'
 #' gold <- tibble::tribble(
 #'   ~doc_id, ~label_id,
 #'   "A", "a",
@@ -47,7 +49,8 @@
 #' )
 #'
 #' gold_vs_pred <- create_comparison(gold, pred)
-#' casimir:::compute_intermediate_results(gold_vs_pred, "doc_id")
+#'
+#' compute_intermediate_results(gold_vs_pred, "doc_id")
 #'
 compute_intermediate_results <- function(
     gold_vs_pred,

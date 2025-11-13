@@ -26,12 +26,12 @@ test_that("threshold application works", {
     "C", "e", 0.2, 2L
   )
 
-  base_compare <- casimir:::create_comparison(pred, gold)
+  base_compare <- casimir::create_comparison(pred, gold)
   # applying zero as threshold should not change anything
-  res_0 <- casimir:::apply_threshold(threshold = 0, base_compare = base_compare)
+  res_0 <- casimir::apply_threshold(threshold = 0, base_compare = base_compare)
   expect_equal(res_0, base_compare)
 
-  res_1 <- casimir:::apply_threshold(base_compare = base_compare, threshold = 1)
+  res_1 <- casimir::apply_threshold(base_compare = base_compare, threshold = 1)
   # expect that no labels are suggested for threshold 1
   expect_true(sum(res_1$suggested) == 0)
   # all gold labels should still be present in dataset
@@ -42,12 +42,12 @@ test_that("threshold application works", {
 
   # expect error if threshold is above 1
   expect_error(
-    casimir:::apply_threshold(base_compare = base_compare, threshold = 1.3),
+    casimir::apply_threshold(base_compare = base_compare, threshold = 1.3),
     regexp = "threshold >= 0 & threshold <= 1 is not TRUE"
   )
 
   # expect some detailed specific results for the test case
-  res_0p5 <- casimir:::apply_threshold(
+  res_0p5 <- casimir::apply_threshold(
     base_compare = base_compare,
     threshold = 0.5
   ) |>
@@ -82,7 +82,7 @@ test_that("threshold application works", {
     "C", "c", 0.2,
     "C", "e", 0.2
   )
-  compare2 <- casimir:::create_comparison(pred2, gold)
+  compare2 <- casimir::create_comparison(pred2, gold)
 
   expect_error(
     apply_threshold(base_compare = compare2, limit = 0.5),
@@ -92,7 +92,7 @@ test_that("threshold application works", {
 })
 
 test_that("limits are applied correctly", {
-  base_compare <- casimir:::create_comparison(
+  base_compare <- casimir::create_comparison(
     dnb_gold_standard, create_rank_col(dnb_test_predictions)
   )
 
@@ -119,7 +119,7 @@ test_that("limits are applied correctly", {
 })
 
 test_that("handling of NULL and inf limits works", {
-  base_compare <- casimir:::create_comparison(
+  base_compare <- casimir::create_comparison(
     dnb_gold_standard, create_rank_col(dnb_test_predictions)
   )
 

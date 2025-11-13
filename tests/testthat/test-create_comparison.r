@@ -24,7 +24,7 @@ test_that("create_comparison produces no nonsense", {
   )
 
   # scenario runs throughs undisturbed
-  expect_silent(casimir:::create_comparison(pred_scenario1, gold))
+  expect_silent(casimir::create_comparison(pred_scenario1, gold))
 
   pred_scenario2 <- tibble::tribble(
     ~doc_id, ~label_id, ~score,
@@ -36,7 +36,7 @@ test_that("create_comparison produces no nonsense", {
     "D", "f"
   )
 
-  expect_error(casimir:::create_comparison(pred_scenario2, gold),
+  expect_error(casimir::create_comparison(pred_scenario2, gold),
     regexp = "nrow\\(predicted_wo_gold\\) == 0 is not TRUE"
   )
 

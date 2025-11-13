@@ -46,10 +46,10 @@ test_that("grouping (doc_groups) of set retrieval computation works", {
 
   # expect no error when adding strata
   expect_silent(
-    casimir:::create_comparison(pred, gold, doc_groups = doc_groups)
+    casimir::create_comparison(pred, gold, doc_groups = doc_groups)
   )
   # expect NA in hsg column of compare if no doc_groups are defined
-  compare_wo_explicit_strata <- casimir:::create_comparison(
+  compare_wo_explicit_strata <- casimir::create_comparison(
     pred, gold,
     doc_groups = NULL
   )
@@ -213,7 +213,7 @@ test_that("grouping (label_groups) of set retrieval computation works", {
 
   # expect no error when adding strata
   expect_silent(
-    casimir:::create_comparison(gold, pred, label_groups = label_groups)
+    casimir::create_comparison(gold, pred, label_groups = label_groups)
   )
 
   # check if invalid colname in label dictionary is rejected
@@ -237,7 +237,7 @@ test_that("grouping (label_groups) of set retrieval computation works", {
   #############################################
   # check intermediate results level
   ####################################################
-  comparison_w_label_groups <- casimir:::create_comparison(
+  comparison_w_label_groups <- casimir::create_comparison(
     pred, gold,
     label_groups = label_groups
   )

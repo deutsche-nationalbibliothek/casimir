@@ -2,6 +2,7 @@
 
 export(apply_threshold)
 export(compute_intermediate_results)
+export(compute_intermediate_results_rr)
 export(compute_pr_auc)
 export(compute_pr_auc_from_curve)
 export(compute_pr_curve)

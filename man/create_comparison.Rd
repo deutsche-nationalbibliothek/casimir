@@ -88,5 +88,5 @@ pred <- tibble::tribble(
   "C", "f"
 )
 
-casimir::create_comparison(pred, gold)
+create_comparison(pred, gold)
 }

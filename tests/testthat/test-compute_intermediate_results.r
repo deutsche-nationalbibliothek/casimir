@@ -23,7 +23,7 @@ test_that("compute_intermediate_results checks out", {
     "C", "f"
   )
 
-  compare_gold_vs_pred <- casimir:::create_comparison(pred_scenario1, gold)
+  compare_gold_vs_pred <- casimir::create_comparison(pred_scenario1, gold)
   res_per_doc_dplyr <- casimir:::compute_intermediate_results_dplyr(
     compare_gold_vs_pred,
     grouping_var = rlang::syms(c("doc_id"))

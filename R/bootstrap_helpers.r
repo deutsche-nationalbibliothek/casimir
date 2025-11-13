@@ -21,41 +21,6 @@
 #'   returned by \code{compute_intermediate_results} and
 #'   \code{summarise_intermediate_results}.
 #'
-#' @examples
-#'
-#' library(casimir)
-#'
-#' gold <- tibble::tribble(
-#'   ~doc_id, ~label_id,
-#'   "A", "a",
-#'   "A", "b",
-#'   "A", "c",
-#'   "B", "a",
-#'   "B", "d",
-#'   "C", "a",
-#'   "C", "b",
-#'   "C", "d",
-#'   "C", "f"
-#' )
-#'
-#' pred <- tibble::tribble(
-#'   ~doc_id, ~label_id,
-#'   "A", "a",
-#'   "A", "d",
-#'   "A", "f",
-#'   "B", "a",
-#'   "B", "e",
-#'   "C", "f"
-#' )
-#'
-#' base_compare <- casimir:::create_comparison(gold, pred)
-#'
-#' boot_replica <- casimir:::generate_replicate_results(
-#'   base_compare,
-#'   n_bt = 10L,
-#'   grouping_var = c("doc_id")
-#' )
-#'
 generate_replicate_results <- function(
     base_compare,
     n_bt,

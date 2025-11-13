@@ -30,6 +30,8 @@ Discounted Cumulative Gain (NDCG) and Label Ranking Average Precision (LRAP).
 }
 \examples{
 
+library(casimir)
+
 gold <- tibble::tribble(
   ~doc_id, ~label_id,
   "A", "a",
@@ -55,7 +57,7 @@ pred <- tibble::tribble(
 
 gold_vs_pred <- create_comparison(gold, pred)
 
-casimir:::compute_intermediate_results_rr(
+compute_intermediate_results_rr(
   gold_vs_pred,
   rlang::syms(c("doc_id"))
 )
