@@ -2,6 +2,7 @@
 
 [![status](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![R-CMD-check](https://github.com/deutsche-nationalbibliothek/casimir/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/deutsche-nationalbibliothek/casimir/actions/workflows/R-CMD-check.yaml)
+[![CRAN status](https://www.r-pkg.org/badges/version/casimir)](https://cran.r-project.org/package=casimir) 
 
 CASIMiR is a toolbox to facilitate comparative analysis of automated subject
 indexing methods in R.
@@ -39,6 +40,12 @@ convince other people:
   * **the wonderful and inclusive R community**
 
 ## Installation instructions
+
+### Install package from CRAN
+
+```
+install.packages("casimir")
+```
 
 ### Install a stable development version from GitHub (requires compilation)
 
