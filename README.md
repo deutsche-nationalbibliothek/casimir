@@ -3,6 +3,8 @@
 [![status](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![R-CMD-check](https://github.com/deutsche-nationalbibliothek/casimir/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/deutsche-nationalbibliothek/casimir/actions/workflows/R-CMD-check.yaml)
 [![CRAN status](https://www.r-pkg.org/badges/version/casimir)](https://cran.r-project.org/package=casimir) 
+ [![Conda Version](https://img.shields.io/conda/vn/conda-forge/r-casimir.svg)](https://anaconda.org/conda-forge/r-casimir)
+ [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/r-casimir.svg)](https://anaconda.org/conda-forge/r-casimir)
 
 CASIMiR is a toolbox to facilitate comparative analysis of automated subject
 indexing methods in R.
@@ -53,11 +55,11 @@ install.packages("casimir")
 remotes::install_github("deutsche-nationalbibliothek/casimir")
 ```
 
-<!-- ### Installation with Conda/Mamba
+### Installation with Conda/Mamba
 
 ```
 conda create --name my-env -c conda-forge r-casimir
-``` -->
+```
 
 ## Getting Started
 
